@@ -1,0 +1,1863 @@
+.. _sourcemanagement:
+
+Source Code Management with Git
+===============================
+
+DIMS software will be released publicly from `UW-DIMS at GitHub`_.
+(Documentation will be delivered on `ReadTheDocs`_. This is covered in Section
+:ref:`documentation`.) At this point, there are only forked repositories of
+software described in Section :ref:`installingtools`.  Daily development work
+is done using a local server accessed via SSH to ``git.prisem.washington.edu``.
+
+Team members need to have familiarity with a few general task sets,
+which are covered in the sections below:
+
++ Cloning repositories and initializing them for use of the
+  ``hub-flow`` Git addon scripts.
+
++ On a daily basis, updating repositories, creating feature
+  or hotfix branches to work on projects, and finishing those branches after
+  testing is complete to merge them back into the ``develop`` branch.
+
++ Creating new repositories, setting triggers for post-commit actions,
+  and monitoring continuous integration results.
+
+
+Global Git Configuration
+------------------------
+
+As we learn about best practices, the following set of global configuration
+settings will be updated. Refer back to this page, or look in the ``dims-git``
+repo, for the latest configuration examples.
+
+The following are user-specific settings that you should alter for your own account and preferences of editor/merge method:
+
+.. code-block:: bash
+
+    git config --global user.name "Dave Dittrich"
+    git config --global user.email "dittrich@u.washington.edu"
+    git config --global merge.tool vimdiff
+    git config --global core.editor vim
+
+..
+
+The following are general and can be applied to anyone's configuration:
+
+.. code-block:: bash
+
+    git config --global push.default tracking
+    git config --global core.excludesfile ~/.gitignore_global
+    git config --global core.autocrlf false
+    git config --global color.diff auto
+    git config --global color.status auto
+    git config --global color.branch auto
+    git config --global color.interactive auto
+    git config --global color.ui auto
+    git config --global branch.autosetuprebase always</verbatim>
+
+..
+
+The following are convenience aliases that help with certain tasks:
+
+.. code-block:: bash
+
+    git config --global alias.find '!git log --color -p -S'
+    git config --global alias.stat '!git status -s'
+    git config --global alias.unstage "reset HEAD --"
+    git config --global alias.uncommit "reset --soft HEAD^"</verbatim>
+
+..
+
+Daily tasks with Git
+--------------------
+
+This section covers regular tasks that are performed to
+work with source code using Git. This section assumes you are
+using the ``hub flow`` tool described in Section :ref:`installingtools`.
+
+.. warning::
+
+   These tools are being installed in the ``dimsenv`` Python virtual
+   environment to make it easier for everyone on the team to access them and to
+   stay up to date with instructions in this document. If you have `any`
+   problems, file a `Jira
+   <http://jira.prisem.washington.edu/secure/Dashboard.jspa>`_ ticket or talk
+   to Dave immediately upon encountering a problem. Do not let yourself get
+   blocked on something and block everyone else as a result!
+
+..
+
+Updating local repos
+~~~~~~~~~~~~~~~~~~~~
+
+The most common task you need to do is keep your local
+repo up to date with the code that others have pushed
+to remote repositories for sharing. The following command
+ensures your repo is up to date:
+
+.. note::
+
+   The list of actions that are performed is provided at the end of the command
+   output. This will remind you of what all is happening under the hood of Hub
+   Flow and is well worth taking a few seconds of your attention.
+
+..
+
+.. code-block:: bash
+
+    (dimsenv)[dittrich@localhost ansible-playbooks (develop)]$ git hf update
+    Fetching origin
+    remote: Counting objects: 187, done.
+    remote: Compressing objects: 100% (143/143), done.
+    remote: Total 165 (delta 56), reused 1 (delta 0)
+    Receiving objects: 100% (165/165), 31.78 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (56/56), completed with 13 local objects.
+    From git.prisem.washington.edu:/opt/git/ansible-playbooks
+       001ba47..0e12ec3  develop    -> origin/develop
+     * [new branch]      feature/dims-334 -> origin/feature/dims-334
+    Updating 001ba47..0e12ec3
+    Fast-forward
+     docs/source/conf.py                       | 2 +-
+     roles/dims-ci-utils-deploy/tasks/main.yml | 5 +++++
+     2 files changed, 6 insertions(+), 1 deletion(-)
+
+    Summary of actions:
+    - Any changes to branches at origin have been downloaded to your local repository
+    - Any branches that have been deleted at origin have also been deleted from your local repository
+    - Any changes from origin/master have been merged into branch 'master'
+    - Any changes from origin/develop have been merged into branch 'develop'
+    - Any resolved merge conflicts have been pushed back to origin
+    - You are now on branch 'develop'
+
+..
+
+If a branch existed on the remote repo (e.g., the ``feature/eliot`` branch used
+in testing), it would be deleted:
+
+.. code-block:: bash
+   :emphasize-lines: 1,5,7,19
+
+   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   * develop
+     master
+     remotes/origin/develop
+     remotes/origin/feature/eliot
+     remotes/origin/master
+   [dittrich@localhost dims-asbuilt (develop)]$ git hf update
+   Fetching origin
+   From git.prisem.washington.edu:/opt/git/dims-asbuilt
+    x [deleted]         (none)     -> origin/feature/eliot
+   
+   Summary of actions:
+   - Any changes to branches at origin have been downloaded to your local repository
+   - Any branches that have been deleted at origin have also been deleted from your local repository
+   - Any changes from origin/master have been merged into branch 'master'
+   - Any changes from origin/develop have been merged into branch 'develop'
+   - Any resolved merge conflicts have been pushed back to origin
+   - You are now on branch 'develop'
+   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   * develop
+     master
+     remotes/origin/develop
+     remotes/origin/master
+
+..
+
+Initializing a repo for ``hub-flow``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every time you clone a new DIMS repo, it must be initialized with ``hub-flow``
+so that ``hub-flow`` commands work properly.  Initialize your repo this way:
+
+.. code-block:: bash
+   :emphasize-lines: 1,9,10
+
+    (dimsenv)[dittrich@localhost git]$ git clone git@git.prisem.washington.edu:/opt/git/dims-ad.git
+    Cloning into 'dims-ad'...
+    remote: Counting objects: 236, done.
+    remote: Compressing objects: 100% (155/155), done.
+    remote: Total 236 (delta 117), reused 159 (delta 76)
+    Receiving objects: 100% (236/236), 26.20 MiB | 5.89 MiB/s, done.
+    Resolving deltas: 100% (117/117), done.
+    Checking connectivity... done.
+    (dimsenv)[dittrich@localhost git]$ cd dims-ad
+    (dimsenv)[dittrich@localhost dims-ad (master)]$ git hf init
+    Using default branch names.
+
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
+..
+
+After initializing ``hub-flow``, there will be two new sections
+in your ``.git/config`` file starting with ``hubflow``:
+
+.. code-block:: bash
+   :linenos:
+   :emphasize-lines: 16-18, 23-28
+
+   (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
+   [core]
+   	repositoryformatversion = 0
+   	filemode = true
+   	bare = false
+   	logallrefupdates = true
+   	ignorecase = true
+   	precomposeunicode = true
+   [remote "origin"]
+   	url = git@git.prisem.washington.edu:/opt/git/dims-ad.git
+   	fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+   	remote = origin
+   	merge = refs/heads/master
+   	rebase = true
+   [hubflow "branch"]
+   	master = master
+   	develop = develop
+   [branch "develop"]
+   	remote = origin
+   	merge = refs/heads/develop
+   	rebase = true
+   [hubflow "prefix"]
+   	feature = feature/
+   	release = release/
+   	hotfix = hotfix/
+   	support = support/
+   	versiontag =
+
+..
+
+.. note::
+
+    A possible test for inclusion in the ``dims-ci-utils`` test suite would be
+    to check for the existance of the ``hubflow "branch"`` and ``hubflow
+    "prefix"`` sections.  These sections could also be added by a script, to
+    avoid having to always remember to do the interactive init.
+
+..
+
+Infrequent tasks with Git
+-------------------------
+
+Creating Git repositories
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As discussed in the introduction to this section, DIMS software
+will be hosted on both a local server ``git.prisem.washington.edu``
+and from `UW-DIMS at GitHub`_.  This section covers creation of
+new repositories on both systems.
+
+Creating repositories on GitHub
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    This section is not complete.
+
+..
+
+
+Setting up remote Git repositories on ``git.prisem.washington.edu``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before a repository can be shared between DIMS team members, a remote
+repository must be set up on ``git.prisem.washington.edu`` for sharing.
+The following is an example session creating a new repository named
+``dims-ocd`` for *operational concept description* (a.k.a., *Concept of
+Operations*).
+
+.. code-block:: bash
+   :emphasize-lines: 1,5,7,8,10,11
+
+    [dittrich@localhost ~]$ slogin git.prisem.washington.edu
+    Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-43-generic x86_64)
+    [ ... ]
+    Last login: Sun Jan 11 12:04:36 2015 from lancaster.prisem.washington.edu
+    dittrich@jira:~$ sudo su - gituser
+    [sudo] password for dittrich:
+    git@jira:~$ cd /opt/git
+    git@jira:/opt/git$ ./newrepo dims-ocd.git
+    Initialized empty Git repository in /opt/git/dims-ocd.git/
+    git@jira:/opt/git$ echo "DIMS Operational Concept Description" > dims-ocd.git/description
+    git@jira:/opt/git$ tree dims-ocd.git
+    dims-ocd.git
+    ├── branches
+    ├── config
+    ├── description
+    ├── HEAD
+    ├── hooks
+    │   ├── post-receive -> /opt/git/bin/post-receive
+    │   ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
+    │   └── post-receive-01email -> /opt/git/bin/post-receive-01email
+    ├── info
+    │   └── exclude
+    ├── objects
+    │   ├── info
+    │   └── pack
+    └── refs
+        ├── heads
+        └── tags
+
+    9 directories, 7 files
+
+..
+
+As can be seen in the output of ``tree`` at the end, the steps above
+only create ``post-receive`` hooks for logging to AMQP and sending
+email when a ``git push`` is done. To add a Jenkins build hook, do
+the following command as well:
+
+.. code-block:: bash
+   :emphasize-lines: 1,2
+
+    git@jira:/opt/git$ ln -s /opt/git/bin/post-receive-02jenkins dims-ocd.git/hooks/post-receive-02jenkins
+    git@jira:/opt/git$ tree dims-ocd.git/hooks/
+    dims-ocd.git/hooks/
+    ├── post-receive -> /opt/git/bin/post-receive
+    ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
+    ├── post-receive-01email -> /opt/git/bin/post-receive-01email
+    └── post-receive-02jenkins -> /opt/git/bin/post-receive-02jenkins
+
+    0 directories, 4 files
+
+..
+
+Setting up a local Git repository before pushing to remote
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After setting up the remote repository, you should create the
+initial local repository. The basic steps are as follows:
+
+#. Create the new local repo directory.
+#. Populate the directory with the files you want in the repo.
+#. Add them to the repo.
+#. Commit the files with a comment
+#. Create an initial version tag.
+#. Set ``remote.origin.url`` to point to the remote repo.
+#. Push the new repo to the remote repo.
+#. Push the tags to the remote repo.
+
+Here is an edited transcript of performing the above tasks.
+
+.. code-block:: bash
+
+    [dittrich@localhost ~]$ cd $GIT
+    [dittrich@localhost git]$ mkdir dims-ocd
+    [dittrich@localhost git]$ git init
+    Initialized empty Git repository in /Users/dittrich/git/.git/
+    [ ... prepare files ... ]
+    [dittrich@localhost dims-ocd (master)]$ ls
+    MIL-STD-498-templates.pdf	UW-logo.png			conf.py				newsystem.rst
+    Makefile			_build				currentsystem.rst		notes.rst
+    OCD-DID.pdf			_static				impacts.rst			operationalscenarios.rst
+    OCD.html			_templates			index.rst			referenceddocs.rst
+    OCD.rst			analysis.rst			justifications.rst		scope.rst
+    UW-logo-32x32.ico		appendices.rst			license.txt
+    [dittrich@localhost dims-ocd (master)]$ rm OCD.rst
+    [dittrich@localhost dims-ocd (master)]$ ls
+    MIL-STD-498-templates.pdf	_build				currentsystem.rst		notes.rst
+    Makefile			_static				impacts.rst			operationalscenarios.rst
+    OCD-DID.pdf			_templates			index.rst			referenceddocs.rst
+    OCD.html			analysis.rst			justifications.rst		scope.rst
+    UW-logo-32x32.ico		appendices.rst			license.txt
+    UW-logo.png			conf.py				newsystem.rst
+    [dittrich@localhost dims-ocd (master)]$ git add .
+    [dittrich@localhost dims-ocd (master)]$ git commit -m "Initial load of MIL-STD-498 template"
+    [master (root-commit) 39816fa] Initial load of MIL-STD-498 template
+     22 files changed, 1119 insertions(+)
+     create mode 100644 dims-ocd/MIL-STD-498-templates.pdf
+     create mode 100644 dims-ocd/Makefile
+     create mode 100644 dims-ocd/OCD-DID.pdf
+     create mode 100755 dims-ocd/OCD.html
+     create mode 100644 dims-ocd/UW-logo-32x32.ico
+     create mode 100644 dims-ocd/UW-logo.png
+     create mode 100644 dims-ocd/_build/.gitignore
+     create mode 100644 dims-ocd/_static/.gitignore
+     create mode 100644 dims-ocd/_templates/.gitignore
+     create mode 100644 dims-ocd/analysis.rst
+     create mode 100644 dims-ocd/appendices.rst
+     create mode 100644 dims-ocd/conf.py
+     create mode 100644 dims-ocd/currentsystem.rst
+     create mode 100644 dims-ocd/impacts.rst
+     create mode 100644 dims-ocd/index.rst
+     create mode 100644 dims-ocd/justifications.rst
+     create mode 100644 dims-ocd/license.txt
+     create mode 100644 dims-ocd/newsystem.rst
+     create mode 100644 dims-ocd/notes.rst
+     create mode 100644 dims-ocd/operationalscenarios.rst
+     create mode 100644 dims-ocd/referenceddocs.rst
+     create mode 100644 dims-ocd/scope.rst
+    [dittrich@localhost dims-ocd (master)]$ git tag -a "2.0.0" -m "Initial template release"
+    [dittrich@localhost dims-ocd (master)]$ git remote add origin git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+    [dittrich@localhost dims-ocd (master)]$ git push -u origin master
+    Counting objects: 24, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (22/22), done.
+    Writing objects: 100% (24/24), 251.34 KiB | 0 bytes/s, done.
+    Total 24 (delta 1), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 15 20:46:33 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+     * [new branch]      master -> master
+    Branch master set up to track remote branch master from origin by rebasing.
+    [dittrich@localhost dims-ocd (master)]$ git push origin --tags
+    Counting objects: 1, done.
+    Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
+    Total 1 (delta 0), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 15 20:46:45 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+     * [new tag]         2.0.0 -> 2.0.0
+
+..
+
+Cherry-picking a commit from one branch to another
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are times when you are working on one branch (e.g., ``feature/coreos``)
+and find that there is a bug due to a missing file. This file should be
+on the ``develop`` branch from which this feature branch was forked, so
+the solution is to fix the bug on the ``develop`` branch and also get
+the fix on the feature branch.
+
+As long as that change (e.g., an added file that does not exist on the branch)
+has no chance of a conflict, a simple ``cherry-pick`` of the commit will get
+things synchronized. Here is an example of the steps:
+
+Let's say the bug was discovered by noticing this error message shows up when
+rendering a Sphinx document using ``sphinx-autobuild``:
+
+.. code-block:: bash
+
+   +--------- source/index.rst changed ---------------------------------------------
+   /Users/dittrich/git/dims-ci-utils/docs/source/lifecycle.rst:306: WARNING: External Graphviz file u'/Users/dittrich/git/dims-ci-utils/Makefile.dot' not found or reading it failed
+   +--------------------------------------------------------------------------------
+
+..
+
+The file ``Makefile.dot`` is not found.  (The reason is that the
+``lifecycle.rst`` file was moved from a different place, but the
+file it included was not.)  We first stash our work (if necessary)
+and check out the develop branch. Next, locate the missing file:
+
+.. code-block:: bash
+   :emphasize-lines: 1,4
+
+   [dittrich@localhost docs (feature/coreos)]$ git checkout develop
+   Switched to branch 'develop'
+   Your branch is up-to-date with 'origin/develop'.
+   [dittrich@localhost docs (develop)]$ find ../.. -name 'Makefile.dot'
+   ../../packer/Makefile.dot
+
+..
+
+We now copy the file to where we believe it should reside, and
+to trigger a new ``sphinx-autobuild``, we touch the file that
+includes it:
+
+.. code-block:: bash
+
+   [dittrich@localhost docs (develop)]$ cp ../../packer/Makefile.dot ..
+   [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst 
+
+..
+
+Switching to the ``sphinx-autobuild`` status window, we see the error
+message has gone away.
+
+.. code-block:: bash
+
+   +--------- source/lifecycle.rst changed -----------------------------------------
+   +--------------------------------------------------------------------------------
+   
+   [I 150331 16:40:04 handlers:74] Reload 1 waiters: None
+   [I 150331 16:40:04 web:1825] 200 GET /lifecycle.html (127.0.0.1) 0.87ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/css/theme.css (127.0.0.1) 1.87ms
+   [I 150331 16:40:04 web:1825] 304 GET /livereload.js (127.0.0.1) 0.50ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/doctools.js (127.0.0.1) 0.43ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/jquery.js (127.0.0.1) 0.67ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/underscore.js (127.0.0.1) 0.48ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/js/theme.js (127.0.0.1) 0.40ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/virtual_machine_lifecycle_v2.jpeg (127.0.0.1) 4.61ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/whiteboard-lifecycle.png (127.0.0.1) 2.02ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/packer_diagram.png (127.0.0.1) 1.65ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/screenshot-lifecycle.png (127.0.0.1) 1.37ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/vm_org_chart.png (127.0.0.1) 0.70ms
+   [I 150331 16:40:04 web:1825] 200 GET /_images/graphviz-f8dca63773d709e39ae45240fc6b7ed94229eb74.png (127.0.0.1) 0.92ms
+   [I 150331 16:40:04 web:1825] 200 GET /_static/fonts/fontawesome-webfont.woff?v=4.0.3 (127.0.0.1) 0.55ms
+   [I 150331 16:40:05 handlers:109] Browser Connected: http://127.0.0.1:41013/lifecycle.html
+
+..
+
+Now we double-check to make sure we have the change
+we expect, add, and commit the fix:
+
+.. code-block:: bash
+   :emphasize-lines: 1,3,4
+
+   [dittrich@localhost docs (develop)]$ git stat
+   ?? Makefile.dot
+   [dittrich@localhost docs (develop)]$ git add ../Makefile.dot
+   [dittrich@localhost docs (develop)]$ git commit -m "Add Makefile.dot from packer repo for lifecycle.rst"
+   [develop d5a948e] Add Makefile.dot from packer repo for lifecycle.rst
+    1 file changed, 83 insertions(+)
+    create mode 100644 Makefile.dot
+
+..
+
+Make note of the commit that includes just the new file: commit ``d5a948e``
+in this case. Now you could bump the version if necessary before pushing.
+
+.. code-block:: bash
+   :emphasize-lines: 1,2
+
+   [dittrich@27b-2 docs (develop)]$ (cd ..; bumpversion patch)
+   [dittrich@27b-2 docs (develop)]$ git hf push
+   Fetching origin
+   Already up-to-date.
+   Counting objects: 10, done.
+   Delta compression using up to 8 threads.
+   Compressing objects: 100% (10/10), done.
+   Writing objects: 100% (10/10), 783 bytes | 0 bytes/s, done.
+   Total 10 (delta 8), reused 0 (delta 0)
+   remote: Running post-receive hook: Tue Mar 31 17:02:43 PDT 2015
+   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+   remote:                                  Dload  Upload   Total   Spent    Left  Speed
+   remote: 100   217  100   217    0     0   2356      0 --:--:-- --:--:-- --:--:--  2679
+   remote: Scheduled polling of dims-ci-utils-deploy-develop
+   remote: Scheduled polling of dims-ci-utils-deploy-master
+   remote: Scheduled polling of dims-seed-jobs
+   remote: No git consumers for URI git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+   remote: [+++] post-receive-06jenkinsalldocs started
+   remote: [+++] REPONAME=dims-ci-utils
+   remote: [+++] BRANCH=develop
+   remote: [+++] newrev=a95c9e1356ff7c6aaed5bcdbe7b533ffc74b6cc1
+   remote: [+++] oldrev=d5a948ebef61da98b7849416ee340e0a4ba45a3a
+   remote: [+++] Branch was updated.
+   remote: [+++] This repo has a documentation directory.
+   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+   remote:                                  Dload  Upload   Total   Spent    Left  Speed
+   remote: 100    79    0     0  100    79      0   1359 --:--:-- --:--:-- --:--:--  1612
+   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+   remote:                                  Dload  Upload   Total   Spent    Left  Speed
+   remote: 100    78    0     0  100    78      0    260 --:--:-- --:--:-- --:--:--   268
+   remote: [+++] post-receive-06jenkinsalldocs finished
+   To git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+      d5a948e..a95c9e1  develop -> develop
+
+   Summary of actions:
+   - The remote branch 'origin/develop' was updated with your changes
+
+..
+
+Now you can go back to the feature branch you were working on,
+and cherry-pick the commit with the missing file.
+
+.. code-block:: bash
+   :emphasize-lines: 1,5,10
+
+   [dittrich@localhost docs (develop)]$ git checkout feature/coreos
+   Switched to branch 'feature/coreos'
+   Your branch is ahead of 'origin/feature/coreos' by 1 commit.
+     (use "git push" to publish your local commits)
+   [dittrich@localhost docs (feature/coreos)]$ git cherry-pick d5a948e
+   [feature/coreos 14dbf59] Add Makefile.dot from packer repo for lifecycle.rst
+    Date: Tue Mar 31 16:38:03 2015 -0700
+    1 file changed, 83 insertions(+)
+    create mode 100644 Makefile.dot
+   [dittrich@localhost docs (feature/coreos)]$ git log
+   commit 14dbf59dff5d6fce51c899b32fef87276dbddef7
+   Author: Dave Dittrich <dave.dittrich@gmail.com>
+   Date:   Tue Mar 31 16:38:03 2015 -0700
+
+       Add Makefile.dot from packer repo for lifecycle.rst
+   ...
+
+..
+
+.. note::
+
+   Note that this results in a new commit hash on this branch
+   (in this case, ``14dbf59dff5d6fce51c899b32fef87276dbddef7``).
+
+..
+
+
+.. _startingarelease:
+
+Starting a "release"
+~~~~~~~~~~~~~~~~~~~~
+
+By convention, DIMS repositories have at least one file, named ``VERSION``,
+that contains the release version number. You can see the current release by
+looking at the contents of this file.
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (dev)]$ cat VERSION
+    1.1.4
+
+..
+
+.. note::
+
+    There may be other files, such as the Sphinx documentation configuration
+    file, ``docs/source/conf.py`` usually, or other source files for Python
+    or Java builds. Each of the files that has a version/release number in
+    it **must** use the same string and be included in the ``.bumpversion.cfg``
+    file in order for ``bumpversion`` to properly manage release numbers.
+
+..
+
+Now that you know what the current version number is, you can initiate
+a release branch with ``hub-flow``, knowing that the new numbr will be.
+In this case, we will create a release branch ``1.2.0`` to increment
+the minor version number component.
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (dev)]$ git hf release start 1.2.0
+    Fetching origin
+    Switched to a new branch 'release/1.2.0'
+    Total 0 (delta 0), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:33:54 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+     * [new branch]      release/1.2.0 -> release/1.2.0
+
+    Summary of actions:
+    - A new branch 'release/1.2.0' was created, based on 'dev'
+    - The branch 'release/1.2.0' has been pushed up to 'origin/release/1.2.0'
+    - You are now on branch 'release/1.2.0'
+
+    Follow-up actions:
+    - Bump the version number now!
+    - Start committing last-minute fixes in preparing your release
+    - When done, run:
+
+         git hf release finish '1.2.0'
+
+..
+
+You should now be on the new release branch:
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (release/1.2.0)]$
+
+..
+
+After making any textual changes, bump the version number
+to match the new release number:
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
+
+..
+
+Now the release can be finished. You will be placed in an editor
+to create comments for actions like merges and tags.
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
+    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ cat VERSION
+    1.2.0
+    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ git hf release finish '1.2.0'
+    Fetching origin
+    Fetching origin
+    Counting objects: 9, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (8/8), done.
+    Writing objects: 100% (9/9), 690 bytes | 0 bytes/s, done.
+    Total 9 (delta 7), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:37:24 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+       3ac28a2..5ca145b  release/1.2.0 -> release/1.2.0
+    Switched to branch 'master'
+    Your branch is up-to-date with 'origin/master'.
+    Removing roles/tomcat/tasks/main.yml
+    Removing roles/tomcat/handlers/main.yml
+    Removing roles/tomcat/defaults/main.yml
+    Removing roles/postgres/templates/pg_hba.conf.j2
+    Removing roles/postgres/files/schema.psql
+    Removing roles/ozone/files/postgresql-9.3-1102.jdbc41.jar
+    Auto-merging roles/logstash/files/demo.logstash.deleteESDB
+    Auto-merging roles/logstash/files/demo.logstash.addwebsense
+    Auto-merging roles/logstash/files/demo.logstash.addufw
+    Auto-merging roles/logstash/files/demo.logstash.addrpcflow
+    Auto-merging roles/logstash/files/demo.logstash.addcymru
+
+    [ ... ]
+
+    ~
+    ".git/MERGE_MSG" 7L, 280C written
+    Merge made by the 'recursive' strategy.
+     .bumpversion.cfg                                                         |   11 +
+     Makefile                                                                 |   61 +-
+     VERSION                                                                  |    1 +
+     configure-all.yml                                                        |    5 +-
+     dims-all-desktop.yml                                                     |   56 +
+     dims-all-server.yml                                                      |  125 ++
+     dims-cifv1-server.yml                                                    |   50 +
+
+    [...]
+
+
+    Release 1.2.0.
+    #
+    # Write a message for tag:
+    #   1.2.0
+    # Lines starting with '#' will be ignored.
+
+    [...]
+
+    ~
+    ".git/TAG_EDITMSG" 5L, 97C written
+    Switched to branch 'dev'
+    Your branch is up-to-date with 'origin/dev'.
+
+    Merge tag '1.2.0' into dev for
+    Merge tag '1.2.0' into dev for
+    Merge tag '1.2.0' into dev for Release 1.2.0.
+
+    # Please enter a commit message to explain why this merge is necessary,
+    # especially if it merges an updated upstream into a topic branch.
+    #
+    # Lines starting with '#' will be ignored, and an empty message aborts
+    # the commit.
+
+    [...]
+
+    ".git/MERGE_MSG" 7L, 273C written
+    Merge made by the 'recursive' strategy.
+     .bumpversion.cfg    | 2 +-
+     VERSION             | 2 +-
+     docs/source/conf.py | 4 ++--
+     group_vars/all      | 2 +-
+     4 files changed, 5 insertions(+), 5 deletions(-)
+    Deleted branch release/1.2.0 (was 5ca145b).
+    Counting objects: 2, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (2/2), done.
+    Writing objects: 100% (2/2), 447 bytes | 0 bytes/s, done.
+    Total 2 (delta 0), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:38:17 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+       3ac28a2..aec921c  dev -> dev
+    Total 0 (delta 0), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:38:19 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+       2afb58f..2482d07  master -> master
+    Counting objects: 1, done.
+    Writing objects: 100% (1/1), 166 bytes | 0 bytes/s, done.
+    Total 1 (delta 0), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:38:25 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+     * [new tag]         1.2.0 -> 1.2.0
+    remote: Running post-receive hook: Thu Jan 22 18:38:28 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+     - [deleted]         release/1.2.0
+
+    Summary of actions:
+    - Latest objects have been fetched from 'origin'
+    - Release branch has been merged into 'master'
+    - The release was tagged '1.2.0'
+    - Tag '1.2.0' has been back-merged into 'dev'
+    - Branch 'master' has been back-merged into 'dev'
+    - Release branch 'release/1.2.0' has been deleted
+    - 'dev', 'master' and tags have been pushed to 'origin'
+    - Release branch 'release/1.2.0' in 'origin' has been deleted.
+
+..
+
+Lastly, bump the patch version number in the ``dev`` branch to make sure
+that when something reports the version in developmental code builds, it
+doesn't look like you are using code from the *last tagged* ``master``
+branch.  That completely defeats the purpose of using version numbers for
+dependency checks or debugging.
+
+.. code-block:: bash
+
+    [dittrich@localhost ansible-playbooks (dev)]$ bumpversion patch
+    [dittrich@localhost ansible-playbooks (dev)]$ git push
+    Counting objects: 9, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (8/8), done.
+    Writing objects: 100% (9/9), 683 bytes | 0 bytes/s, done.
+    Total 9 (delta 7), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Jan 22 18:51:00 PST 2015
+    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+       aec921c..d4fe053  dev -> dev
+
+..
+
+Figure :ref:`newrelease` shows what the branches look like with
+GitX.app on a Mac:
+
+.. _newrelease:
+
+.. figure:: images/gitx-newrelease.png
+   :alt: New 1.2.0 release, dev on 1.2.1
+   :width: 80%
+   :align: center
+
+   New 1.2.0 release on master, dev now on 1.2.1.
+
+Branch Renaming
+~~~~~~~~~~~~~~~
+
+Several of the git repos comprising the DIMS source code management
+system are using the name ``dev`` for the main development branch.  The
+(somewhat) accepted name for the development branch is ``develop``, as detailed
+in e.g. `http://nvie.com/posts/a-successful-git-branching-model/`.
+
+We would therefore like to rename any dev branch to develop throughout
+our git repo set.  This will of course impact team members who use the
+central repos to share work.  Research online suggests that branch
+renaming can be done.  The best source found was
+https://gist.github.com/lttlrck/9628955, who suggested a three-part
+operation
+
+.. code-block:: bash
+
+   # Rename branch locally
+   git branch -m old_branch new_branch
+   # Delete the old branch
+   git push origin :old_branch
+   # Push the new branch, set local branch to track the new remote
+   git push --set-upstream origin new_branch
+
+..
+
+To test this recipe out without impacting any existing repos and
+therefore avoiding any possible loss of real work, we constructed a
+test situation with a central repo and two fake 'users' who both push
+and pull from that repo.  A branch rename is then done, following the
+recipe above.  The impact on each of the two users is noted.
+
+First, we create a bare repo.  This will mimic our authoratitive repos
+on ``git.prisem.washington.edu``.  We'll call this repo ``dims-328.git``, named after the DIMS
+Jira ticket created to study the branch rename issue:
+
+.. code-block:: bash
+
+   $ cd
+   $ mkdir depot
+   $ cd depot
+   $ git init --bare dims-328.git
+
+..
+
+Next, we clone this repo a first time, which simulates the first
+'user' (replace /home/stuart/ with your local path):
+
+.. code-block:: bash
+
+   $ cd
+   $ mkdir scratch
+   $ cd scratch
+   $ git clone file:///home/stuart/depot/dims-328.git
+
+..
+
+Next, we dd some content in master branch
+
+.. code-block:: bash
+
+   $ cd dims-328
+   $ echo content > foo
+   $ git add foo
+   $ git commit -m "msg"
+   $ git push origin master
+
+..
+
+We now clone the 'depot' repo a second time, to simulate the second
+user.  Both users are then developing using the authoratitive repo as
+the avenue to share work.  Notice how the second user clones into the
+specified directory ``dims-328-2``, so as not to tread on the first user's
+work:
+
+.. code-block:: bash
+
+   $ cd ~/scratch
+   $ git clone file:///home/stuart/depot/dims-328.git dims-328-2
+
+..
+
+`user1` (first clone) then creates a ``dev`` branch and adds some content to
+it:
+
+.. code-block:: bash
+
+   $ cd ~/scratch/dims-328
+   $ git branch dev
+   $ git checkout dev
+   $ echo content > devbranch
+   $ git add devbranch
+   $ git commit -m "added content to dev branch"
+   $ git push origin dev
+
+..
+
+This will create a ``dev`` branch in the origin repo, i.e the depot.
+
+Next, as the second user, pull the changes, checkout ``dev`` and edit:
+
+.. code-block:: bash
+
+   $ cd ~scratch/dims-328-2
+   $ git pull
+   $ git checkout dev
+   $ echo foo >> devbranch
+
+..
+
+At this point we have two 'users' with local repos, both of which share
+a common upstream repo.  Both users have got the dev branch checked
+out, and may have local changes on that branch.
+
+
+Now, we wish to rename the branch ``dev`` to ``develop`` throughout, i.e. at
+the depot and in users' repos.
+
+Using instructions from https://gist.github.com/lttlrck/9628955, and
+noting the impacts to each user, we first act as `user1`, who will be
+deemed 'in charge' of the renaming process:
+
+.. code-block:: bash
+
+   $ cd ~scratch/dims-328
+   $ git branch -m dev develop
+   $ git push origin :dev
+   To file:///home/stuart/depot/dims-328.git
+    - [deleted]         dev
+   $ git push --set-upstream origin develop
+   Counting objects: 2, done.
+   Delta compression using up to 8 threads.
+   Compressing objects: 100% (2/2), done.
+   Writing objects: 100% (2/2), 259 bytes | 0 bytes/s, done.
+   Total 2 (delta 0), reused 0 (delta 0)
+   To file:///home/stuart/depot/dims-328.git
+    * [new branch]      develop -> develop
+   Branch develop set up to track remote branch develop from origin.
+
+..
+
+.. warning::
+
+   (This reads like a ..warning block. Is that how it was meant?)
+
+   The ``git push`` output message implies a deletion of the ``dev`` branch in
+   the depot.  If `user2` were to interact with ``origin/dev`` now, what would
+   happen??
+
+..
+
+Here are the contents of `user1`'s ``.git/config`` after the 3-operation
+rename:
+
+.. code-block:: bash
+
+   [stuart@rejewski dims-328 (develop)]$ cat .git/config
+   [core]
+	   repositoryformatversion = 0
+	   filemode = true
+	   bare = false
+	   logallrefupdates = true
+   [remote "origin"]
+	   url = file:///home/stuart/depot/dims-328.git
+	   fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+	   remote = origin
+	   merge = refs/heads/master
+   [branch "develop"]
+	   remote = origin
+	   merge = refs/heads/develop
+
+..
+
+Note how there are references to ``develop`` but none to ``dev``.  As far as
+`user1` is concerned, the branch rename appears to have worked and is complete.
+
+Now, what does `user2` see? With ``dev`` branch checked out, `and` with a
+local mod, we do a ``pull``:
+
+.. code-block:: bash
+
+   $ cd ~scratch/dims-328-2
+   $ git pull
+   From file:///home/stuart/depot/dims-328
+    * [new branch]      develop    -> origin/develop
+   Your configuration specifies to merge with the ref 'dev'
+   from the remote, but no such ref was fetched.
+
+..
+
+This is some form of error message.  `user2`'s ``.git/config`` at this
+point is this:
+
+.. code-block:: bash
+
+   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   [core]
+	   repositoryformatversion = 0
+	   filemode = true
+	   bare = false
+	   logallrefupdates = true
+   [remote "origin"]
+	   url = file:///home/stuart/depot/dims-328.git
+	   fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+	   remote = origin
+	   merge = refs/heads/master
+   [branch "dev"]
+	   remote = origin
+	   merge = refs/heads/dev
+
+..
+
+Perhaps just the branch rename will work for `user2`? As `user2`, we do the
+first part of the `rename recipe`:
+
+.. code-block:: bash
+
+   $ git branch -m dev develop
+
+..
+
+No errors from this, but `user2`'s ``.git/config`` still refers to a
+``dev`` branch:
+
+.. code-block:: bash
+   :emphasize-lines: 15
+
+   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   [core]
+	   repositoryformatversion = 0
+	   filemode = true
+	   bare = false
+	   logallrefupdates = true
+   [remote "origin"]
+	   url = file:///home/stuart/depot/dims-328.git
+	   fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+	   remote = origin
+	   merge = refs/heads/master
+   [branch "develop"]
+	   remote = origin
+	   merge = refs/heads/dev
+
+..
+
+Next, as `user2`, we issued the third part of the `rename recipe` (but skipped
+the second part):
+
+.. code-block:: bash
+
+   $ git push --set-upstream origin develop
+   Branch develop set up to track remote branch develop from origin.
+   Everything up-to-date.
+
+..
+
+Note that this is a ``push``, but since ``user2`` had no committed changes
+locally, no content was actually pushed.
+
+.. note::
+
+   Not yet tested what would occur should that have been the case.
+
+..
+
+Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
+``develop``:
+
+.. code-block:: bash
+   :emphasize-lines: 15
+
+   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   [core]
+	   repositoryformatversion = 0
+	   filemode = true
+	   bare = false
+	   logallrefupdates = true
+   [remote "origin"]
+	   url = file:///home/stuart/depot/dims-328.git
+	   fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+	   remote = origin
+	   merge = refs/heads/master
+   [branch "develop"]
+	   remote = origin
+	   merge = refs/heads/develop
+
+..
+
+Next, as `user2`, commit the local change, and push to depot:
+
+.. code-block:: bash
+
+   $ git add devbranch
+   $ git commit -m "msg"
+   $ git push
+
+..
+
+So it appears that `user2` can issue just the branch rename and upstream
+operation, and skip the second component of the 3-part recipe (``git push
+origin :old_branch``), likely since this is an operation on the remote
+(depot) itself and was already done by `user1`.
+
+Finally, we switch back to `user1` and pull changes made by `user2`:
+
+.. code-block:: bash
+
+   $ cd ~scratch/dims-328
+   $ git pull
+
+..
+
+.. warning::
+
+    This has addressed `only` git changes.  The wider implications of a git
+    branch rename on systems such as Jenkins has yet to be addressed.  Since
+    systems like Jenkins generally just clone or pull from depots, it is
+    expected that only git URLs need to change from including ``dev`` to
+    ``develop``.
+
+..
+
+.. _fixingcomments:
+
+Fixing comments in unpublished commits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   This section was derived from http://makandracards.com/makandra/868-change-commit-messages-of-past-git-commits
+
+   .. warning::
+
+       Only do this if you have **not already pushed** the changes!!
+       As noted in the ``git-commit`` man page for the ``--amend`` option:
+
+       .. code-block:: bash
+
+           You should understand the implications of rewriting history if you
+           amend a commit that has already been published. (See the "RECOVERING
+           FROM UPSTREAM REBASE" section in git-rebase(1).)
+   
+       ..
+
+   ..
+
+..
+
+There may be times when you accidentally make multiple commits,
+one at a time, using the same comment (but the changes are
+not related to the comment).
+
+
+Here is an example of three commits all made with ``git commit -am``
+using the same message:
+
+.. code-block:: bash
+   :emphasize-lines: 2,8,14,20,27
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log
+    commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:35:08 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    commit 7f3d0d8134c000a787aad83f2690808008ed1d96
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:34:40 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    commit f6f5d868c8ddd12018ca662a54d1f58c150e6364
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:33:59 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    commit 96575c967f606e2161033de92dd2dc580ad60a8b
+    Merge: 1253ea2 dae5aca
+    Author: Linda Parsons <lparsonstech@gmail.com>
+    Date:   Thu Apr 30 14:00:49 2015 -0400
+    
+        Merge remote-tracking branch 'origin/develop' into develop
+    
+    commit 1253ea20bc553759c43d3a999b81be009851d195
+    Author: Linda Parsons <lparsonstech@gmail.com>
+    Date:   Thu Apr 30 14:00:19 2015 -0400
+    
+        Added information for deploying to infrastructure
+
+..
+
+.. note::
+
+   Make note that the commit immediately prior to the three
+   erroneously commented commits is ``96575c96``. We will use
+   that commit number in a moment...
+
+..
+
+Looking at the patch information shows these are clearly not
+all correctly commented:
+
+.. code-block:: bash
+   :emphasize-lines: 8-26,34-60,68-83
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log --patch
+    commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:35:08 2015 -0700
+
+        Fix intersphinx links to use DOCSURL env variable
+
+    diff --git a/docs/makedocset b/docs/makedocset
+    index dafbedb..9adb954 100644
+    --- a/docs/makedocset
+    +++ b/docs/makedocset
+    @@ -7,7 +7,14 @@
+     # This is useful for building a set of documents that employ
+     # intersphinx linking, obtaining the links from the co-local
+     # repositories instead of specified remote locations.
+    +#
+    +# To build the docs for a specific server (e.g., when building
+    +# using a local docker container running Nginx), set the
+    +# environment variable DOCSURL to point to the server:
+    +#
+    +# $ export DOCSURL=http://192.168.99.100:49153
+     
+    +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
+     
+     # Activate dimsenv virtual environment for Sphinx
+     . $HOME/dims/envs/dimsenv/bin/activate
+    
+    commit 7f3d0d8134c000a787aad83f2690808008ed1d96
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:34:40 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    diff --git a/docs/source/conf.py b/docs/source/conf.py
+    index 9fdc100..b3cd483 100644
+    --- a/docs/source/conf.py
+    +++ b/docs/source/conf.py
+    @@ -351,13 +351,16 @@ epub_exclude_files = ['search.html']
+     # If false, no index is generated.
+     #epub_use_index = True
+     
+    +os.environ['GITBRANCH'] = "develop"
+    +
+    +if os.environ.get('DOCSURL') is None:
+    +    #os.environ['DOCSURL'] = "file://{}".format(os.environ.get('GIT'))
+    +    os.environ['DOCSURL'] = "http://u12-dev-svr-1.prisem.washington.edu:8080/docs/{}/html/".format(
+    +        os.environ['GITBRANCH'])
+     
+     intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
+     intersphinx_mapping = {
+    -        'dimsocd': ("%s/dims/docs/dims-ocd" % os.environ['HOME'],
+    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd/objects.inv', None)),
+    -        'dimsad': ("%s/dims/docs/dims-ad" % os.environ['HOME'],
+    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad/objects.inv', None)),
+    -        'dimssr': ("%s/dims/docs/dims-sr" % os.environ['HOME'],
+    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-sr/objects.inv', None))
+    +        'dimsocd': ("{}/dims-ocd".format(os.environ['DOCSURL']), None),
+    +        'dimsad': ("{}/dims-ad".format(os.environ['DOCSURL']), None),
+    +        'dimssr': ("{}/dims-sr".format(os.environ['DOCSURL']), None)
+     }
+
+    commit f6f5d868c8ddd12018ca662a54d1f58c150e6364
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:33:59 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    diff --git a/docs/makedocs b/docs/makedocs
+    deleted file mode 100644
+    index dafbedb..0000000
+    --- a/docs/makedocs
+    +++ /dev/null
+    @@ -1,66 +0,0 @@
+    -#!/bin/bash -x
+    -#
+    -# This script builds multiple Sphinx documents in repos
+    -# residing (in their current checkout branch/state) in
+    -# the directory specified by the $GIT environment variable.
+    -#
+    -# This is useful for building a set of documents that employ
+    -# intersphinx linking, obtaining the links from the co-local
+    -# repositories instead of specified remote locations.
+    ...
+
+..
+
+
+The last commit is easy to fix. Just use ``git commit --amend``
+and edit the message:
+
+.. code-block:: bash
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git commit --amend 
+    
+    Add DOCSURL selection of where docs reside for intersphinx links
+    
+    # Please enter the commit message for your changes. Lines starting
+    # with '#' will be ignored, and an empty message aborts the commit.
+    #
+    # Date:      Thu Apr 30 18:35:08 2015 -0700
+    #
+    # On branch develop
+    # Your branch is ahead of 'origin/develop' by 3 commits.
+    #   (use "git push" to publish your local commits)
+    #
+    # Changes to be committed:
+    #       modified:   makedocset
+
+..
+
+Now we can see the message has been changed, but so has the
+commit hash!
+
+.. code-block:: bash
+   :emphasize-lines: 2
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log --patch
+    commit 654cb34378cb0a4140725a37e3724b6dcee7aebd
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:35:08 2015 -0700
+    
+        Add DOCSURL selection of where docs reside for intersphinx links
+
+    diff --git a/docs/makedocset b/docs/makedocset
+    index dafbedb..9adb954 100644
+    --- a/docs/makedocset
+    +++ b/docs/makedocset
+    @@ -7,7 +7,14 @@
+     # This is useful for building a set of documents that employ
+     # intersphinx linking, obtaining the links from the co-local
+     # repositories instead of specified remote locations.
+    +#
+    +# To build the docs for a specific server (e.g., when building
+    +# using a local docker container running Nginx), set the
+    +# environment variable DOCSURL to point to the server:
+    +#
+    +# $ export DOCSURL=http://192.168.99.100:49153
+     
+    +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
+     
+     # Activate dimsenv virtual environment for Sphinx
+     . $HOME/dims/envs/dimsenv/bin/activate
+    
+    commit 7f3d0d8134c000a787aad83f2690808008ed1d96
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:34:40 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    diff --git a/docs/source/conf.py b/docs/source/conf.py
+    ...
+
+.. 
+
+The second commit has the correct comment, but commit ``f6f5d868c``
+was simply renaming a file. It got caught up as a commit when
+the ``-a`` option was given when committing the changed file,
+not realizing the renamed file had already been added to the
+cache.
+
+To change the message for *only* commit ``f6f5d86``, start an interactive
+rebase at the commit immediately prior to that commit (in this case,
+commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
+
+.. code-block:: bash
+   :emphasize-lines: 3
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git rebase -i 96575c9
+    
+    edit f6f5d86 Fix intersphinx links to use DOCSURL env variable
+    pick 7f3d0d8 Fix intersphinx links to use DOCSURL env variable
+    pick 654cb34 Add DOCSURL selection of where docs reside for intersphinx links
+    
+    # Rebase 96575c9..654cb34 onto 96575c9 (       3 TODO item(s))
+    #
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    #
+    # These lines can be re-ordered; they are executed from top to bottom.
+    #
+    # If you remove a line here THAT COMMIT WILL BE LOST.
+    #
+    # However, if you remove everything, the rebase will be aborted.
+    #
+    # Note that empty commits are commented out
+
+..
+
+As soon as you exit the editor, Git will begin the rebase
+and tell you what to do next:
+
+.. code-block:: bash
+
+    Stopped at f6f5d868c8ddd12018ca662a54d1f58c150e6364... Fix intersphinx links to use DOCSURL env variable
+    You can amend the commit now, with
+    
+    	git commit --amend 
+    
+    Once you are satisfied with your changes, run
+    
+    	git rebase --continue
+
+..
+
+Now use ``git commit --amend`` to edit the comment:
+
+.. code-block:: bash
+
+    (dimsenv)[dittrich@27b-2 docs (develop|REBASE-i 1/3)]$ git commit --amend
+    
+    Rename makedocs -> makedocset
+    
+    # Please enter the commit message for your changes. Lines starting
+    # with '#' will be ignored, and an empty message aborts the commit.
+    #
+    # Date:      Thu Apr 30 18:33:59 2015 -0700
+    #
+    # rebase in progress; onto 96575c9
+    # You are currently editing a commit while rebasing branch 'develop' on '96575c9'.
+    #
+    # Changes to be committed:
+    #       renamed:    makedocs -> makedocset
+    #
+
+..
+
+Finish off by continuing the rebase for the remaining commits.
+
+.. code-block:: bash
+
+    (dimsenv)[dittrich@27b-2 docs (develop|REBASE-i 1/3)]$ git rebase --continue
+    Successfully rebased and updated refs/heads/develop.
+
+..
+
+Now ``git log`` shows the correct comments, as well as
+new commit hashes:
+
+.. code-block:: bash
+
+    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log
+    commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:35:08 2015 -0700
+    
+        Add DOCSURL selection of where docs reside for intersphinx links
+    
+    commit c2c55ff3dcbf10739c5d86ce8a6192e930ccd265
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:34:40 2015 -0700
+    
+        Fix intersphinx links to use DOCSURL env variable
+    
+    commit 2155936ad7e3ae71ef5775b2036a4b6c21a9a86d
+    Author: Dave Dittrich <dave.dittrich@gmail.com>
+    Date:   Thu Apr 30 18:33:59 2015 -0700
+    
+        Rename makedocs -> makedocset
+    
+    commit 96575c967f606e2161033de92dd2dc580ad60a8b
+    Merge: 1253ea2 dae5aca
+    Author: Linda Parsons <lparsonstech@gmail.com>
+    Date:   Thu Apr 30 14:00:49 2015 -0400
+    
+        Merge remote-tracking branch 'origin/develop' into develop
+
+..
+
+
+Creating a new documentation-only repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note:: TBD
+
+   The following is included here to document how to set up a new
+   documentation-only repo. The lines that are highlighted are those
+   that include user input. The long-term goal is to script creating
+   these repos so as to not require everyone know exactly how to
+   answer each of these questions. This is blocked waiting on getting
+   a consistent Python virtual environment that works on both dev
+   systems and Jenkins before globally functional scripts and Sphinx
+   configurations will work properly.
+
+..
+
+.. code-block:: bash
+   :linenos:
+   :emphasize-lines: 1,2,3,5,6,13,18,23,26,27,34,35,43,47,53,56,59-67,72,73,86-88,100
+
+   [dittrich@localhost git]$ mkdir dims-asbuilt
+   [dittrich@localhost git]$ cd dims-asbuilt/
+   [dittrich@localhost dims-asbuilt]$ git init
+   Initialized empty Git repository in /Users/dittrich/git/dims-asbuilt/.git/
+   [dittrich@localhost dims-asbuilt (master)]$ workon dimsenv
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ sphinx-quickstart 
+   Welcome to the Sphinx 1.3.1 quickstart utility.
+   
+   Please enter values for the following settings (just press Enter to
+   accept a default value, if one is given in brackets).
+   
+   Enter the root path for documentation.
+   > Root path for the documentation [.]:
+   
+   You have two options for placing the build directory for Sphinx output.
+   Either, you use a directory "_build" within the root path, or you separate
+   "source" and "build" directories within the root path.
+   > Separate source and build directories (y/n) [n]: y
+   
+   Inside the root directory, two more directories will be created; "_templates"
+   for custom HTML templates and "_static" for custom stylesheets and other static
+   files. You can enter another prefix (such as ".") to replace the underscore.
+   > Name prefix for templates and static dir [_]: 
+   
+   The project name will occur in several places in the built documentation.
+   > Project name: DIMS 'As-Built' System
+   > Author name(s): Dave Dittrich
+   
+   Sphinx has the notion of a "version" and a "release" for the
+   software. Each version can have multiple releases. For example, for
+   Python the version is something like 2.5 or 3.0, while the release is
+   something like 2.5.1 or 3.0a1.  If you don't need this dual structure,
+   just set both to the same value.
+   > Project version: 0.1.0
+   > Project release [0.1.0]: 
+   
+   If the documents are to be written in a language other than English,
+   you can select a language here by its language code. Sphinx will then
+   translate text that it generates into that language.
+   
+   For a list of supported codes, see
+   http://sphinx-doc.org/config.html#confval-language.
+   > Project language [en]: 
+   
+   The file name suffix for source files. Commonly, this is either ".txt"
+   or ".rst".  Only files with this suffix are considered documents.
+   > Source file suffix [.rst]: 
+   
+   One document is special in that it is considered the top node of the
+   "contents tree", that is, it is the root of the hierarchical structure
+   of the documents. Normally, this is "index", but if your "index"
+   document is a custom template, you can also set this to another filename.
+   > Name of your master document (without suffix) [index]: 
+   
+   Sphinx can also add configuration for epub output:
+   > Do you want to use the epub builder (y/n) [n]: y
+   
+   Please indicate if you want to use one of the following Sphinx extensions:
+   > autodoc: automatically insert docstrings from modules (y/n) [n]: 
+   > doctest: automatically test code snippets in doctest blocks (y/n) [n]: 
+   > intersphinx: link between Sphinx documentation of different projects (y/n) [n]: y
+   > todo: write "todo" entries that can be shown or hidden on build (y/n) [n]: y
+   > coverage: checks for documentation coverage (y/n) [n]: 
+   > pngmath: include math, rendered as PNG images (y/n) [n]: 
+   > mathjax: include math, rendered in the browser by MathJax (y/n) [n]: 
+   > ifconfig: conditional inclusion of content based on config values (y/n) [n]: y
+   > viewcode: include links to the source code of documented Python objects (y/n) [n]: 
+   
+   A Makefile and a Windows command file can be generated for you so that you
+   only have to run e.g. `make html' instead of invoking sphinx-build
+   directly.
+   > Create Makefile? (y/n) [y]: 
+   > Create Windows command file? (y/n) [y]: n
+   
+   Creating file ./source/conf.py.
+   Creating file ./source/index.rst.
+   Creating file ./Makefile.
+   
+   Finished: An initial directory structure has been created.
+   
+   You should now populate your master file ./source/index.rst and create other documentation
+   source files. Use the Makefile to build the docs, like so:
+      make builder
+   where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
+
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ echo \
+   > "This is a documentation-only repo. Sphinx source is in docs/source." > README.txt
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ tree
+   .
+   ├── README.txt
+   ├── Makefile
+   ├── build
+   └── source
+       ├── _static
+       ├── _templates
+       ├── conf.py
+       └── index.rst
+   
+   4 directories, 4 files
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ dims.sphinx-autobuild 
+   Serving on http://127.0.0.1:29583
+
+..
+
+After setting up the directory structure, editing the ``source/conf.py`` file
+to fix the title, etc., and creating initial scaffolding files sufficient
+to render a Sphinx document, you are almost ready to commit to Git. First,
+do ``make clean`` to get rid of any rendered files and make sure that only
+the source files and ``README.txt`` file are present:
+
+.. code-block:: bash
+   :emphasize-lines: 1,3
+
+   [dittrich@localhost dims-asbuilt (master)]$ make clean
+   rm -rf build/*
+   [dittrich@localhost dims-asbuilt (master)]$ tree
+   .
+   ├── Makefile
+   ├── README.txt
+   ├── build
+   └── source
+       ├── _static
+       ├── _templates
+       ├── cifv1.rst
+       ├── conf.py
+       ├── git.rst
+       ├── index.rst
+       └── jenkins.rst
+   
+   4 directories, 7 files
+
+..
+
+The next step is to add the source to the local git repo, set the upstream
+origin, tag the repository with the version number specified above, and push
+it to origin.
+
+.. code-block:: bash
+   :linenos:
+   :emphasize-lines: 1,2,10,20-22,31
+
+   [dittrich@localhost dims-asbuilt (master)]$ git add .
+   [dittrich@localhost dims-asbuilt (master)]$ git stat
+   A  Makefile
+   A  README.txt
+   A  source/cifv1.rst
+   A  source/conf.py
+   A  source/git.rst
+   A  source/index.rst
+   A  source/jenkins.rst
+   [dittrich@localhost dims-asbuilt (master)]$ git commit -m "Initial load"
+   [master (root-commit) d0fcaa5] Initial load
+    7 files changed, 604 insertions(+)
+    create mode 100644 Makefile
+    create mode 100644 README.txt
+    create mode 100644 source/cifv1.rst
+    create mode 100644 source/conf.py
+    create mode 100644 source/git.rst
+    create mode 100644 source/index.rst
+    create mode 100644 source/jenkins.rst
+   [dittrich@localhost dims-asbuilt (master)]$ git remote add origin git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   [dittrich@localhost dims-asbuilt (master)]$ git tag -a "0.1.0" -m "Initial template release"
+   [dittrich@localhost dims-asbuilt (master)]$ git push origin master
+   Counting objects: 10, done.
+   Delta compression using up to 8 threads.
+   Compressing objects: 100% (7/7), done.
+   Writing objects: 100% (10/10), 7.37 KiB | 0 bytes/s, done.
+   Total 10 (delta 0), reused 0 (delta 0)
+   remote: Running post-receive hook: Wed Mar 18 16:15:02 PDT 2015
+   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+    * [new branch]      master -> master
+   [dittrich@localhost dims-asbuilt (master)]$ git push origin --tags
+   Counting objects: 1, done.
+   Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
+   Total 1 (delta 0), reused 0 (delta 0)
+   remote: Running post-receive hook: Wed Mar 18 16:26:29 PDT 2015
+   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+    * [new tag]         0.1.0 -> 0.1.0
+
+..
+
+Following those steps, initialize the repo for ``hub-flow``.
+
+.. code-block:: bash
+   :emphasize-lines: 1
+
+   [dittrich@localhost dims-asbuilt (master)]$ git hf init
+   Using default branch names.
+   
+   Which branch should be used for tracking production releases?
+      - master
+        Branch name for production releases: [master] 
+        Branch name for "next release" development: [develop] 
+   
+   How to name your supporting branch prefixes?
+   Feature branches? [feature/] 
+   Release branches? [release/] 
+   Hotfix branches? [hotfix/] 
+   Support branches? [support/] 
+   Version tag prefix? [] 
+   Total 0 (delta 0), reused 0 (delta 0)
+   remote: Running post-receive hook: Wed Mar 18 16:24:14 PDT 2015
+   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+    * [new branch]      develop -> develop
+
+..
+
+Set up ``bumpversion``:
+
+.. code-block:: bash
+   :emphasize-lines: 1
+
+   [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg 
+
+   [bumpversion]
+   current_version = 0.1.0
+   commit = True
+   tag = False
+
+   [bumpversion:file:source/conf.py]
+
+..
+
+Use the ``--dry-run`` option to test whether the configuration
+was done properly before attempting to actually bump the version
+number.
+
+.. code-block:: bash
+   :emphasize-lines: 1,48
+
+   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion --dry-run --verbose patch
+   Reading config file .bumpversion.cfg:
+   [bumpversion]
+   current_version = 0.1.0
+   commit = True
+   tag = False
+   
+   [bumpversion:file:source/conf.py]
+   
+   
+   Parsing version '0.1.0' using regexp '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'
+   Parsed the following values: major=0, minor=1, patch=0
+   Attempting to increment part 'patch'
+   Values are now: major=0, minor=1, patch=1
+   Dry run active, won't touch any files.
+   New version will be '0.1.1'
+   Asserting files source/conf.py contain the version string:
+   Found '0.1.0' in source/conf.py at line 61: version = '0.1.1'
+   Would change file source/conf.py:
+   --- a/source/conf.py
+   +++ b/source/conf.py
+   @@ -59,9 +59,9 @@
+    # built documents.
+    #
+    # The short X.Y version.
+   -version = '0.1.0'
+   +version = '0.1.1'
+    # The full version, including alpha/beta/rc tags.
+   -release = '0.1.0'
+   +release = '0.1.1'
+    
+    # The language for content autogenerated by Sphinx. Refer to documentation
+    # for a list of supported languages.
+   Would write to config file .bumpversion.cfg:
+   [bumpversion]
+   current_version = 0.1.1
+   commit = True
+   tag = False
+   
+   [bumpversion:file:source/conf.py]
+   
+   
+   Would prepare Git commit
+   Would add changes in file 'source/conf.py' to Git
+   Would add changes in file '.bumpversion.cfg' to Git
+   Would commit to Git with message 'Bump version: 0.1.0 → 0.1.1'
+   Would tag 'v0.1.1' in Git
+   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion patch
+
+..
+
+Now use ``hub-flow`` to push the current state of the local repo.
+
+.. code-block:: bash
+   :emphasize-lines: 1
+
+   [dittrich@localhost dims-asbuilt (develop)]$ git hf push
+   Fetching origin
+   Already up-to-date.
+   Counting objects: 4, done.
+   Delta compression using up to 8 threads.
+   Compressing objects: 100% (4/4), done.
+   Writing objects: 100% (4/4), 375 bytes | 0 bytes/s, done.
+   Total 4 (delta 3), reused 0 (delta 0)
+   remote: Running post-receive hook: Wed Mar 18 16:38:27 PDT 2015
+   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+      d0fcaa5..db3c7f1  develop -> develop
+   
+   Summary of actions:
+   - The remote branch 'origin/develop' was updated with your changes
+
+..
+
+Finally, add the hook to trigger Jenkins documentation construction (in
+this case, cutting/pasting the hook from another repo to get the link correct).
+
+.. code-block:: bash
+   :emphasize-lines: 1,9,10
+
+   [git@jira git]$ tree dims-ad.git/hooks/
+   dims-ad.git/hooks/
+   ├── post-receive -> /opt/git/bin/post-receive
+   ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
+   ├── post-receive-01email -> /opt/git/bin/post-receive-01email
+   └── post-receive-06jenkinsalldocs -> /opt/git/bin/post-receive-06jenkinsalldocs
+
+   0 directories, 4 files
+   [git@jira git]$ ln -s /opt/git/bin/post-receive-06jenkinsalldocs dims-asbuilt.git/hooks/post-receive-06jenkinsalldocs
+   [git@jira git]$ tree dims-asbuilt.git/hooks/
+   dims-asbuilt.git/hooks/
+   ├── post-receive -> /opt/git/bin/post-receive
+   ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
+   ├── post-receive-01email -> /opt/git/bin/post-receive-01email
+   └── post-receive-06jenkinsalldocs -> /opt/git/bin/post-receive-06jenkinsalldocs
+
+   0 directories, 4 files
+
+..
+
+.. todo::
+
+   Put all of the steps above into a script so that they are
+   done consistently and much more easily.
+
+..
+
+
+.. todo::
+
+   STOPPED HERE (see ``not-added-yet.txt`` for more text to be added.)
+
+..
+
+.. _UW-DIMS at GitHub: https://github.com/uw-dims
+.. _ReadTheDocs: https://readthedocs.org/
+
