@@ -173,6 +173,20 @@ in testing), it would be deleted:
 
 ..
 
+While using ``git hf update && git hf pull`` seems like it is simple enough,
+the DIMS project has several dozen repos, many of which are inter-related.
+Keeping them all up to date is not simple, and because of this developers
+often get far out of sync with the rest of the team.
+
+A useful tool for managing multiple Git repositories and keeping them in sync
+with the master branches is to use the program ``mr``. (http://joeyh.name/code/mr/)
+
+``mr`` uses a configuration file that can be added to using ``mr register`` within
+a repo.  Cloning all of the DIMS source repos at once, or getting the contents of
+what should be an up-to-date ``.mrconfig`` file, is covered in the Section
+:ref:`cloningmultiplerepos`.
+
+
 .. _initializingforhubflow:
 
 Initializing a repo for ``hub-flow``
@@ -214,7 +228,6 @@ After initializing ``hub-flow``, there will be two new sections
 in your ``.git/config`` file starting with ``hubflow``:
 
 .. code-block:: bash
-   :linenos:
    :emphasize-lines: 16-18, 23-28
 
    (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
@@ -276,7 +289,59 @@ To get a list of all repositories on ``git.prisem.washington.edu``,
 use the Git shell command ``list``:
 
 .. code-block:: bash
+   :emphasize-lines: 1
 
+    [dittrich@27b-2 ~]$ ssh git@git.prisem.washington.edu list
+    prisem-replacement.git
+    ELK.git
+    cif-java.git
+    cif-client.git
+    dims-ad.git
+    supervisor.git
+    dims-tr.git
+    lemonldap-ng.git
+    pygraph.git
+    parsons-docker.git
+    configs.git
+    poster-deck-2014-noflow.git
+    dims-keys.git
+    dims.git
+    dims-tp.git
+    ops-trust-portal.git
+    dimssysconfig.git
+    dims-dockerfiles.git
+    stix-java.git
+    ansible-playbooks.git
+    dims-dashboard.git
+    mal4s.git
+    dims-ocd.git
+    sphinx-autobuild.git
+    dims-devguide.git
+    dims-asbuilt.git
+    ticketing-redis.git
+    dims-sr.git
+    prisem.git
+    umich-botnets.git
+    dims-dsdd.git
+    dims-sample-data.git
+    packer.git
+    java-stix-v1.1.1.git
+    vagrant.git
+    dims-jds.git
+    ansible-inventory.git
+    ops-trust-openid.git
+    dims-coreos-vagrant.git
+    configstest.git
+    poster-deck-2014.git
+    rwfind.git
+    dims-ci-utils.git
+    ipgrep.git
+    tupelo.git
+    dims-opst-portal.git
+    lemonldap-dims.git
+    MozDef.git
+    tsk4j.git
+    dims-svd.git
 
 ..
 
@@ -284,16 +349,12 @@ To clone all of these repositories in a single step, there is
 another Git shell command ``mrconfig`` that returns the contents
 of a ``.mrconfig`` file (see ``man mr`` for more information).
 
-.. code-block:: bash
-
-
-..
-
 .. caution::
 
    To use a ``.mrconfig`` file in a an arbitrary directory, you
    will need to add the directory path to this file to the ``~/.mrtrust``
-   file:
+   file. In this example, we will clone repos into `~/dims/git`` by
+   placing the ``.mrconfig`` file in the ``~/dims`` directory.
 
    .. code-block:: bash
 
@@ -307,12 +368,11 @@ of a ``.mrconfig`` file (see ``man mr`` for more information).
 
 If you are building a documentation set (i.e., a limited set of documentation-only
 repositories that are cross-linked using the ``intersphinx`` extension to Sphinx
-as described in :ref:`dims-ci-utils:
+as described in Section :ref:`intersphinxlinking`.
 
 
 .. code-block:: bash
-   :linenos:
-   :emphasize-lines: 1,2,29,30,33,101
+   :emphasize-lines: 1,2,29,30,98
 
     [dittrich@localhost ~]$ cd ~/dims
     [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig dims-ad dims-sr dims-ocd
@@ -422,6 +482,16 @@ as described in :ref:`dims-ci-utils:
 
 ..
 
+.. note::
+
+   The example just shown uses only three repos. If you do not specify
+   any repo names on the ``mrconfig`` Git shell command, it will return
+   the settings for all 50+ DIMS repos. You can then clone the entire
+   set of DIMS repositories with the same ``mr checkout`` command,
+   and update all of them at once with ``mr update``. 
+
+..
+
 .. _creatinggitrepos:
 
 Creating Git repositories
@@ -437,9 +507,13 @@ new repositories on both systems.
 Creating repositories on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. note::
+.. todo::
 
-    This section is not complete.
+    .. note::
+
+        This section is not complete.
+
+    ..
 
 ..
 
@@ -507,6 +581,20 @@ the following command as well:
     └── post-receive-02jenkins -> /opt/git/bin/post-receive-02jenkins
 
     0 directories, 4 files
+
+..
+
+.. todo::
+
+    .. note::
+
+        The ``newrepo`` command needs to be extended to support
+        command line options for selecting hooks, and added to ``list``
+        and ``mrconfig`` as Git shell commands for remote access.
+        This will greatly simply repo creation by eliminating several
+        manual steps that are not easy to remember.
+
+    ..
 
 ..
 
@@ -1255,9 +1343,13 @@ the second part):
 Note that this is a ``push``, but since ``user2`` had no committed changes
 locally, no content was actually pushed.
 
-.. note::
+.. todo::
 
-   Not yet tested what would occur should that have been the case.
+    .. note::
+
+        Not yet tested what would occur should that have been the case.
+
+    ..
 
 ..
 
@@ -1836,7 +1928,6 @@ origin, tag the repository with the version number specified above, and push
 it to origin.
 
 .. code-block:: bash
-   :linenos:
    :emphasize-lines: 1,2,10,20-22,31
 
    [dittrich@localhost dims-asbuilt (master)]$ git add .
