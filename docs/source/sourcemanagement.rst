@@ -22,6 +22,10 @@ which are covered in the sections below:
 + Creating new repositories, setting triggers for post-commit actions,
   and monitoring continuous integration results.
 
++ Keeping up to date with new repositories (or starting fresh with a new
+  development system by cloning all DIMS repositories a new.)
+
+.. _gitconfiguration:
 
 Global Git Configuration
 ------------------------
@@ -68,6 +72,8 @@ The following are convenience aliases that help with certain tasks:
 
 ..
 
+.. _dailygittasks:
+
 Daily tasks with Git
 --------------------
 
@@ -87,13 +93,17 @@ using the ``hub flow`` tool described in Section :ref:`installingtools`.
 
 ..
 
+.. _updatinglocalrepos:
+
 Updating local repos
 ~~~~~~~~~~~~~~~~~~~~
 
 The most common task you need to do is keep your local
 repo up to date with the code that others have pushed
-to remote repositories for sharing. The following command
-ensures your repo is up to date:
+to remote repositories for sharing.
+
+The following command ensures that a local repo you
+are working on is up to date:
 
 .. note::
 
@@ -162,6 +172,8 @@ in testing), it would be deleted:
      remotes/origin/master
 
 ..
+
+.. _initializingforhubflow:
 
 Initializing a repo for ``hub-flow``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -245,8 +257,172 @@ in your ``.git/config`` file starting with ``hubflow``:
 
 ..
 
+.. _infrequentgittasks:
+
 Infrequent tasks with Git
 -------------------------
+
+.. _cloningmultiplerepos:
+
+Cloning multiple repos from ``git.prisem.washington.edu``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are several dozen repositories on ``git.prisem.washington.edu``
+that contain DIMS-generated code, configuration files, and/or documentation,
+but also local copies of Git repositories from other sources (some with
+DIMS-related customizations).
+
+To get a list of all repositories on ``git.prisem.washington.edu``,
+use the Git shell command ``list``:
+
+.. code-block:: bash
+
+
+..
+
+To clone all of these repositories in a single step, there is
+another Git shell command ``mrconfig`` that returns the contents
+of a ``.mrconfig`` file (see ``man mr`` for more information).
+
+.. code-block:: bash
+
+
+..
+
+.. caution::
+
+   To use a ``.mrconfig`` file in a an arbitrary directory, you
+   will need to add the directory path to this file to the ``~/.mrtrust``
+   file:
+
+   .. code-block:: bash
+
+       [dittrich@localhost dims]$ cat ~/.mrtrust
+       /Users/dittrich/dims/.mrconfig
+       /Users/dittrich/git/.mrconfig
+
+   ..
+
+..
+
+If you are building a documentation set (i.e., a limited set of documentation-only
+repositories that are cross-linked using the ``intersphinx`` extension to Sphinx
+as described in :ref:`dims-ci-utils:
+
+
+.. code-block:: bash
+   :linenos:
+   :emphasize-lines: 1,2,29,30,33,101
+
+    [dittrich@localhost ~]$ cd ~/dims
+    [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig dims-ad dims-sr dims-ocd
+    [git/dims-ad]
+    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-ad.git' 'dims-ad' &&
+    	(cd dims-ad; git hf init)
+    show = git remote show origin
+    update = git hf update
+    pull = git hf update &&
+    	git hf pull
+    stat = git status -s
+    
+    [git/dims-sr]
+    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-sr.git' 'dims-sr' &&
+    	(cd dims-sr; git hf init)
+    show = git remote show origin
+    update = git hf update
+    pull = git hf update &&
+    	git hf pull
+    stat = git status -s
+    
+    [git/dims-ocd]
+    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-ocd.git' 'dims-ocd' &&
+    	(cd dims-ocd; git hf init)
+    show = git remote show origin
+    update = git hf update
+    pull = git hf update &&
+    	git hf pull
+    stat = git status -s
+    [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig dims-ad dims-sr dims-ocd > .mrconfig
+    [dittrich@localhost dims]$ mr checkout
+    mr checkout: /Users/dittrich/dims/git/dims-ad
+    Cloning into 'dims-ad'...
+    remote: Counting objects: 518, done.
+    remote: Compressing objects: 100% (437/437), done.
+    remote: Total 518 (delta 308), reused 155 (delta 76)
+    Receiving objects: 100% (518/518), 27.88 MiB | 5.88 MiB/s, done.
+    Resolving deltas: 100% (308/308), done.
+    Checking connectivity... done.
+    Using default branch names.
+    
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master] 
+    Branch name for "next release" development: [develop] 
+    
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/] 
+    Release branches? [release/] 
+    Hotfix branches? [hotfix/] 
+    Support branches? [support/] 
+    Version tag prefix? [] 
+    
+    mr checkout: /Users/dittrich/dims/git/dims-ocd
+    Cloning into 'dims-ocd'...
+    remote: Counting objects: 474, done.
+    remote: Compressing objects: 100% (472/472), done.
+    remote: Total 474 (delta 288), reused 0 (delta 0)
+    Receiving objects: 100% (474/474), 14.51 MiB | 4.26 MiB/s, done.
+    Resolving deltas: 100% (288/288), done.
+    Checking connectivity... done.
+    Using default branch names.
+    
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master] 
+    Branch name for "next release" development: [develop] 
+    
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/] 
+    Release branches? [release/] 
+    Hotfix branches? [hotfix/] 
+    Support branches? [support/] 
+    Version tag prefix? [] 
+    
+    mr checkout: /Users/dittrich/dims/git/dims-sr
+    Cloning into 'dims-sr'...
+    remote: Counting objects: 450, done.
+    remote: Compressing objects: 100% (445/445), done.
+    remote: Total 450 (delta 285), reused 0 (delta 0)
+    Receiving objects: 100% (450/450), 498.20 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (285/285), done.
+    Checking connectivity... done.
+    Using default branch names.
+    
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master] 
+    Branch name for "next release" development: [develop] 
+    
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/] 
+    Release branches? [release/] 
+    Hotfix branches? [hotfix/] 
+    Support branches? [support/] 
+    Version tag prefix? [] 
+    
+    mr checkout: finished (3 ok)
+    [dittrich@27b-2 dims]$ mr stat
+    mr stat: /Users/dittrich/tmp/dims/git/dims-ad
+
+    mr stat: /Users/dittrich/tmp/dims/git/dims-ocd
+
+    mr stat: /Users/dittrich/tmp/dims/git/dims-sr
+
+    mr stat: finished (3 ok)
+
+..
+
+.. _creatinggitrepos:
 
 Creating Git repositories
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -255,6 +431,8 @@ As discussed in the introduction to this section, DIMS software
 will be hosted on both a local server ``git.prisem.washington.edu``
 and from `UW-DIMS at GitHub`_.  This section covers creation of
 new repositories on both systems.
+
+.. _creatingreposongithub:
 
 Creating repositories on GitHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -265,6 +443,7 @@ Creating repositories on GitHub
 
 ..
 
+.. _settingupremotedimsrepos:
 
 Setting up remote Git repositories on ``git.prisem.washington.edu``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -330,6 +509,8 @@ the following command as well:
     0 directories, 4 files
 
 ..
+
+.. _settinguplocalrepo:
 
 Setting up a local Git repository before pushing to remote
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -417,6 +598,8 @@ Here is an edited transcript of performing the above tasks.
      * [new tag]         2.0.0 -> 2.0.0
 
 ..
+
+.. _cherrypickingcommits:
 
 Cherry-picking a commit from one branch to another
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
