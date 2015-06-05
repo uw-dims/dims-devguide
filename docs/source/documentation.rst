@@ -690,8 +690,13 @@ Pay attention to the build output.
 
 ..
 
-Both of these are simple typographical errors in the ``intro.rst``
-file.
+.. _typographicerrors:
+
+Typographic errors
+~~~~~~~~~~~~~~~~~~
+
+Both of the errors seen in this first example above are simple typographical
+errors in the ``intro.rst`` file.
 
 The first one, as it says, involves an improper literal on
 line 25:
@@ -747,6 +752,12 @@ starting out to get a refresher, and also have a browser window up with the
 `The reStructuredText_ Cheat Sheet: Syntax Reminders`_ or `Quick
 reStructuredText`_ quick reference guide to help while writing reST documents.
 
+
+.. _linkerrors:
+
+Link errors
+~~~~~~~~~~~
+
 A more subtle problem that comes up frequently when creating
 links to reference material in Sphinx documents is this
 error:
@@ -791,6 +802,11 @@ the URL, like this:
 
 ..
 
+.. _lateximageerrors:
+
+LaTeX image errors
+~~~~~~~~~~~~~~~~~~
+
 You may get errors rendering LaTeX PDF documents that include
 image files. Such an error may look like this:
 
@@ -826,6 +842,128 @@ image files. Such an error may look like this:
 
 The `solution to this`_ is to use ``mogrify -density 90 DD_home_page_small.png``
 to fix the image resolution metadata in the PNG file.
+
+.. _latexunicodeerrors:
+
+LaTeX Unicode rendering errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another error message that could occur when rendering the kind of
+text in the ``code-block`` seen in Section :ref:`typographicerrors` relates to
+the Unicode characters produced by the ``tree` program to show the indentation
+levels.
+
+Here is an error message (with the specific lines highlighted) that can show up
+in a Jenkins build process FAILURE message:
+
+
+.. code-block:: bash
+    :linenos:
+    :emphasize-lines: 16,22,28
+
+    Running LaTeX files through pdflatex...
+    make -C build/latex all-pdf
+    make[1]: Entering directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/ansible-playbooks/docs/build/latex'
+    pdflatex  'AnsiblePlaybooksRepository.tex'
+    This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+    entering extended mode
+    (./AnsiblePlaybooksRepository.tex
+    
+    ...
+    
+    Underfull \hbox (badness 10000) in paragraph at lines 819--822
+    []\T1/ptm/m/n/10 While it is not re-quired to in-stall dims-ci-utils, you prob-
+    a-bly will want to run the play-book
+    [11] [12] [13]
+    
+    ! Package inputenc Error: Unicode char \u8:â”œ not set up for use with LaTeX.
+    
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...                                              
+                                                      
+    l.1040 â”œ-- defaults
+                         
+    ? 
+    ! Emergency stop.
+     ...                                              
+                                                      
+    l.1040 â”œ-- defaults
+                         
+    !  ==> Fatal error occurred, no output PDF file produced!
+    Transcript written on AnsiblePlaybooksRepository.log.
+    make[1]: *** [AnsiblePlaybooksRepository.pdf] Error 1
+    make[1]: Leaving directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/ansible-playbooks/docs/build/latex'
+    make: *** [latexpdf] Error 2
+    Build step 'Custom Python Builder' marked build as failure
+    Warning: you have no plugins providing access control for builds, so falling back to legacy behavior of permitting any downstream builds to be triggered
+    Finished: FAILURE
+
+..
+
+Here is the specific block of text that triggered the rendering
+error message:
+
+.. code-block:: rest
+   :emphasize-lines: 3
+
+    .. code-block:: bash
+    
+        ── defaults
+            ── main.yml
+        ── files
+            ── base-requirements.txt
+            ── debian-virtualenv-prereqs.sh
+            ── dimsenv-requirements.txt
+            ── macos-virtualenv-prereqs.sh
+        ── meta
+            ── main.yml
+        ── tasks
+            ── main.yml
+            ── post_tasks.yml -> ../../../dims/post_tasks.yml
+            ── pre_tasks.yml -> ../../../dims/pre_tasks.yml
+        ── templates
+            ── bashrc.dims.virtualenv.j2
+            ── builddimsenvmod.sh.j2
+
+    ..
+
+..
+
+The problem is that the long-dash character is not defined to
+LaTeX. This is done in the Sphinx ``conf.py`` file, and all DIMS
+documents should include these definitions because we frequently
+embed output of ``tree``, which uses Unicode characters for line
+drawing.  (Not all do, which causes random failures when adding text to
+Sphinx documents.)
+
+.. code-block:: yaml
+   :emphasize-lines: 10
+
+    latex_elements = {
+     ...
+    # Additional stuff for the LaTeX preamble.
+    #
+    # The following comes from
+    # https://github.com/rtfd/readthedocs.org/issues/416
+    #
+    'preamble': "".join((
+        '\DeclareUnicodeCharacter{00A0}{ }',     # NO-BREAK SPACE
+        '\DeclareUnicodeCharacter{2014}{\dash}', # LONG DASH
+        '\DeclareUnicodeCharacter{251C}{+}',     # BOX DRAWINGS LIGHT VERTICAL AND RIGHT
+        '\DeclareUnicodeCharacter{2514}{+}',     # BOX DRAWINGS LIGHT UP AND RIGHT
+    )),
+    }
+
+..
+
+.. note::
+
+   See http://tex.stackexchange.com/questions/34604/entering-unicode-characters-in-latex
+
+..
+
+.. commontasks:
 
 Common Tasks
 ------------
