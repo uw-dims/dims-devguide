@@ -243,3 +243,42 @@ variables as shown in the examples.
 
    ..
 
+#. Test the configuration (with VPN disconnected).
+
+   .. code-block:: bash
+
+       [dittrich@localhost etc]$ dig @127.0.0.1 jira.prisem.washington.edu
+
+       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.prisem.washington.edu
+       ; (1 server found)
+       ;; global options: +cmd
+       ;; connection timed out; no servers could be reached
+
+   ..
+
+#. Test the configuration (with VPN enabled).
+
+   .. code-block:: bash
+
+       [dittrich@localhost etc]$ dig @127.0.0.1 jira.prisem.washington.edu
+
+       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.prisem.washington.edu
+       ; (1 server found)
+       ;; global options: +cmd
+       ;; Got answer:
+       ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58384
+       ;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+       ;; QUESTION SECTION:
+       ;jira.prisem.washington.edu.    IN      A
+
+       ;; ANSWER SECTION:
+       jira.prisem.washington.edu. 0   IN      A       192.168.88.97
+
+       ;; Query time: 18 msec
+       ;; SERVER: 127.0.0.1#53(127.0.0.1)
+       ;; WHEN: Wed Jul  1 17:32:54 2015
+       ;; MSG SIZE  rcvd: 60
+
+   ..
+
