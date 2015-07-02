@@ -37,6 +37,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    documentation
    continuousintegration
    deployconfigure
+   appendices
 
 .. note::
 
