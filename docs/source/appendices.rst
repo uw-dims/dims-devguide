@@ -10,13 +10,19 @@ Setting up DNS using dnsmasq
 
 DNS is designed to be a distributed, hierarchical, system of
 mapping names to IP addresses (and the reverse, IP addresses
-to names).  To learn more about it, see:
+to names).
 
-#. `How the Domain Name System (DNS) Works`_, by Verisign
+.. note::
 
-#. `How does DNS work?`_, by D.J. Berstein
+   To learn more about it, see:
 
-#. `The Domain Name System`_, Wikipedia
+       #. `How the Domain Name System (DNS) Works`_, by Verisign
+
+       #. `How does DNS work?`_, by D.J. Berstein
+
+       #. `The Domain Name System`_, Wikipedia
+
+..
 
 .. _How the Domain Name System (DNS) Works: http://www.verisigninc.com/en_US/domain-names/online/how-dns-works/index.xhtml
 .. _How does DNS work?: http://cr.yp.to/djbdns/intro-dns.html
@@ -243,7 +249,9 @@ variables as shown in the examples.
 
    ..
 
-#. Test the configuration (with VPN disconnected).
+#. Test the configuration.
+  
+   With VPN disconnected:
 
    .. code-block:: bash
 
@@ -256,7 +264,7 @@ variables as shown in the examples.
 
    ..
 
-#. Test the configuration (with VPN enabled).
+   With VPN enabled:
 
    .. code-block:: bash
 
@@ -282,3 +290,32 @@ variables as shown in the examples.
 
    ..
 
+
+Split-Horizon DNS
+~~~~~~~~~~~~~~~~~
+
+Organizations often use non-routable network address ranges,
+as defined by `RFC 1918 - Address Allocation for Private Internets`_,
+on the *internal* portion of a firewalled network that also has
+*external* internet-facing 
+
+The video `DNS Split Brain`_ explains some of the issues of handling
+DNS mappings in situations where networks are partitioned. An organization
+may have service domain names be the *same* to point to separate internal
+and external resources, even though they have completely different IP addresses.
+A web server, for example, may be accessible to users on the internet
+with limited public content, while another server that has the *same fully-qualified
+domain name* may be hosted on the inside of a firewall and VPN with different
+content that is private to the organization. Having multiple DNS servers,
+rather than just one DNS server, and configuring them to properly
+answer and/or forward DNS requests differently (depending on the *perspective*
+of the client making the request) adds complexity for system administration,
+but can simplify things from a user perspective when trying to access a resource.
+
+References on configuring ``dnsmasq`` and the concept of *Split-horizon DNS*
+are included in the :ref:`dittrich:dns` Section of the home page of
+:ref:`dittrich:homepage`.
+
+
+.. _RFC 1918 - Address Allocation for Private Internets: https://tools.ietf.org/html/rfc1918
+.. _DNS Split Brain: https://youtu.be/55YONDU22qc
