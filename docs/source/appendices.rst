@@ -290,6 +290,101 @@ variables as shown in the examples.
 
    ..
 
+Logging
+~~~~~~~
+
+.. code-bock:: bash
+
+    On 7/2/15 6:47 AM, Linda Parsons wrote:
+
+    > Do you know where the queries are logged on os x? I can’t find logs
+    > anywhere. I can see in /var/log/system.log where dnsmasq is stopped and
+    > started - that’s it.
+
+..
+
+``syslog`` and ``rsyslog`` are very fine-grained and controllable in terms of where
+logs go (i.e., which file, which logging host, both, etc.), though each program
+choses what facility and severity level it will log at. Here is excerpt from
+``dnsmasq`` man page:
+
+.. code-block:: bash
+
+    -8, --log-facility=<facility>
+    Set the facility to which dnsmasq will send syslog entries, this defaults
+    to DAEMON, and to LOCAL0 when debug mode is in operation. If the facility
+    given contains at least one '/' character, it is taken to be a filename,
+    and dnsmasq logs to the given file, instead of syslog. If the facility is
+    '-' then dnsmasq logs to stderr. (Errors whilst read- ing configuration
+    will still go to syslog, but all output from a successful startup, and all
+    output whilst running, will go exclusively to the file.) When logging to a
+    file, dnsmasq will close and reopen the file when it receives SIGUSR2.
+    This allows the log file to be rotated without stopping dnsmasq.
+
+    ...
+
+    When it receives SIGUSR2 and it is logging direct to a file (see
+    --log-facility ) dnsmasq will close and reopen the log file. Note that
+    during this operation, dnsmasq will not be running as root. When it first
+    creates the logfile dnsmasq changes the ownership of the file to the
+    non-root user it will run as. Logrotate should be configured to create a
+    new log file with the ownership which matches the existing one before
+    sending SIGUSR2. If TCP DNS queries are in progress, the old logfile will
+    remain open in child processes which are handling TCP queries and may
+    continue to be written. There is a limit of 150 seconds, after which all
+    existing TCP processes will have expired: for this reason, it is not wise
+    to configure log- file compression for logfiles which have just been
+    rotated. Using logrotate, the required options are create and delay-
+    compress.
+
+..
+
+So ``dnsmasq`` can bypass ``syslog``/``rsyslog`` filters and log directly to a
+file.
+
+.. note::
+
+    Adding the option ``log-facility=/var/log/dnsmasq.log`` diverts log messages
+    into the file ``var/log/dnsmasq.log``.
+
+    .. caution::
+
+        ``dnsmasq``, when logging directly to a file, does *not* handle
+        rolling of the log file or otherwise limiting its growth. The file
+        will just continue to grow without bounds over time. You can rename
+        the file at any time, then send the ``SIGUSR2`` signal to the ``dnsmasq``
+        process, which will open a new log file. (See the man page output
+        above for more details.)
+
+    ..
+
+..
+
+.. note::
+
+    Ok, I figured out that ``dnsmasq`` logs to ``/var/log/debug.log`` in
+    general, which led me to realize these messages have a log level of ``debug``.
+    But on Mac OS X the default is not to log debug messages. I had to edit
+    the ``/etc/asl.conf`` file to set the log level to ``debug``. Then the
+    debug messages would show up in the console using all messages. Keep the
+    level at debug for a short time but have turned it off as it slows down
+    the system a lot.  I could see from the debug statements how the request
+    to ``127.0.0.1`` were being forwarded.
+
+    .. caution::
+
+        Setting the full system logging level to ``debug`` just to get
+        messages from one service is over-kill.  It is preferable to force
+        the specific service to log at a ``facility`` and/or ``severity``
+        level that is then filtered by ``syslog``/``rsyslog``, allowing
+        just those messages you want to be logged to go to a place you
+        want them to go.  The ``log-faility`` option above works better
+        for this.
+
+    ..
+
+..
+
 
 Split-Horizon DNS
 ~~~~~~~~~~~~~~~~~
