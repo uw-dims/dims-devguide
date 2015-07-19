@@ -102,6 +102,11 @@ The most common task you need to do is keep your local
 repo up to date with the code that others have pushed
 to remote repositories for sharing.
 
+.. _updatingwithhubflow:
+
+Updating using ``hubflow``
+""""""""""""""""""""""""""
+
 The following command ensures that a local repo you
 are working on is up to date:
 
@@ -113,7 +118,7 @@ are working on is up to date:
 
 ..
 
-.. code-block:: bash
+.. code-block:: none
 
     (dimsenv)[dittrich@localhost ansible-playbooks (develop)]$ git hf update
     Fetching origin
@@ -144,7 +149,7 @@ are working on is up to date:
 If a branch existed on the remote repo (e.g., the ``feature/eliot`` branch used
 in testing), it would be deleted:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,5,7,19
 
    [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
@@ -178,14 +183,65 @@ the DIMS project has several dozen repos, many of which are inter-related.
 Keeping them all up to date is not simple, and because of this developers
 often get far out of sync with the rest of the team.
 
-A useful tool for managing multiple Git repositories and keeping them in sync
-with the master branches is to use the program ``mr``. (http://joeyh.name/code/mr/)
+.. _updatingwithmr:
 
-``mr`` uses a configuration file that can be added to using ``mr register`` within
-a repo.  Cloning all of the DIMS source repos at once, or getting the contents of
+Updating using the ``mr`` command
+"""""""""""""""""""""""""""""""""
+
+A useful tool for managing multiple Git repositories and keeping them in sync
+with the master branches is to use the program `mr`_.
+
+.. _mr: http://joeyh.name/code/mr/
+
+``mr`` uses a configuration file that can be added to using ``mr register``
+within a repo, or by editing/writing the ``.mrconfig`` file directly.
+
+.. attention::
+
+    These instructions assume the reader is *not already using* ``mr``
+    on a regular basis. Additionally, all DIMS Git repos are assumed
+    to be segrated into their own directory tree apart from any other
+    Git repos that the developer may be using.
+    
+    This assumption allows for use of a ``.mrconfig`` file specifically for
+    just DIMS source code that can be over-written entirely with DIMS-specific
+    settings.
+   
+    .. todo::
+
+       A script will be written to allow users to more easily do these
+       steps. See Jira ticket `DIMS-350`. 
+
+    ..
+
+..
+
+.. _DIMS-350: http://jira.prisem.washington.edu/browse/DIMS-350
+
+Cloning all of the DIMS source repos at once, or getting the contents of
 what should be an up-to-date ``.mrconfig`` file, is covered in the Section
 :ref:`cloningmultiplerepos`.
 
+After all repos have been cloned, they can be kept up to date on a daily
+basis. Start your work session with the following commands:
+
+.. code-block:: bash
+
+    $ cd $GIT
+    $ mr update
+
+..
+
+.. caution::
+
+    If you do not update a repo before attempting to ``git hf push`` or
+    ``git hf update`` with commited changes, Git will do a ``pull``
+    and potentially you will end up with at best a ``merge``, and at
+    worst a merge conflict that you must resolve before the ``push`` can
+    complete. If you are not comfortable handling a merge conflict, talk
+    to another team member to get help.
+
+..
 
 .. _initializingforhubflow:
 
@@ -353,7 +409,7 @@ of a ``.mrconfig`` file (see ``man mr`` for more information).
 
    To use a ``.mrconfig`` file in a an arbitrary directory, you
    will need to add the directory path to this file to the ``~/.mrtrust``
-   file. In this example, we will clone repos into `~/dims/git`` by
+   file. In this example, we will clone repos into ``~/dims/git`` by
    placing the ``.mrconfig`` file in the ``~/dims`` directory.
 
    .. code-block:: bash
