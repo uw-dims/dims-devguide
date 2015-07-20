@@ -3,6 +3,57 @@
 Development and Core Tool Policy
 ================================
 
+This section contains policy statements regarding software development that all
+developers working on the DIMS project are expected to adhere to.
+
+.. attention::
+
+    The requirements to adhere to the policies stated here is partly to keep
+    the project moving forward smoothly, but also to ensure that the sofware
+    products we develop are suitable for open source release as required by the
+    contract (see :ref:`dimssr:opensourcerelease` in
+    :ref:`dimssr:dimssystemrequirements`) and in conformance with University of
+    Washington policy.
+
+..
+
+.. _copyright:
+
+Copyright
+---------
+
+All source code should include a copyright statement with the year the
+project started (2013) and the current year, as shown here:
+
+.. code-block:: python
+
+   #!/usr/bin/env python
+   #
+   # Copyright (C) 2013, 2015 University of Washington. All rights reserved.
+   #
+   # ...
+
+..
+
+.. note::
+
+    Where possible, include the actual copyright symbol. For example, in Sphinx
+    documents, follow the instructions in Section :ref:`textsubstitution`.
+
+..
+
+.. _license:
+
+License
+------
+
+All source code repositories shall include the following license statement
+to accompany the Copyright statement in the previous section.
+
+.. include:: ../../license.txt
+   :literal:
+
+
 Development and Core Tool Policy
 --------------------------------
 
@@ -60,12 +111,27 @@ cloning it to your local workstation: ::
 
 ..
 
-.. warning:: NOT FINISHED YET...
+.. todo::
+
+    .. warning::
+
+        NOT FINISHED YET.
+
+    ..
+
+..
 
 Developing
 ----------
 
 Developing new features for the DIMS CI Utilities...
 
-.. warning:: NOT FINISHED YET...
+.. todo::
 
+    .. warning::
+
+        NOT FINISHED YET.
+
+    ..
+
+..
