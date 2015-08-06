@@ -293,7 +293,7 @@ variables as shown in the examples.
 Logging
 ~~~~~~~
 
-.. code-bock:: bash
+.. code-block:: bash
 
     On 7/2/15 6:47 AM, Linda Parsons wrote:
 
@@ -507,8 +507,8 @@ space by allocating a disk image larger than is necessary.
 
        mount | grep -q "$HOME/dims/git"
        if [ $? -eq 1 ]; then
-	       hdiutil attach -mountpoint ~/dims/git ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage
-	       mount | grep "$HOME/dims/git"
+	       hdiutil attach -mountpoint ~/dims/git ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage 2>/dev/null
+	       mount | grep -q "$HOME/dims/git"
 	       if [ $? -ne 0 ]; then
 		       echo "[---] Failed to mount ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage to ~/dims/git"
 	       fi

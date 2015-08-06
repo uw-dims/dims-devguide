@@ -36,7 +36,7 @@ which are covered in the sections below:
     running OS X, Windows, and/or Linux.  See `Git on Mac OS X: Don't ignore case!`_
     and `How do I commit case-sensitive only filename changes in Git?`_. A solution
     for Mac OS X, posted in `Case sensitivity in Git`_, is documented in
-    Section :ref:`macosxcasesensitive`_.
+    Section :ref:`macosxcasesensitive`.
 
 ..
 
