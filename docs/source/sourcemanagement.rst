@@ -1157,6 +1157,10 @@ GitX.app on a Mac:
 
    New 1.2.0 release on master, dev now on 1.2.1.
 
+..
+
+.. _branchrenaming:
+
 Branch Renaming
 ~~~~~~~~~~~~~~~
 
@@ -1483,6 +1487,39 @@ Finally, we switch back to `user1` and pull changes made by `user2`:
     systems like Jenkins generally just clone or pull from depots, it is
     expected that only git URLs need to change from including ``dev`` to
     ``develop``.
+
+..
+
+.. _deletingtags:
+
+Deleting accidentally created tags
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When trying to finish a release, you may accidentally create a tag
+named ``finish``.  It may even get propagated automatically to
+``origin``, in which case it could propagate to others' repos:
+
+.. code-block:: none
+
+    mr update: /Users/dittrich/dims/git/dims-keys
+    Fetching origin
+    From git.prisem.washington.edu:/opt/git/dims-keys
+     * [new tag]         finish     -> finish
+
+..
+
+You can delete them locally and remotely with the
+following commands:
+
+.. code-block:: none
+   :emphasize-lines: 1,3
+
+    [dittrich@localhost dims-keys (develop)]$ git tag -d finish
+    Deleted tag 'finish' (was 516d9d2)
+    [dittrich@localhost dims-keys (develop)]$ git push origin :refs/tags/finish
+    remote: Running post-receive hook: Thu Aug  6 16:07:17 PDT 2015
+    To git@git.prisem.washington.edu:/opt/git/dims-keys.git
+     - [deleted]         finish
 
 ..
 
