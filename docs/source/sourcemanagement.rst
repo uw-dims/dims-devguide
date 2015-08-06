@@ -25,6 +25,25 @@ which are covered in the sections below:
 + Keeping up to date with new repositories (or starting fresh with a new
   development system by cloning all DIMS repositories a new.)
 
+.. caution::
+
+    Mac OS X (by default) uses an HFS file system *with case sensitivity*.
+    Unlike Ubuntu and other Linux/Unix distributions using case-sensitive
+    file systems like ``ext2``, ``reiserfs``, etc., the default OS X file
+    system does not care if you name a file ``THISFILE`` or ``ThisFile``
+    or ``thisfile``. All of those are the same file name. This can cause
+    problems when you use Git to share a source repository between computers
+    running OS X, Windows, and/or Linux.  See `Git on Mac OS X: Don't ignore case!`_
+    and `How do I commit case-sensitive only filename changes in Git?`_. A solution
+    for Mac OS X, posted in `Case sensitivity in Git`_, is documented in
+    Section :ref:`macosxcasesensitive`_.
+
+..
+
+.. _Git on Mac OS X\: Don't ignore case!: http://tapestryjava.blogspot.com/2010/07/git-on-mac-os-x-dont-ignore-case.html
+.. _How do I commit case-sensitive only filename changes in Git?: http://stackoverflow.com/questions/17683458/how-do-i-commit-case-sensitive-only-filename-changes-in-git
+.. _Case sensitivity in Git: http://stackoverflow.com/questions/8904327/case-sensitivity-in-git
+
 .. _gitconfiguration:
 
 Global Git Configuration
@@ -347,7 +366,7 @@ use the Git shell command ``list``:
 .. code-block:: bash
    :emphasize-lines: 1
 
-    [dittrich@27b-2 ~]$ ssh git@git.prisem.washington.edu list
+    [dittrich@localhost ~]$ ssh git@git.prisem.washington.edu list
     prisem-replacement.git
     ELK.git
     cif-java.git
@@ -527,7 +546,7 @@ as described in Section :ref:`intersphinxlinking`.
     Version tag prefix? [] 
     
     mr checkout: finished (3 ok)
-    [dittrich@27b-2 dims]$ mr stat
+    [dittrich@localhost dims]$ mr stat
     mr stat: /Users/dittrich/tmp/dims/git/dims-ad
 
     mr stat: /Users/dittrich/tmp/dims/git/dims-ocd
@@ -845,8 +864,8 @@ in this case. Now you could bump the version if necessary before pushing.
 .. code-block:: bash
    :emphasize-lines: 1,2
 
-   [dittrich@27b-2 docs (develop)]$ (cd ..; bumpversion patch)
-   [dittrich@27b-2 docs (develop)]$ git hf push
+   [dittrich@localhost docs (develop)]$ (cd ..; bumpversion patch)
+   [dittrich@localhost docs (develop)]$ git hf push
    Fetching origin
    Already up-to-date.
    Counting objects: 10, done.
@@ -1504,7 +1523,7 @@ using the same message:
 .. code-block:: bash
    :emphasize-lines: 2,8,14,20,27
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log
+    (dimsenv)[dittrich@localhost docs (develop)]$ git log
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -1552,7 +1571,7 @@ all correctly commented:
 .. code-block:: bash
    :emphasize-lines: 8-26,34-60,68-83
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log --patch
+    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -1644,7 +1663,7 @@ and edit the message:
 
 .. code-block:: bash
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git commit --amend 
+    (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend 
     
     Add DOCSURL selection of where docs reside for intersphinx links
     
@@ -1668,7 +1687,7 @@ commit hash!
 .. code-block:: bash
    :emphasize-lines: 2
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log --patch
+    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
     commit 654cb34378cb0a4140725a37e3724b6dcee7aebd
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -1719,7 +1738,7 @@ commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
 .. code-block:: bash
    :emphasize-lines: 3
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git rebase -i 96575c9
+    (dimsenv)[dittrich@localhost docs (develop)]$ git rebase -i 96575c9
     
     edit f6f5d86 Fix intersphinx links to use DOCSURL env variable
     pick 7f3d0d8 Fix intersphinx links to use DOCSURL env variable
@@ -1765,7 +1784,7 @@ Now use ``git commit --amend`` to edit the comment:
 
 .. code-block:: bash
 
-    (dimsenv)[dittrich@27b-2 docs (develop|REBASE-i 1/3)]$ git commit --amend
+    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git commit --amend
     
     Rename makedocs -> makedocset
     
@@ -1787,7 +1806,7 @@ Finish off by continuing the rebase for the remaining commits.
 
 .. code-block:: bash
 
-    (dimsenv)[dittrich@27b-2 docs (develop|REBASE-i 1/3)]$ git rebase --continue
+    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git rebase --continue
     Successfully rebased and updated refs/heads/develop.
 
 ..
@@ -1797,7 +1816,7 @@ new commit hashes:
 
 .. code-block:: bash
 
-    (dimsenv)[dittrich@27b-2 docs (develop)]$ git log
+    (dimsenv)[dittrich@localhost docs (develop)]$ git log
     commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700

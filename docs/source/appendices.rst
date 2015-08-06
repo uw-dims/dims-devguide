@@ -414,3 +414,126 @@ are included in the :ref:`dittrich:dns` Section of the home page of
 
 .. _RFC 1918 - Address Allocation for Private Internets: https://tools.ietf.org/html/rfc1918
 .. _DNS Split Brain: https://youtu.be/55YONDU22qc
+
+.. _macosxcasesensitive:
+
+Using a Case-Sensitive sparse image on Mac OS X
+-----------------------------------------------
+
+At the beginning of Section :ref:`sourcemanagement`, a caution
+block describes a problem involving sharing source code
+repositories between systems having file systems that are
+*case-sensitive* with other operating systems having file
+systems that are *case-insensitive*.
+
+This section provides the steps for creating a case-sensitive sparse
+HFS file image that can be mounted on a Mac OS X system to better
+integrate with Git source respositories using case-sensitive
+file and/or directory names in the respository.
+
+.. note::
+
+   This example arbitrarily uses an 8GB sparse image. Change size as
+   necessary for your own situation.
+
+..
+
+We are going to take the existing contents of a directory (``$HOME/dims/git``
+in this case) and replace it with a mounted case-sensitive journalled HFS
+sparse disk image. We are using a sparse image to avoid needlessly wasting
+space by allocating a disk image larger than is necessary.
+
+#. Use the OS X *Disk Image* app to create a sparse image. This is shown
+   in Figure :ref:`creatingsparseimage`.
+
+   .. _creatingsparseimage:
+    
+   .. figure:: images/HFS_CaseSensitive_Sparseimage.png
+      :alt: Creating a sparse image with Disk Utility
+      :width: 85%
+      :align: center
+    
+      Creating a sparse image with Disk Utility
+    
+   ..
+
+#. Move the existing directory to another name, so we can replace that
+   directory with an empty directory to act a mount point for our
+   sparse bundle:
+
+   .. code-block:: none
+
+        [dittrich@localhost ~]$ cd ~/dims
+        [dittrich@localhost dims]$ mv git git.tmp
+        [dittrich@localhost dims]$ mkdir git
+
+   ..
+
+#. Mount the sparse image using ``hdiutil``:
+
+   .. code-block:: none
+      :linenos:
+      :emphasize-lines: 11
+
+        [dittrich@localhost dims]$ hdiutil attach -mountpoint ~/dims/git ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage
+        /dev/disk3          	GUID_partition_scheme          	
+        /dev/disk3s1        	EFI                            	
+        /dev/disk3s2        	Apple_HFS                      	/Users/dittrich/dims/git
+        [dittrich@localhost dims]$ mount
+        /dev/disk1 on / (hfs, local, journaled)
+        devfs on /dev (devfs, local, nobrowse)
+        map -hosts on /net (autofs, nosuid, automounted, nobrowse)
+        map auto_home on /home (autofs, automounted, nobrowse)
+        /dev/disk2s1 on /Volumes/_mdSSD (hfs, local, nodev, nosuid, journaled, noowners)
+        /dev/disk3s2 on /Users/dittrich/dims/git (hfs, local, nodev, nosuid, journaled, noowners, mounted by dittrich)
+
+   ..
+
+#. Move the files from the temporary directory into the case-sensitive
+   mounted volume, or re-clone any repositories that were causing problems
+   with case-sensitive files, then delete the temporary directory.
+
+   .. code-block:: none
+
+        [dittrich@localhost dims]$ mv git.tmp/* git
+        [dittrich@localhost dims]$ rmdir git.tmp
+
+   ..
+
+#. Add lines to your ``~/.bash_profile`` file to ensure this sparse
+   image is mounted at the start of every initial login session.
+
+   .. code-block:: bash
+
+       mount | grep -q "$HOME/dims/git"
+       if [ $? -eq 1 ]; then
+	       hdiutil attach -mountpoint ~/dims/git ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage
+	       mount | grep "$HOME/dims/git"
+	       if [ $? -ne 0 ]; then
+		       echo "[---] Failed to mount ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage to ~/dims/git"
+	       fi
+       fi
+
+   ..
+
+   You should see something like the following for the initial terminal window:
+
+   .. code-block:: none
+
+       Last login: Fri Feb 13 04:48:45 on ttys005
+
+
+       [+++] DIMS shell initialization
+       [+++] Sourcing /opt/dims/etc/bashrc.dims.d/bashrc.dims.virtualenv ...
+       [+++] Activating DIMS virtual environment (dimsenv)
+       [+++] (Create file /Users/dittrich/.DIMS_NO_DIMSENV_ACTIVATE to disable)
+       [+++] Virtual environment dimsenv activated
+       [+++] Mounted sshfs gituser@git.prisem.washington.edu:cfg as /Users/dittrich/dims/cfg
+       /dev/disk3               GUID_partition_scheme           
+       /dev/disk3s1             EFI                             
+       /dev/disk3s2             Apple_HFS                       /Users/dittrich/dims/git
+       /dev/disk3s2 on /Users/dittrich/dims/git (hfs, local, nodev, nosuid, journaled, noowners, mounted by dittrich)
+
+   ..
+
+# eof
