@@ -76,7 +76,7 @@ The following are general and can be applied to anyone's configuration:
     git config --global color.branch auto
     git config --global color.interactive auto
     git config --global color.ui auto
-    git config --global branch.autosetuprebase always</verbatim>
+    git config --global branch.autosetuprebase always
 
 ..
 
@@ -87,7 +87,7 @@ The following are convenience aliases that help with certain tasks:
     git config --global alias.find '!git log --color -p -S'
     git config --global alias.stat '!git status -s'
     git config --global alias.unstage "reset HEAD --"
-    git config --global alias.uncommit "reset --soft HEAD^"</verbatim>
+    git config --global alias.uncommit "reset --soft HEAD^"
 
 ..
 
