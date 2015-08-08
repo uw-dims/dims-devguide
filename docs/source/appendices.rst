@@ -536,4 +536,20 @@ space by allocating a disk image larger than is necessary.
 
    ..
 
+   .. note::
+
+      If you forgot to set a volume label when you created the sparse image
+      file in Disk Utility, and the disk image just created gets mounted as
+      "Disk Image", you may wish to change the label. To do this, after the
+      volume is mounted you can rename it using the command:
+
+      .. code-block:: bash
+
+          [dittrich@localhost docs (develop)]$ diskutil rename "Disk Image" DIMS_Git
+          Volume on disk2s2 renamed to DIMS_Git
+
+      ..
+
+   ..
+
 # eof
