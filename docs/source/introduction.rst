@@ -3,13 +3,13 @@
 Introduction 
 ============
 
-Introduction
-------------
-
 This chapter introduces the software development policies,
 methodology for source code and configuration file management,
 documentation, and use of continuous integration mechanisms
 used for deployment and testing of DIMS components.
+
+Overview
+--------
 
 + Section :ref:`policy` discusses the policies that developers should
   understand in order to operate in a manner consistent with the rest of the
@@ -32,7 +32,7 @@ used for deployment and testing of DIMS components.
   and off-line (PDF) documentation.
 
 + DIMS software is maintained under version control using Git and the HubFlow
-  methodology and tool set. Section :ref:`developing` covers how these
+  methodology and tool set. Section :ref:`sourcemanagement` covers how these
   tools are used for source code, documentation, and system configuration
   files.
 
