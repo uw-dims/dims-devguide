@@ -45,7 +45,7 @@ project started (2013) and the current year, as shown here:
 .. _license:
 
 License
-------
+-------
 
 All source code repositories shall include the following license statement
 to accompany the Copyright statement in the previous section.
