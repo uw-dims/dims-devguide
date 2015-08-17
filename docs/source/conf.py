@@ -363,6 +363,7 @@ if os.environ.get('DOCSURL') is None:
 
 intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
 intersphinx_mapping = {
+        'dimsad': ("{}/dims-ad".format(os.environ['DOCSURL']), None),
         'dimssr': ("{}/dims-sr".format(os.environ['DOCSURL']), None),
         'dimsocd': ("{}/dims-ocd".format(os.environ['DOCSURL']), None),
         'dimsciutils': ("{}/dims-ci-utils".format(os.environ['DOCSURL']), None),
