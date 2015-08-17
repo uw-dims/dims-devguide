@@ -38,6 +38,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    continuousintegration
    deployconfigure
    programming
+   communication
    appendices
 
 .. note::
