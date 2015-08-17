@@ -44,6 +44,74 @@ which are covered in the sections below:
 .. _How do I commit case-sensitive only filename changes in Git?: http://stackoverflow.com/questions/17683458/how-do-i-commit-case-sensitive-only-filename-changes-in-git
 .. _Case sensitivity in Git: http://stackoverflow.com/questions/8904327/case-sensitivity-in-git
 
+.. attention::
+
+    Git is a great tool for source managment, but can be a little tricky
+    to use when there is a team of programmers all using Git in slightly
+    different ways. Bad habits are easy to form, like the short-cut of
+    working on the ``develop`` branch in a multi-branch workflow.
+
+    Take a moment to read through the following Gist (original
+    source: `bevanhunt/hubflow_workflow`_)
+
+    .. code-block:: none
+
+        Git Hubflow Workflow:
+
+        Sync Branch:
+        git hf update - this will update master and develop and sync remote branches with local ones (be sure not to put commits into develop or master as it will push these up)
+        git hf push - this will push your commits in your local branch to the matching remote branch
+        git hf pull - this will pull the remote commits into your local branch (don't use if the remote branch has been rebased - use git pull origin "your-branch" instead)
+
+        Feature Branch:
+        gif hf feature start "my-feature" - this will create a feature branch on origin and local will be based off the latest develop branch (make sure to git hf update before or you will get an error if local develop and remote develop have divereged)
+        git hf feature finish "my-feature" - this will delete the local and remote branches (only do this after a PR has been merged)
+        git hf feature cancel -f "my-feature" - this will delete the local and remote branches (only do this if the feature branch was created in error)
+        git hf feature checkout "my-feature" - this will checkout the feature branch
+
+        Hotfix Branch:
+        git hf hotfix start "release-version" - this will create a hotfix branch on origin and local will be based off the latest develop branch (make sure to git hf update before or you get an error if local develop and remote devleop have divereged)
+        git hf hotfix finish "release-version" - this will delete the local and remote branches and merge the commits of the hotfix branch into master and develop branches - it will also create a release tag that matches the release version on master
+        git hf hotfix cancel -f "release-version" - this will delete the remote and local branch (only do this if the hotfix was created in error)
+        git checkout hotfix/"release-version" - this will checkout the hotfix branch (make sure to git hf update first)
+
+        Release Branch:
+        git hf release start "release-version" - this will create a release branch on origin and local will be based off the latest develop branch (make sure to git hf update before or you get an error if local develop and remote devleop have divereged)
+        git hf release finish "release-version" - this will delete the local and remote branches and merge the commits of the release branch both into develop and master - it will also create a release tag that matches the release version on master
+        git hf release cancel -f "release-version" - this will delete the local and remote branch (only do this if the release was created in error)
+        git checkout release/"release-version" - this will checkout the release branch (make sure to git hf update first)
+
+        Preparing a PR:
+        - put the Aha! Ticket # in PR title with a description
+        - assign to the proper reviewer
+        - don't squash the commits until after reviewed
+        - after review - squash the commits
+
+        Squashing Commits:
+        - checkout the branch you want to squash
+        - git merge-base "my-branch" develop (returns merge-base-hash)
+        - git rebase -i "merge-base-hash"
+        - change all commit types to "squash" from "pick" in the text file (except first) & save file
+        - if you get a no-op message in the text file and still have multiple commits then use the command git rebase -i (without the hash)
+        - fix any merge conflicts
+        - you should have one commit
+        - force update your remote branch: git push origin "my-branch" -f
+
+        Resolving merge conflicts with the develop branch that are not squashing related (generally on PRs - auto-merge will show as disabled):
+        - git hf update
+        - git rebase develop (while in your branch)
+        - resolve any merge conflicts
+
+        Rules to remember:
+        - don't ever git merge branches together manually (should never run command - git merge)
+        - squash only after review and before merging PR into develop
+
+    ..
+
+..
+
+.. _bevanhunt/hubflow_workflow: https://gist.github.com/bevanhunt/903740bf7306d806f943
+
 .. _gitconfiguration:
 
 Global Git Configuration
@@ -181,7 +249,7 @@ in testing), it would be deleted:
    Fetching origin
    From git.prisem.washington.edu:/opt/git/dims-asbuilt
     x [deleted]         (none)     -> origin/feature/eliot
-   
+
    Summary of actions:
    - Any changes to branches at origin have been downloaded to your local repository
    - Any branches that have been deleted at origin have also been deleted from your local repository
@@ -221,15 +289,15 @@ within a repo, or by editing/writing the ``.mrconfig`` file directly.
     on a regular basis. Additionally, all DIMS Git repos are assumed
     to be segrated into their own directory tree apart from any other
     Git repos that the developer may be using.
-    
+
     This assumption allows for use of a ``.mrconfig`` file specifically for
     just DIMS source code that can be over-written entirely with DIMS-specific
     settings.
-   
+
     .. todo::
 
        A script will be written to allow users to more easily do these
-       steps. See Jira ticket `DIMS-350`. 
+       steps. See Jira ticket `DIMS-350`.
 
     ..
 
@@ -459,7 +527,7 @@ as described in Section :ref:`intersphinxlinking`.
     pull = git hf update &&
     	git hf pull
     stat = git status -s
-    
+
     [git/dims-sr]
     checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-sr.git' 'dims-sr' &&
     	(cd dims-sr; git hf init)
@@ -468,7 +536,7 @@ as described in Section :ref:`intersphinxlinking`.
     pull = git hf update &&
     	git hf pull
     stat = git status -s
-    
+
     [git/dims-ocd]
     checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-ocd.git' 'dims-ocd' &&
     	(cd dims-ocd; git hf init)
@@ -488,19 +556,19 @@ as described in Section :ref:`intersphinxlinking`.
     Resolving deltas: 100% (308/308), done.
     Checking connectivity... done.
     Using default branch names.
-    
+
     Which branch should be used for tracking production releases?
        - master
-    Branch name for production releases: [master] 
-    Branch name for "next release" development: [develop] 
-    
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
     How to name your supporting branch prefixes?
-    Feature branches? [feature/] 
-    Release branches? [release/] 
-    Hotfix branches? [hotfix/] 
-    Support branches? [support/] 
-    Version tag prefix? [] 
-    
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
     mr checkout: /Users/dittrich/dims/git/dims-ocd
     Cloning into 'dims-ocd'...
     remote: Counting objects: 474, done.
@@ -510,19 +578,19 @@ as described in Section :ref:`intersphinxlinking`.
     Resolving deltas: 100% (288/288), done.
     Checking connectivity... done.
     Using default branch names.
-    
+
     Which branch should be used for tracking production releases?
        - master
-    Branch name for production releases: [master] 
-    Branch name for "next release" development: [develop] 
-    
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
     How to name your supporting branch prefixes?
-    Feature branches? [feature/] 
-    Release branches? [release/] 
-    Hotfix branches? [hotfix/] 
-    Support branches? [support/] 
-    Version tag prefix? [] 
-    
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
     mr checkout: /Users/dittrich/dims/git/dims-sr
     Cloning into 'dims-sr'...
     remote: Counting objects: 450, done.
@@ -532,19 +600,19 @@ as described in Section :ref:`intersphinxlinking`.
     Resolving deltas: 100% (285/285), done.
     Checking connectivity... done.
     Using default branch names.
-    
+
     Which branch should be used for tracking production releases?
        - master
-    Branch name for production releases: [master] 
-    Branch name for "next release" development: [develop] 
-    
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
     How to name your supporting branch prefixes?
-    Feature branches? [feature/] 
-    Release branches? [release/] 
-    Hotfix branches? [hotfix/] 
-    Support branches? [support/] 
-    Version tag prefix? [] 
-    
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
     mr checkout: finished (3 ok)
     [dittrich@localhost dims]$ mr stat
     mr stat: /Users/dittrich/tmp/dims/git/dims-ad
@@ -563,7 +631,7 @@ as described in Section :ref:`intersphinxlinking`.
    any repo names on the ``mrconfig`` Git shell command, it will return
    the settings for all 50+ DIMS repos. You can then clone the entire
    set of DIMS repositories with the same ``mr checkout`` command,
-   and update all of them at once with ``mr update``. 
+   and update all of them at once with ``mr update``.
 
 ..
 
@@ -811,7 +879,7 @@ includes it:
 .. code-block:: bash
 
    [dittrich@localhost docs (develop)]$ cp ../../packer/Makefile.dot ..
-   [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst 
+   [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst
 
 ..
 
@@ -822,7 +890,7 @@ message has gone away.
 
    +--------- source/lifecycle.rst changed -----------------------------------------
    +--------------------------------------------------------------------------------
-   
+
    [I 150331 16:40:04 handlers:74] Reload 1 waiters: None
    [I 150331 16:40:04 web:1825] 200 GET /lifecycle.html (127.0.0.1) 0.87ms
    [I 150331 16:40:04 web:1825] 200 GET /_static/css/theme.css (127.0.0.1) 1.87ms
@@ -935,6 +1003,28 @@ and cherry-pick the commit with the missing file.
 
 ..
 
+.. _syncingupstream:
+
+Synchronizing with an *upstream* repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to track another project's Git repository, syncing
+it with a fork that you use locally, do the following:
+
+* `Configuring a remote for a fork`_
+* `Syncing a fork`_
+
+.. note::
+
+   The DIMS project is using forks of several source repositories, some
+   for the sake of local customization, and some for adding features
+   necessary for DIMS purposes. The `MozDef`_ project is one of these
+   (see the :ref:`dimsad:dimsarchitecturedesign` document, Section
+   :ref:`dimsad:conceptofexecution`).
+
+.. _MozDef: http://mozdef.readthedocs.org/en/latest/
+.. _Configuring a remote for a fork: https://help.github.com/articles/configuring-a-remote-for-a-fork/
+.. _Syncing a fork: 
 
 .. _startingarelease:
 
@@ -1542,7 +1632,7 @@ Fixing comments in unpublished commits
            You should understand the implications of rewriting history if you
            amend a commit that has already been published. (See the "RECOVERING
            FROM UPSTREAM REBASE" section in git-rebase(1).)
-   
+
        ..
 
    ..
@@ -1564,32 +1654,32 @@ using the same message:
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     commit 7f3d0d8134c000a787aad83f2690808008ed1d96
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:34:40 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     commit f6f5d868c8ddd12018ca662a54d1f58c150e6364
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:33:59 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     commit 96575c967f606e2161033de92dd2dc580ad60a8b
     Merge: 1253ea2 dae5aca
     Author: Linda Parsons <lparsonstech@gmail.com>
     Date:   Thu Apr 30 14:00:49 2015 -0400
-    
+
         Merge remote-tracking branch 'origin/develop' into develop
-    
+
     commit 1253ea20bc553759c43d3a999b81be009851d195
     Author: Linda Parsons <lparsonstech@gmail.com>
     Date:   Thu Apr 30 14:00:19 2015 -0400
-    
+
         Added information for deploying to infrastructure
 
 ..
@@ -1629,18 +1719,18 @@ all correctly commented:
     +# environment variable DOCSURL to point to the server:
     +#
     +# $ export DOCSURL=http://192.168.99.100:49153
-     
+
     +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
-     
+
      # Activate dimsenv virtual environment for Sphinx
      . $HOME/dims/envs/dimsenv/bin/activate
-    
+
     commit 7f3d0d8134c000a787aad83f2690808008ed1d96
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:34:40 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     diff --git a/docs/source/conf.py b/docs/source/conf.py
     index 9fdc100..b3cd483 100644
     --- a/docs/source/conf.py
@@ -1648,14 +1738,14 @@ all correctly commented:
     @@ -351,13 +351,16 @@ epub_exclude_files = ['search.html']
      # If false, no index is generated.
      #epub_use_index = True
-     
+
     +os.environ['GITBRANCH'] = "develop"
     +
     +if os.environ.get('DOCSURL') is None:
     +    #os.environ['DOCSURL'] = "file://{}".format(os.environ.get('GIT'))
     +    os.environ['DOCSURL'] = "http://u12-dev-svr-1.prisem.washington.edu:8080/docs/{}/html/".format(
     +        os.environ['GITBRANCH'])
-     
+
      intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
      intersphinx_mapping = {
     -        'dimsocd': ("%s/dims/docs/dims-ocd" % os.environ['HOME'],
@@ -1672,9 +1762,9 @@ all correctly commented:
     commit f6f5d868c8ddd12018ca662a54d1f58c150e6364
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:33:59 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     diff --git a/docs/makedocs b/docs/makedocs
     deleted file mode 100644
     index dafbedb..0000000
@@ -1700,10 +1790,10 @@ and edit the message:
 
 .. code-block:: bash
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend 
-    
+    (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend
+
     Add DOCSURL selection of where docs reside for intersphinx links
-    
+
     # Please enter the commit message for your changes. Lines starting
     # with '#' will be ignored, and an empty message aborts the commit.
     #
@@ -1728,7 +1818,7 @@ commit hash!
     commit 654cb34378cb0a4140725a37e3724b6dcee7aebd
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
-    
+
         Add DOCSURL selection of where docs reside for intersphinx links
 
     diff --git a/docs/makedocset b/docs/makedocset
@@ -1745,22 +1835,22 @@ commit hash!
     +# environment variable DOCSURL to point to the server:
     +#
     +# $ export DOCSURL=http://192.168.99.100:49153
-     
+
     +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
-     
+
      # Activate dimsenv virtual environment for Sphinx
      . $HOME/dims/envs/dimsenv/bin/activate
-    
+
     commit 7f3d0d8134c000a787aad83f2690808008ed1d96
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:34:40 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     diff --git a/docs/source/conf.py b/docs/source/conf.py
     ...
 
-.. 
+..
 
 The second commit has the correct comment, but commit ``f6f5d868c``
 was simply renaming a file. It got caught up as a commit when
@@ -1776,11 +1866,11 @@ commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
    :emphasize-lines: 3
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git rebase -i 96575c9
-    
+
     edit f6f5d86 Fix intersphinx links to use DOCSURL env variable
     pick 7f3d0d8 Fix intersphinx links to use DOCSURL env variable
     pick 654cb34 Add DOCSURL selection of where docs reside for intersphinx links
-    
+
     # Rebase 96575c9..654cb34 onto 96575c9 (       3 TODO item(s))
     #
     # Commands:
@@ -1808,11 +1898,11 @@ and tell you what to do next:
 
     Stopped at f6f5d868c8ddd12018ca662a54d1f58c150e6364... Fix intersphinx links to use DOCSURL env variable
     You can amend the commit now, with
-    
-    	git commit --amend 
-    
+
+    	git commit --amend
+
     Once you are satisfied with your changes, run
-    
+
     	git rebase --continue
 
 ..
@@ -1822,9 +1912,9 @@ Now use ``git commit --amend`` to edit the comment:
 .. code-block:: bash
 
     (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git commit --amend
-    
+
     Rename makedocs -> makedocset
-    
+
     # Please enter the commit message for your changes. Lines starting
     # with '#' will be ignored, and an empty message aborts the commit.
     #
@@ -1857,26 +1947,26 @@ new commit hashes:
     commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
-    
+
         Add DOCSURL selection of where docs reside for intersphinx links
-    
+
     commit c2c55ff3dcbf10739c5d86ce8a6192e930ccd265
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:34:40 2015 -0700
-    
+
         Fix intersphinx links to use DOCSURL env variable
-    
+
     commit 2155936ad7e3ae71ef5775b2036a4b6c21a9a86d
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:33:59 2015 -0700
-    
+
         Rename makedocs -> makedocset
-    
+
     commit 96575c967f606e2161033de92dd2dc580ad60a8b
     Merge: 1253ea2 dae5aca
     Author: Linda Parsons <lparsonstech@gmail.com>
     Date:   Thu Apr 30 14:00:49 2015 -0400
-    
+
         Merge remote-tracking branch 'origin/develop' into develop
 
 ..
@@ -1907,81 +1997,81 @@ Creating a new documentation-only repo
    [dittrich@localhost dims-asbuilt]$ git init
    Initialized empty Git repository in /Users/dittrich/git/dims-asbuilt/.git/
    [dittrich@localhost dims-asbuilt (master)]$ workon dimsenv
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ sphinx-quickstart 
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ sphinx-quickstart
    Welcome to the Sphinx 1.3.1 quickstart utility.
-   
+
    Please enter values for the following settings (just press Enter to
    accept a default value, if one is given in brackets).
-   
+
    Enter the root path for documentation.
    > Root path for the documentation [.]:
-   
+
    You have two options for placing the build directory for Sphinx output.
    Either, you use a directory "_build" within the root path, or you separate
    "source" and "build" directories within the root path.
    > Separate source and build directories (y/n) [n]: y
-   
+
    Inside the root directory, two more directories will be created; "_templates"
    for custom HTML templates and "_static" for custom stylesheets and other static
    files. You can enter another prefix (such as ".") to replace the underscore.
-   > Name prefix for templates and static dir [_]: 
-   
+   > Name prefix for templates and static dir [_]:
+
    The project name will occur in several places in the built documentation.
    > Project name: DIMS 'As-Built' System
    > Author name(s): Dave Dittrich
-   
+
    Sphinx has the notion of a "version" and a "release" for the
    software. Each version can have multiple releases. For example, for
    Python the version is something like 2.5 or 3.0, while the release is
    something like 2.5.1 or 3.0a1.  If you don't need this dual structure,
    just set both to the same value.
    > Project version: 0.1.0
-   > Project release [0.1.0]: 
-   
+   > Project release [0.1.0]:
+
    If the documents are to be written in a language other than English,
    you can select a language here by its language code. Sphinx will then
    translate text that it generates into that language.
-   
+
    For a list of supported codes, see
    http://sphinx-doc.org/config.html#confval-language.
-   > Project language [en]: 
-   
+   > Project language [en]:
+
    The file name suffix for source files. Commonly, this is either ".txt"
    or ".rst".  Only files with this suffix are considered documents.
-   > Source file suffix [.rst]: 
-   
+   > Source file suffix [.rst]:
+
    One document is special in that it is considered the top node of the
    "contents tree", that is, it is the root of the hierarchical structure
    of the documents. Normally, this is "index", but if your "index"
    document is a custom template, you can also set this to another filename.
-   > Name of your master document (without suffix) [index]: 
-   
+   > Name of your master document (without suffix) [index]:
+
    Sphinx can also add configuration for epub output:
    > Do you want to use the epub builder (y/n) [n]: y
-   
+
    Please indicate if you want to use one of the following Sphinx extensions:
-   > autodoc: automatically insert docstrings from modules (y/n) [n]: 
-   > doctest: automatically test code snippets in doctest blocks (y/n) [n]: 
+   > autodoc: automatically insert docstrings from modules (y/n) [n]:
+   > doctest: automatically test code snippets in doctest blocks (y/n) [n]:
    > intersphinx: link between Sphinx documentation of different projects (y/n) [n]: y
    > todo: write "todo" entries that can be shown or hidden on build (y/n) [n]: y
-   > coverage: checks for documentation coverage (y/n) [n]: 
-   > pngmath: include math, rendered as PNG images (y/n) [n]: 
-   > mathjax: include math, rendered in the browser by MathJax (y/n) [n]: 
+   > coverage: checks for documentation coverage (y/n) [n]:
+   > pngmath: include math, rendered as PNG images (y/n) [n]:
+   > mathjax: include math, rendered in the browser by MathJax (y/n) [n]:
    > ifconfig: conditional inclusion of content based on config values (y/n) [n]: y
-   > viewcode: include links to the source code of documented Python objects (y/n) [n]: 
-   
+   > viewcode: include links to the source code of documented Python objects (y/n) [n]:
+
    A Makefile and a Windows command file can be generated for you so that you
    only have to run e.g. `make html' instead of invoking sphinx-build
    directly.
-   > Create Makefile? (y/n) [y]: 
+   > Create Makefile? (y/n) [y]:
    > Create Windows command file? (y/n) [y]: n
-   
+
    Creating file ./source/conf.py.
    Creating file ./source/index.rst.
    Creating file ./Makefile.
-   
+
    Finished: An initial directory structure has been created.
-   
+
    You should now populate your master file ./source/index.rst and create other documentation
    source files. Use the Makefile to build the docs, like so:
       make builder
@@ -1999,9 +2089,9 @@ Creating a new documentation-only repo
        ├── _templates
        ├── conf.py
        └── index.rst
-   
+
    4 directories, 4 files
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ dims.sphinx-autobuild 
+   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ dims.sphinx-autobuild
    Serving on http://127.0.0.1:29583
 
 ..
@@ -2030,7 +2120,7 @@ the source files and ``README.txt`` file are present:
        ├── git.rst
        ├── index.rst
        └── jenkins.rst
-   
+
    4 directories, 7 files
 
 ..
@@ -2089,18 +2179,18 @@ Following those steps, initialize the repo for ``hub-flow``.
 
    [dittrich@localhost dims-asbuilt (master)]$ git hf init
    Using default branch names.
-   
+
    Which branch should be used for tracking production releases?
       - master
-        Branch name for production releases: [master] 
-        Branch name for "next release" development: [develop] 
-   
+        Branch name for production releases: [master]
+        Branch name for "next release" development: [develop]
+
    How to name your supporting branch prefixes?
-   Feature branches? [feature/] 
-   Release branches? [release/] 
-   Hotfix branches? [hotfix/] 
-   Support branches? [support/] 
-   Version tag prefix? [] 
+   Feature branches? [feature/]
+   Release branches? [release/]
+   Hotfix branches? [hotfix/]
+   Support branches? [support/]
+   Version tag prefix? []
    Total 0 (delta 0), reused 0 (delta 0)
    remote: Running post-receive hook: Wed Mar 18 16:24:14 PDT 2015
    To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
@@ -2113,7 +2203,7 @@ Set up ``bumpversion``:
 .. code-block:: bash
    :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg 
+   [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg
 
    [bumpversion]
    current_version = 0.1.0
@@ -2137,10 +2227,10 @@ number.
    current_version = 0.1.0
    commit = True
    tag = False
-   
+
    [bumpversion:file:source/conf.py]
-   
-   
+
+
    Parsing version '0.1.0' using regexp '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'
    Parsed the following values: major=0, minor=1, patch=0
    Attempting to increment part 'patch'
@@ -2161,7 +2251,7 @@ number.
     # The full version, including alpha/beta/rc tags.
    -release = '0.1.0'
    +release = '0.1.1'
-    
+
     # The language for content autogenerated by Sphinx. Refer to documentation
     # for a list of supported languages.
    Would write to config file .bumpversion.cfg:
@@ -2169,10 +2259,10 @@ number.
    current_version = 0.1.1
    commit = True
    tag = False
-   
+
    [bumpversion:file:source/conf.py]
-   
-   
+
+
    Would prepare Git commit
    Would add changes in file 'source/conf.py' to Git
    Would add changes in file '.bumpversion.cfg' to Git
@@ -2198,7 +2288,7 @@ Now use ``hub-flow`` to push the current state of the local repo.
    remote: Running post-receive hook: Wed Mar 18 16:38:27 PDT 2015
    To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
       d0fcaa5..db3c7f1  develop -> develop
-   
+
    Summary of actions:
    - The remote branch 'origin/develop' was updated with your changes
 
