@@ -23,9 +23,9 @@ used that has a single target that identified by a meaningful word like
 
 .. _make: https://en.wikipedia.org/wiki/Make_(software)
 
-.. code-block::
+.. code-block:: none
 
-   $ make target
+    $ make target
 
 ..
 
