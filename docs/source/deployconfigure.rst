@@ -9,7 +9,7 @@ Deployment and Configuration
 .. todo::
 
    This section will describe how to do orchestration, or
-   the orderly and systematic configruation of all microservice
+   the orderly and systematic configuration of all microservice
    components that make up a DIMS deployment through a combination
    of Docker containers, virtual machines, and bare metal servers.
    This may involve merging Section :ref:`usingdocker` and
@@ -37,8 +37,14 @@ at http://datasift.github.io/gitflow/Versioning.html
 Developer boxes
 ~~~~~~~~~~~~~~~
 
-This refers to virtual machines (or a system of virtual machines), managed by Vagrant,
-that a developer runs on his developer workstation to develop, debug and test code. 
+This refers to one of two types of systems:
+
+#. Virtual machines (or a system of virtual machines), managed by Vagrant, that a
+   developer runs on his developer workstation to develop, debug and test code.
+
+#. A bare-metal system, such as a laptop, used for development, field testing,
+   demonstrations, etc.
+
 
 .. _integrationenvironment:
 
