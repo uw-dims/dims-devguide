@@ -1,11 +1,7 @@
-=============
-Documentation
-=============
-
 .. _documentation:
 
-Documentation
--------------
+Documenting DIMS Components
+===========================
 
 This chapter covers `Sphinx`_ and `ReStructured Text (reST)`_,
 and how they are used with `ReadTheDocs`_ (a hosted documentation
@@ -850,7 +846,7 @@ LaTeX Unicode rendering errors
 
 Another error message that could occur when rendering the kind of
 text in the ``code-block`` seen in Section :ref:`typographicerrors` relates to
-the Unicode characters produced by the ``tree` program to show the indentation
+the Unicode characters produced by the ``tree`` program to show the indentation
 levels.
 
 Here is an error message (with the specific lines highlighted) that can show up
