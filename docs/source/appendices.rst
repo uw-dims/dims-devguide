@@ -24,6 +24,7 @@ to names).
 
 ..
 
+
 .. _How the Domain Name System (DNS) Works: http://www.verisigninc.com/en_US/domain-names/online/how-dns-works/index.xhtml
 .. _How does DNS work?: http://cr.yp.to/djbdns/intro-dns.html
 .. _The Domain Name System: https://en.wikipedia.org/wiki/Domain_Name_System
@@ -49,7 +50,7 @@ Mac OS X configuration
 .. attention::
 
     The following instructions are partially specific to Mac OS X,
-    which handles network configuration using **System Preferences...*
+    which handles network configuration using **System Preferences...**
 
 ..
 
