@@ -26,7 +26,7 @@ Daily Scrum
 
 ..
 
-.. _remotecoordination
+.. _remotecoordination:
 
 Remote Coordination
 -------------------
@@ -141,14 +141,14 @@ Screensharing in Google Hangouts
     put Google Hangout into a feedback loop that will eventually bring
     the internet to its knees.  Don't say I didn't warn you!!! :)
 
-    .. figure:: images/infinite-hangout.png
-       :alt: The internet melting in an infinite Google Hangout loop...
-       :width: 90%
-       :align: center
+..
 
-       The internet melting in an infinite Google Hangout loop...
+.. figure:: images/infinite-hangout.png
+   :alt: The internet melting in an infinite Google Hangout loop...
+   :width: 90%
+   :align: center
 
-    ..
+   The internet melting in an infinite Google Hangout loop...
 
 ..
 
