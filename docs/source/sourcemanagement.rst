@@ -1024,7 +1024,7 @@ it with a fork that you use locally, do the following:
 
 .. _MozDef: http://mozdef.readthedocs.org/en/latest/
 .. _Configuring a remote for a fork: https://help.github.com/articles/configuring-a-remote-for-a-fork/
-.. _Syncing a fork: 
+.. _Syncing a fork: https://help.github.com/articles/syncing-a-fork/
 
 .. _startingarelease:
 

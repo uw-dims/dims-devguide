@@ -12,7 +12,7 @@ Deployment and Configuration
    the orderly and systematic configuration of all microservice
    components that make up a DIMS deployment through a combination
    of Docker containers, virtual machines, and bare metal servers.
-   This may involve merging Section :ref:`usingdocker` and
+   This may involve merging Section :ref:`dimsdockerfiles:usingdocker` and
    Section :ref:`vmprovisioning`.
 
 ..

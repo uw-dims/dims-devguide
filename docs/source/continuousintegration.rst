@@ -84,7 +84,9 @@ uses Ansible to do the deployment.
     (a "host" file), although we hope to move to using dynamic inventories.
     Either way, we need to define the hosts in a system and group them in ways
     that make deployments easy and scalable. (More on this subject can be found
-    in the :ref:``ansibleinventory:ansibleinventory` documentation.)
+    in the :ref:`ansibleinventory:ansibleinventory` documentation.)
+
+..
 
 Ideally, software in a "develop" branch would be deployed in one or more
 development and/or test systems, each defined by a single host file
@@ -197,7 +199,7 @@ The post-receive hook, ``post-receive-jenkins06alldocs``, calls a parameterized
 Jenkins job, ``dims-docs-deploy``, when the repository receives a push.  The
 hook code follows:
 
-.. literalinclude:: ../../git/post-receive-06jenkinsalldocs
+.. literalinclude:: ../../../dims-ci-utils/git/post-receive-06jenkinsalldocs
     :linenos:
     :language: bash
 
@@ -368,7 +370,7 @@ key.
 
 For your reference, the ``jenkins.dims-docs-deploy`` source follows:
 
-.. literalinclude:: ../../jenkins/job-scripts/jenkins.dims-docs-deploy
+.. literalinclude:: ../../../dims-ci-utils/jenkins/job-scripts/jenkins.dims-docs-deploy
     :linenos:
     :language: bash
 

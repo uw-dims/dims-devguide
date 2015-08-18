@@ -366,6 +366,7 @@ intersphinx_mapping = {
         'dimsad': ("{}/dims-ad".format(os.environ['DOCSURL']), None),
         'dimssr': ("{}/dims-sr".format(os.environ['DOCSURL']), None),
         'dimsocd': ("{}/dims-ocd".format(os.environ['DOCSURL']), None),
+        'dimsdockerfiles': ("{}/dims-dockerfiles".format(os.environ['DOCSURL']), None),
         'dimsciutils': ("{}/dims-ci-utils".format(os.environ['DOCSURL']), None),
         'ansibleplaybooks': ("{}/ansible-playbooks".format(os.environ['DOCSURL']),None),
         'ansibleinventory': ("{}/ansible-inventory".format(os.environ['DOCSURL']),None),
