@@ -49,4 +49,22 @@ We initially used Adobe Connect, though that is being phased out.
 Using Google Hangout
 ~~~~~~~~~~~~~~~~~~~~
 
+.. _opstrust:
+
+Ops-Trust email lists
+~~~~~~~~~~~~~~~~~~~~~
+
+We use an instance of the Ops-Trust portal system for managing
+accounts. Once an account is active, there are a number of mailing lists
+that DIMS project members should join to get various email communications
+(some ad-hoc and sent by humans, and some automatically generated for
+situational awareness, alerts, testing, etc.)
+
+These lists are:
+
+.. todo::
+
+    Describe the lists and their purpose.
+
+..
 
