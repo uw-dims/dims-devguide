@@ -635,6 +635,50 @@ as described in Section :ref:`intersphinxlinking`.
 
 ..
 
+Adding a newly-created repository
+"""""""""""""""""""""""""""""""""
+
+Until the ``dims.git.syncrepos`` script has a new feature added to it
+to detect when a new repo exists on ``git.prisem.washington.edu`` that
+does not have a local repo associated with it, you must do this yourself.
+
+When someone uses the ``newrepo`` script to create a new repo on
+``git.prisem.washington.edu``, you will need to get new ``.mrconfig``
+settings for that repo in order for ``dims.git.syncrepo`` to synchronize it.
+If you have your ``$GIT`` environment variable pointing to a directory
+that *only* has DIMS Git repos in it, you just need to create an updated
+``.mrconfig`` file.
+
+.. note::
+
+    It is safest to get a new copy of the ``.mrconfig`` file contents
+    and save them to a temporary file that you can compare with the
+    current file to ensure you are getting just what you expect, and
+    only then over-writing the ``.mrconfig`` file with the new contents.
+    The steps are shown here:
+
+..
+
+.. code-block:: none
+
+   [dittrich@localhost ~]$ cd $GIT/..
+   [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig > .mrconfig.new
+   [dittrich@localhost dims]$ diff .mrconfig .mrconfig.new
+   324a325,333
+   > [git/dims-db-recovery]
+   > checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-db-recovery.git' 'dims-db-recovery' &&
+   >    (cd dims-db-recovery; git hf init)
+   > show = git remote show origin
+   > update = git hf update
+   > pull = git hf update &&
+   >    git hf pull
+   > stat = git status -s
+   >
+   [dittrich@localhost dims]$ mv .mrconfig.new .mrconfig
+
+..
+
+
 .. _creatinggitrepos:
 
 Creating Git repositories
