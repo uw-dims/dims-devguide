@@ -675,6 +675,30 @@ that *only* has DIMS Git repos in it, you just need to create an updated
    > stat = git status -s
    >
    [dittrich@localhost dims]$ mv .mrconfig.new .mrconfig
+   [dittrich@27b dims]$ mr checkout git/dims-db-recover
+   mr checkout: /Users/dittrich/dims/git/dims-db-recovery
+   Cloning into 'dims-db-recovery'...
+   remote: Counting objects: 351, done.
+   remote: Compressing objects: 100% (254/254), done.
+   remote: Total 351 (delta 63), reused 350 (delta 63)
+   Receiving objects: 100% (351/351), 7.60 MiB | 5.62 MiB/s, done.
+   Resolving deltas: 100% (63/63), done.
+   Checking connectivity... done.
+   Using default branch names.
+
+   Which branch should be used for tracking production releases?
+      - master
+   Branch name for production releases: [master] 
+   Branch name for "next release" development: [develop] 
+
+   How to name your supporting branch prefixes?
+   Feature branches? [feature/] 
+   Release branches? [release/] 
+   Hotfix branches? [hotfix/] 
+   Support branches? [support/] 
+   Version tag prefix? [] 
+
+   mr checkout: finished (1 ok; 43 skipped)
 
 ..
 
