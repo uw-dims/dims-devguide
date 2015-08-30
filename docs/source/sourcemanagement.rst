@@ -675,7 +675,7 @@ that *only* has DIMS Git repos in it, you just need to create an updated
    > stat = git status -s
    >
    [dittrich@localhost dims]$ mv .mrconfig.new .mrconfig
-   [dittrich@27b dims]$ mr checkout git/dims-db-recover
+   [dittrich@27b dims]$ mr checkout
    mr checkout: /Users/dittrich/dims/git/dims-db-recovery
    Cloning into 'dims-db-recovery'...
    remote: Counting objects: 351, done.
