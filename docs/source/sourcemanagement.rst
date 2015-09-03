@@ -132,6 +132,33 @@ The following are user-specific settings that you should alter for your own acco
 
 ..
 
+.. todo::
+
+    .. caution::
+
+        The Ansible playbook for configuring user accounts currently
+        over-writes the ``$HOME/.gitconfig`` file for each user. This
+        wipes out the things like ``user.name`` and ``user.email``
+        that were just set above when that play is run again. That
+        is a bug in that it is not `idempotent`_. One quick hack that
+        restores these values is to add those commands to your
+        ``$HOME/.bash_aliases`` file, which is run every time a new
+        shell is created.
+
+        A better solution is to have the ``user.name`` and ``user.email``
+        configuration settings come from the ops-trust portal user
+        attributes table, so they are set consistently with what is
+        stored in the ops-trust portal database when Ansible sets up
+        user accounts.
+
+    ..
+
+..
+
+
+.. _idempotent: http://docs.ansible.com/ansible/glossary.html#idempotency
+
+
 The following are general and can be applied to anyone's configuration:
 
 .. code-block:: bash
