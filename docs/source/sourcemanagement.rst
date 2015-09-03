@@ -232,9 +232,24 @@ using the ``hub flow`` tool described in Section :ref:`installingtools`.
 Updating local repos
 ~~~~~~~~~~~~~~~~~~~~
 
-The most common task you need to do is keep your local
-repo up to date with the code that others have pushed
-to remote repositories for sharing.
+The most common task you need to do is keep your local Git repos up to date
+with the code that others have pushed to remote repositories for sharing.
+With several dozen individual Git repos, keeping your system up to date
+with all of these frequently changing repos using ``git`` commands alone
+is difficult.
+
+To make things easier, helper programs like the ``hubflow`` scripts
+and ``mr`` can be used, but even those programs have their limits.
+
+The preferred method of updating the larger set of DIMS Git repos
+is to use ``dims.git.syncrepos``, which in turn calls ``hubflow`` via
+``mr`` as part of its processing. This convenience script (described in
+Section :ref:`dimsgitsyncrepos`) works on many repos at once, saving time and
+effort.
+
+You should still learn how ``hubflow`` and ``mr`` work, since you will
+need to use them to update individual Git repos when you are working within
+those repos, so we will start with those tools.
 
 .. _updatingwithhubflow:
 
