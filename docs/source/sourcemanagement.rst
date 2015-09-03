@@ -186,6 +186,26 @@ The following are convenience aliases that help with certain tasks:
 
 ..
 
+.. todo::
+
+    Work out which other convenience alises would be useful for
+    DIMS development from these links:
+
+    + `One weird trick for powerful Git aliases`_, by Nicola Paolucci, October 3, 2014
+    + GitHubGist `mwhite/git-aliases.md`_ (The Ultimate Git Alias Setup)
+    + `Must Have Git Aliases: Advanced Examples`_, by @durdn
+
+    See Jira ticket `DIMS-470`_. (Remove this when completed.)
+
+..
+
+.. _DIMS-470: http://jira.prisem.washington.edu/browse/DIMS-470
+
+.. _One weird trick for powerful Git aliases: http://blogs.atlassian.com/2014/10/advanced-git-aliases/
+.. _mwhite/git-aliases.md: https://gist.github.com/mwhite/6887990
+.. _Must Have Git Aliases\: Advanced Examples: http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
+
+
 .. _dailygittasks:
 
 Daily tasks with Git
