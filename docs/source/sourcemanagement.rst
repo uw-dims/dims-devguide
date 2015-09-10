@@ -10,7 +10,7 @@ software described in Section :ref:`installingtools`.  Daily development work
 is done using a local server accessed via SSH to ``git.prisem.washington.edu``.
 
 Team members need to have familiarity with a few general task sets,
-which are covered in the sections below:
+which are covered in the sections below. These tasks include things like:
 
 + Cloning repositories and initializing them for use of the
   ``hub-flow`` Git addon scripts.
@@ -52,7 +52,9 @@ which are covered in the sections below:
     working on the ``develop`` branch in a multi-branch workflow.
 
     Take a moment to read through the following Gist (original
-    source: `bevanhunt/hubflow_workflow`_)
+    source: `bevanhunt/hubflow_workflow`_). It provides an overview of
+    hubflow branch concepts and some other things about Git that are
+    good to keep in mind.
 
     .. code-block:: none
 
@@ -123,12 +125,12 @@ repo, for the latest configuration examples.
 
 The following are user-specific settings that you should alter for your own account and preferences of editor/merge method:
 
-.. code-block:: bash
+.. code-block:: none
 
-    git config --global user.name "Dave Dittrich"
-    git config --global user.email "dittrich@u.washington.edu"
-    git config --global merge.tool vimdiff
-    git config --global core.editor vim
+    $ git config --global user.name "Dave Dittrich"
+    $ git config --global user.email "dittrich@u.washington.edu"
+    $ git config --global merge.tool vimdiff
+    $ git config --global core.editor vim
 
 ..
 
@@ -136,20 +138,26 @@ The following are user-specific settings that you should alter for your own acco
 
     .. caution::
 
-        The Ansible playbook for configuring user accounts currently
-        over-writes the ``$HOME/.gitconfig`` file for each user. This
-        wipes out the things like ``user.name`` and ``user.email``
-        that were just set above when that play is run again. That
-        is a bug in that it is not `idempotent`_. One quick hack that
-        restores these values is to add those commands to your
-        ``$HOME/.bash_aliases`` file, which is run every time a new
-        shell is created.
 
-        A better solution is to have the ``user.name`` and ``user.email``
-        configuration settings come from the ops-trust portal user
-        attributes table, so they are set consistently with what is
-        stored in the ops-trust portal database when Ansible sets up
-        user accounts.
+        There is a side-effect of the way we set up common Git configuration
+        for users with Ansible.  Whenever the ``dims-users-create`` role is
+        played, a fresh copy of the user's global Git configuration file
+        (``~/.gitconfig``) is over-written.  That file contains the four
+        settings listed above, which means they will be wiped out whenever that
+        role is run and you will need to reset them. (See the file
+        ``$GIT/ansible-playbooks/dims-users-create/templates/gitconfig.j2``).
+        That is a bug in that it is not `idempotent`_.
+
+        One quick hack that restores these values is to add those commands to
+        your ``$HOME/.bash_aliases`` file, which is run every time a new
+        interactive Bash shell is started.
+
+        A better long-term solution, which we are working towards, is to
+        have the ``user.name`` and ``user.email`` configuration settings come
+        from the ops-trust portal user attributes table, so they can be
+        set by the user and stored in one central location, which can then be
+        retreived from the ops-trust user database and applied consistently
+        by Ansible when it sets up user accounts.
 
     ..
 
