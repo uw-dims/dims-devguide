@@ -959,6 +959,177 @@ Sphinx documents.)
 
 ..
 
+.. _latexnottty:
+
+"LaTeX is not a TTY" errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another variation of errors during LaTeX rendering presents itself similarly
+to the previous error, but the problem is due to inability to map a Unicode
+character to a LaTeX macro: the problem is due to directly (or indirectly)
+sending output saved from Unix command line programs that do fancy things
+like coloring characters, etc, using ANSI escape sequences. While a terminal
+program that uses the Unix TTY subsystem may handle the ANSI escape
+sequences, and HTML renderers may know how to handle the ANSI escape
+sequences, LaTeX does not. Here is an example of this problem, excerpted
+from a Jenkins build job email message:
+
+.. code-block:: none
+   :linenos:
+   :emphasize-lines: 3,28,34,38
+
+    Started by user anonymous
+    [EnvInject] - Loading node environment variables.
+    Building in workspace /var/lib/jenkins/jobs/dims-docs-deploy/workspace
+
+    Deleting project workspace... done
+
+    [workspace] $ /bin/bash -xe /tmp/shiningpanda5607640542889107840.sh
+    + jenkins.logmon
+    [workspace] $ /bin/bash -xe /tmp/shiningpanda5535708223044870299.sh
+    + jenkins.dims-docs-deploy
+    [+++] jenkins.dims-docs-deploy: Deploying documentation
+    [+++] jenkins.dims-docs-deploy: Get global vars from jenkins.dims-defaults.
+    [+++] jenkins.dims-defaults Default variables
+    [+++]    PLAYBOOKSREPO=ansible-playbooks
+    [+++]    INVENTORYREPO=ansible-inventory
+    [+++]    GITURLPREFIX=git@git.prisem.washington.edu:/opt/git/
+    [+++]    MASTERBRANCH=master
+    [+++]    DEVBRANCH=develop
+    [+++]    DEVHOSTS=development
+    [+++]    MASTERHOSTS=production
+    [+++]    DEFAULTHOSTFILE=development
+    [+++]    DEFAULTANSIBLEBRANCH=develop
+    [+++]    DEFAULTINVENTORYBRANCH=develop
+    [+++]    DEFAULTREMOTEUSER=ansible
+
+    ...
+    ! Package inputenc Error: Keyboard character used is undefined
+    (inputenc)                in inputencoding `utf8'.
+
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...
+
+    l.5790 ...dl{}GIT/dims\PYGZhy{}dockerfiles/configu
+
+    !  ==> Fatal error occurred, no output PDF file produced!
+    Transcript written on UsingDockerinDIMS.log.
+    make[1]: *** [UsingDockerinDIMS.pdf] Error 1
+    make[1]: Leaving directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/dims-dockerfiles/docs/build/latex'
+    make: *** [latexpdf] Error 2
+    Build step 'Custom Python Builder' marked build as failure
+    Warning: you have no plugins providing access control for builds, so falling back to legacy behavior of permitting any downstream builds to be triggered
+    Finished: FAILURE
+
+..
+
+To find the line in question (5790, in this case, called out in output
+line 34 above), manually trigger a LaTeX PDF build from the Sphinx
+document and then look for the LaTeX source file that corresponds with the
+PDF file name (seen in output line 38 above) in the ``build/latex`` subdirectory
+(in this case, it would be
+``$GIT/dims-dockerfiles/docs/build/latex/UsingDockerinDIMS.tex``) to
+find the character that causes the error:
+
+.. code-block:: none
+   :linenos:
+   :emphasize-lines: 14-19,32
+
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ make latexpdf
+
+     ...
+
+    ! Package inputenc Error: Keyboard character used is undefined
+    (inputenc)                in inputencoding `utf8'.
+
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...
+
+    l.5789 ...dl{}GIT/dims\PYGZhy{}dockerfiles/configu
+
+    ? ^Cmake[1]: *** Deleting file `UsingDockerinDIMS.pdf'
+    ^Z
+    [1]+  Stopped                 make latexpdf
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ kill -9 %1
+    [1]+  Killed: 9               make latexpdf
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ pr -n build/latex/UsingDockerinDIMS.tex | less
+
+      ...
+
+     5780    * VPN \PYGZsq{}01\PYGZus{}uwapl\PYGZus{}dimsdev2\PYGZsq{} is running
+     5781    * VPN \PYGZsq{}02\PYGZus{}prsm\PYGZus{}dimsdev2\PYGZsq{} is running
+     5782   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/bashrc.dims.virtualenv ...
+     5783   [+++] Activating DIMS virtual environment (dimsenv) [ansible\PYGZhy{}playbooks v1.2.93]
+     5784   [+++] (Create file /home/mboggess/.DIMS\PYGZus{}NO\PYGZus{}DIMSENV\PYGZus{}ACTIVATE to disable)
+     5785   [+++] Virtual environment \PYGZsq{}dimsenv\PYGZsq{} activated [ansible\PYGZhy{}playbooks v1.2.93]
+     5786   [+++] /opt/dims/bin/dims.install.dimscommands: won\PYGZsq{}t try to install scripts in /opt/dims
+     5787   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/git\PYGZhy{}prompt.sh ...
+     5788   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/hub.bash\PYGZus{}completion.sh ...
+     5789   ESC[1;34m[dimsenv]ESC[0m ESC[1;33mmboggess@dimsdev2:\PYGZti{}/core\PYGZhy{}localESC[0m () \PYGZdl{} bash \PYGZdl{}GIT/dims\PYGZhy{}dockerfiles/configu
+     5790   rations/elasticsearch/setup\PYGZus{}cluster.sh
+     5791
+     5792   elasticsearch@.service                          0\PYGZpc{}    0     0.0KB/s   \PYGZhy{}\PYGZhy{}:\PYGZhy{}\PYGZhy{} ETA
+     5793   elasticsearch@.service                        100\PYGZpc{} 1680     1.6KB/s   00:00
+     5794
+     5795   start\PYGZus{}elasticsearch\PYGZus{}cluster.sh                  0\PYGZpc{}    0     0.0KB/s   \PYGZhy{}\PYGZhy{}:\PYGZhy{}\PYGZhy{} ETA
+     5796   start\PYGZus{}elasticsearch\PYGZus{}cluster.sh                100\PYGZpc{}   75     0.1KB/s   00:00
+     5797   ESC[1;34m[dimsenv]ESC[0m ESC[1;33mmboggess@dimsdev2:\PYGZti{}/core\PYGZhy{}localESC[0m () \PYGZdl{} vagrant ssh core\PYGZhy{}01 \PYGZhy{}\PYGZhy{} \PYGZhy{}A
+     5798   VM name: core\PYGZhy{}01 \PYGZhy{} IP: 172.17.8.101
+     5799   Last login: Wed Sep  9 13:50:22 2015 from 10.0.2.2
+     5800
+     5801   CoreESC[38;5;206mOESC[38;5;45mSESC[39m alpha (794.0.0)
+     5802   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[?1034hESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m ls
+     5803   ESC[0mESC[01;34minstancesESC[0m  start\PYGZus{}elasticsearch\PYGZus{}cluster.sh  ESC[01;34mstaticESC[0m  ESC[01;34mtemplatesESC[0m
+     5804   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m bash start\PYGZus{}elasticsearch\PYGZus{}cluster.sh
+     5805   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m ESC[Ketcdctl cluster\PYGZhy{}hea
+      ...
+
+..
+
+.. note::
+
+    Pay close attention to the commands used to reproduce the error that Jenkins
+    encountered from the command line. LaTeX, which is being invoked by Sphinx
+    (a Python program that invokes ``pdflatex`` as a subprocess) has some
+    problems getting the **CTRL-C** character (see line 14). To work around this,
+    do the following:
+
+    #. Suspend the process with **CTRL-Z** (see line 15).
+
+    #. Identify the suspended job's number found within the square brackets on
+       line 16: (``[1]+  Stopped ...``, in this case, job ``1``).
+
+    #. Use the ``kill`` command (see ``man kill`` and ``man signal``) to send
+       the ``-9`` (non-maskable interrupt) signal to the suspended job
+       (see line 17).
+
+    #. Use ``pr -n`` to add line numbers to the file and pass the output
+       to a pager like ``less`` to find the line number called out by
+       LaTeX (see lines 19 and 32).
+
+..
+
+As can be seen in line 32 above, the escape sequence **ESC[1;34m** (set
+foreground color 'Blue': see `Bash Prompt HOWTO: Chapter 6. ANSI Escape
+Sequences: Colours and Cursor Movement`_) is causing LaTeX to fail.
+
+The moral of the story is, only send properly mapped Unicode and/or UTF-8/ASCII
+text to Sphinx, so that when it does not fail when it invokes LaTeX.
+
+.. _Bash Prompt HOWTO\: Chapter 6. ANSI Escape Sequences\: Colours and Cursor Movement: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+
+.. note::
+
+    You can strip ANSI escape sequences in many ways. Google "strip ANSI
+    escape sequences" to find some. Another way to handle this is to
+    disable colorizing, or cut/paste command output as simple text
+    rather than capturing terminal output with programs like
+    ``script``.
+
+..
+
 .. commontasks:
 
 Common Tasks
