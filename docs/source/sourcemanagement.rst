@@ -3,11 +3,18 @@
 Source Code Management with Git
 ===============================
 
-DIMS software will be released publicly from `UW-DIMS at GitHub`_.
-(Documentation will be delivered on `ReadTheDocs`_. This is covered in Section
-:ref:`documentation`.) At this point, there are only forked repositories of
-software described in Section :ref:`installingtools`.  Daily development work
-is done using a local server accessed via SSH to ``git.prisem.washington.edu``.
+Daily development work on DIMS source code is done using a local server
+accessed via SSH to ``git.prisem.washington.edu``.  The public release of DIMS
+software will be from `github.com/uw-dims`_ with public
+documentation  delivered on `ReadTheDocs`_. (DIMS documentation is covered in
+Section :ref:`documentation`.)
+
+.. note::
+
+    At this point `github.com/uw-dims`_ primarily contains forked
+    repositories of the software described in Section :ref:`installingtools`.
+
+..
 
 Team members need to have familiarity with a few general task sets,
 which are covered in the sections below. These tasks include things like:
@@ -46,7 +53,7 @@ which are covered in the sections below. These tasks include things like:
 
 .. attention::
 
-    Git is a great tool for source managment, but can be a little tricky
+    Git is a great tool for source management, but can be a little tricky
     to use when there is a team of programmers all using Git in slightly
     different ways. Bad habits are easy to form, like the short-cut of
     working on the ``develop`` branch in a multi-branch workflow.
@@ -415,7 +422,7 @@ yet (lines 36-37, 54-56, and 59-62).
    :linenos:
    :emphasize-lines: 1,19-32,36-37,54-56,59-62
 
-    dittrich@dimsdemo1:~/dims/git/ansible-playbooks$ dims.git.syncrepos 
+    dittrich@dimsdemo1:~/dims/git/ansible-playbooks$ dims.git.syncrepos
     [+++] Repo "/home/dittrich/dims/git/prisem-replacement" is clean: updating...
     [+++] Repo "/home/dittrich/dims/git/ELK" is clean: updating...
     [+++] Repo "/home/dittrich/dims/git/cif-java" is clean: updating...
@@ -568,8 +575,11 @@ in your ``.git/config`` file starting with ``hubflow``:
 
     A possible test for inclusion in the ``dims-ci-utils`` test suite would be
     to check for the existance of the ``hubflow "branch"`` and ``hubflow
-    "prefix"`` sections.  These sections could also be added by a script, to
-    avoid having to always remember to do the interactive init.
+    "prefix"`` sections.
+
+    These are automatically created when repos are checked out using the
+    ``dims.git.syncrepos`` script and/or methods involving ``mr`` described
+    in the following sections.
 
 ..
 
@@ -848,15 +858,15 @@ that *only* has DIMS Git repos in it, you just need to create an updated
 
    Which branch should be used for tracking production releases?
       - master
-   Branch name for production releases: [master] 
-   Branch name for "next release" development: [develop] 
+   Branch name for production releases: [master]
+   Branch name for "next release" development: [develop]
 
    How to name your supporting branch prefixes?
-   Feature branches? [feature/] 
-   Release branches? [release/] 
-   Hotfix branches? [hotfix/] 
-   Support branches? [support/] 
-   Version tag prefix? [] 
+   Feature branches? [feature/]
+   Release branches? [release/]
+   Hotfix branches? [hotfix/]
+   Support branches? [support/]
+   Version tag prefix? []
 
    mr checkout: finished (1 ok; 43 skipped)
 
@@ -870,7 +880,7 @@ Creating Git repositories
 
 As discussed in the introduction to this section, DIMS software
 will be hosted on both a local server ``git.prisem.washington.edu``
-and from `UW-DIMS at GitHub`_.  This section covers creation of
+and from `github.com/uw-dims`_.  This section covers creation of
 new repositories on both systems.
 
 .. _creatingreposongithub:
@@ -1236,12 +1246,6 @@ and cherry-pick the commit with the missing file.
 Synchronizing with an *upstream* repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to track another project's Git repository, syncing
-it with a fork that you use locally, do the following:
-
-* `Configuring a remote for a fork`_
-* `Syncing a fork`_
-
 .. note::
 
    The DIMS project is using forks of several source repositories, some
@@ -1250,9 +1254,106 @@ it with a fork that you use locally, do the following:
    (see the :ref:`dimsad:dimsarchitecturedesign` document, Section
    :ref:`dimsad:conceptofexecution`).
 
+..
+
 .. _MozDef: http://mozdef.readthedocs.org/en/latest/
+
+
+To track another project's Git repository, syncing
+it with a fork that you use locally, it is necessary to
+do the following:
+
+* `Configuring a remote for a fork`_
+* `Syncing a fork`_
+
 .. _Configuring a remote for a fork: https://help.github.com/articles/configuring-a-remote-for-a-fork/
 .. _Syncing a fork: https://help.github.com/articles/syncing-a-fork/
+
+    #. Make sure that you have defined `upstream` properly, e.g.,
+
+        .. code-block:: none
+
+            [dimsenv] ~/dims/git/MozDef (master) $ git remote -v
+            origin      git@git.prisem.washington.edu:/opt/git/MozDef.git (fetch)
+            origin      git@git.prisem.washington.edu:/opt/git/MozDef.git (push)
+            upstream    git@github.com:jeffbryner/MozDef.git (fetch)
+            upstream    git@github.com:jeffbryner/MozDef.git (push)
+
+        ..
+
+    #. Fetch the contents of the ``upstream`` remote repository:
+
+        .. code-block:: none
+
+            [dimsenv] ~/dims/git/MozDef (master) $ git fetch upstream
+            remote: Counting objects: 6, done.
+            remote: Total 6 (delta 2), reused 2 (delta 2), pack-reused 4
+            Unpacking objects: 100% (6/6), done.
+            From github.com:jeffbryner/MozDef
+               700c1be..4575c0f  master     -> upstream/master
+             * [new tag]         v1.12      -> v1.12
+
+        ..
+
+    #. Checkout the branch to sync (e.g., ``master``) and then merge
+       any changes:
+
+        .. code-block:: none
+
+            [dimsenv] ~/dims/git/MozDef (master) $ git checkout master
+            Already on 'master'
+            Your branch is up-to-date with 'origin/master'.
+            [dimsenv] ~/dims/git/MozDef (master) $ git merge upstream/master
+            Merge made by the 'recursive' strategy.
+             alerts/unauth_ssh_pyes.conf |  4 ++++
+             alerts/unauth_ssh_pyes.py   | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+             2 files changed, 82 insertions(+)
+             create mode 100644 alerts/unauth_ssh_pyes.conf
+             create mode 100644 alerts/unauth_ssh_pyes.py
+            [dimsenv] ~/dims/git/MozDef (master) $ git push origin master
+            Counting objects: 8, done.
+            Delta compression using up to 8 threads.
+            Compressing objects: 100% (8/8), done.
+            Writing objects: 100% (8/8), 2.11 KiB | 0 bytes/s, done.
+            Total 8 (delta 3), reused 0 (delta 0)
+            remote: Running post-receive hook: Thu Sep 17 20:52:14 PDT 2015
+            To git@git.prisem.washington.edu:/opt/git/MozDef.git
+               180484a..766da56  master -> master
+
+        ..
+
+    #. Now push the updated repository to the "local" `remote repository` (i.e,
+       ``git.prisem.washington.edu`` for the DIMS project):
+
+        .. code-block:: none
+
+            [dimsenv] ~/dims/git/MozDef (master) $ git push origin master
+            Counting objects: 8, done.
+            Delta compression using up to 8 threads.
+            Compressing objects: 100% (8/8), done.
+            Writing objects: 100% (8/8), 2.11 KiB | 0 bytes/s, done.
+            Total 8 (delta 3), reused 0 (delta 0)
+            remote: Running post-receive hook: Thu Sep 17 20:52:14 PDT 2015
+            To git@git.prisem.washington.edu:/opt/git/MozDef.git
+               180484a..766da56  master -> master
+
+        ..
+
+    #. If the `remote` repository is itself the fork (e.g., if you fork a
+       repository on GitHub, then want to maintain a "local" `remote repository`
+       on-site for your project, you may wish to use a label other than
+       ``upstream`` to connote the fork differently):
+
+
+        .. code-block:: none
+
+            [dimsenv] ~/git/ansible (release1.8.4*) $ git remote -v
+            davedittrich        git@github.com:davedittrich/ansible.git (fetch)
+            davedittrich        git@github.com:davedittrich/ansible.git (push)
+            origin      https://github.com/ansible/ansible.git (fetch)
+            origin      https://github.com/ansible/ansible.git (push)
+
+        ..
 
 .. _startingarelease:
 
@@ -2562,6 +2663,6 @@ this case, cutting/pasting the hook from another repo to get the link correct).
 
 ..
 
-.. _UW-DIMS at GitHub: https://github.com/uw-dims
+.. _github.com/uw-dims: UW-DIMS: https://github.com/uw-dims
 .. _ReadTheDocs: https://readthedocs.org/
 
