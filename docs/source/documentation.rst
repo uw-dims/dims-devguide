@@ -377,6 +377,7 @@ You can now load the page with a browser:
 
 ..
 
+.. _manuallybuildpdf:
 
 Manually Building PDF using LaTeX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
