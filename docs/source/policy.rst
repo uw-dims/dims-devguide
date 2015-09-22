@@ -6,16 +6,46 @@ Development and Core Tool Policy
 This section contains policy statements regarding software development that all
 developers working on the DIMS project are expected to adhere to.
 
+In order to prevent core tools being used by developers being incompatible,
+rendering installation instructions buggy and/or causing random failures in a
+complicated build environment, everyone on the DIMS project **must** use the
+same core tools, and use the same workflow processes.  This will allow
+controlled updates and provide stability in the tools we are using within the
+project.
+
+Without some discipline and adherence to documented policies, far too much time
+ends up being wasted when one person can do something, but another can't, or
+something runs fine on one system, but fails on another system. In either case,
+team members get blocked from making forward progress and the project suffers
+as a result. These policies are not being imposed to stifle anyone's creativity,
+but to help *everyone* on the team be more productive.
+
 .. attention::
 
-    The requirements to adhere to the policies stated here is partly to keep
+    The requirement to adhere to the policies stated here is partly to keep
     the project moving forward smoothly, but also to ensure that the sofware
-    products we develop are suitable for open source release as required by the
-    contract (see :ref:`dimssr:opensourcerelease` in
+    products developed by this project are suitable for public open source
+    release as required by the contract (see :ref:`dimssr:opensourcerelease` in
     :ref:`dimssr:dimssystemrequirements`) and in conformance with University of
     Washington policy.
 
 ..
+
+.. _sourcecontrol:
+
+Source Code Control
+-------------------
+
+As pointed out by Jeff Knupp in his blog post `Open Sourcing a Python Project
+the Right Way`_, "git and GitHub have become the de-facto standard for Open
+Source projects." Just as Knupp's post suggests, the DIMS project has been
+following the same *git-flow* model described by Vincent Driesen in his `A
+successful Git branching model`_ blog post, using *Sphinx* and *RST* (see the
+section :ref:`documentation`), and using *continuous integration* via Jenkins
+(see :ref:`continuousintegration`).
+
+.. _Open Sourcing a Python Project the Right Way: https://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/
+.. _A successful Git branching model: http://nvie.com/posts/a-successful-git-branching-model/
 
 .. _copyright:
 
@@ -53,17 +83,6 @@ to accompany the Copyright statement in the previous section.
 .. include:: ../../license.txt
    :literal:
 
-
-Development and Core Tool Policy
---------------------------------
-
-In order to prevent core tools being used by developers being incompatible,
-rendering installation instructions buggy and/or causing random failures in a
-complicated build environment, everyone on the DIMS project **must** use the
-same core tools by policy.  This will allow controlled updates and provide
-stability in the tools we are using within the project.  Far too much time is
-wasted when one person can do something, but another can't and gets blocked, or
-something runs fine on one system, but fails on another system.
 
 .. _developingongithub:
 
