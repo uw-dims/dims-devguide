@@ -413,86 +413,158 @@ Updating with ``dims.git.syncrepos``
 """"""""""""""""""""""""""""""""""""
 
 A script that combines several of the above steps into one single command
-is ``dims.git.synrepos``. In the example here, highlighted lines show
-where a repo is *clean*, but is being updated with new code (lines 19-32),
-and were repos are *dirty*, meaning they have files that are not committed
-yet (lines 36-37, 54-56, and 59-62).
+is ``dims.git.synrepos``.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~ () $ dims.git.syncrepos --version
+    dims.git.syncrepos version 1.6.97
+
+..
+
+In the example here, highlighted lines show
+where repos are *dirty* (Repo[9], Repo[13], and Repo[33]), meaning they have
+tracked files that are not committed yet and cannot be updated, *clean* and
+requiring updates from the remote repo (Repo[12]), and new repositories from
+the remote server (Repo[28] and Repo[30]) that are being cloned and initialized
+for use with `hub-flow` tools. At the end, ``dims.git.syncrepos`` reports
+how many repos were updated out of the available repos on the remote
+server, how many new repos it added, and/or how many repos could not be
+updated because they are dirty. Lastly, it reports how long it took (so
+you can be aware of how long you have to go get coffee after
+starting a sync.)
 
 .. code-block:: none
    :linenos:
-   :emphasize-lines: 1,19-32,36-37,54-56,59-62
+   :emphasize-lines: 1,11-15,19-32,33-34,50-73,75-98,101-103,118,125-127
 
-    dittrich@dimsdemo1:~/dims/git/ansible-playbooks$ dims.git.syncrepos
-    [+++] Repo "/home/dittrich/dims/git/prisem-replacement" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ELK" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/cif-java" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/cif-client" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-ad" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-tr" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/pygraph" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/configs" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/poster-deck-2014-noflow" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-keys" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-tp" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-vagrant" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ops-trust-portal" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dimssysconfig" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-dockerfiles" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/stix-java" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ansible-playbooks" is clean: updating...
-    remote: Counting objects: 16, done.
-    remote: Compressing objects: 100% (9/9), done.
-    remote: Total 9 (delta 4), reused 0 (delta 0)
-    Unpacking objects: 100% (9/9), done.
-    From git.prisem.washington.edu:/opt/git/ansible-playbooks
-       2751aa3..305800a  develop    -> origin/develop
-    Updating 2751aa3..305800a
-    Fast-forward
-     roles/docker-registry-install/tasks/main.yml       | 22 ++++++++++++++--------
-     .../templates/config.yml.j2                        |  4 ++--
-     .../templates/docker_run.sh.j2                     |  6 ++++++
-     3 files changed, 22 insertions(+), 10 deletions(-)
-     create mode 100644 roles/docker-registry-install/templates/docker_run.sh.j2
-    [+++] Repo "/home/dittrich/dims/git/dims-dashboard" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/mal4s" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-ocd" is clean: updating...
-    [---] Repo "/home/dittrich/dims/git/sphinx-autobuild" is dirty:
-     M sphinx_autobuild/__init__.py
-    [+++] Repo "/home/dittrich/dims/git/dims-devguide" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-asbuilt" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ticketing-redis" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-sr" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/prisem" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/umich-botnets" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-dsdd" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-sample-data" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-supervisor" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-packer" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/java-stix-v1.1.1" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-jds" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ansible-inventory" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/ops-trust-openid" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-db-recovery" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/rwfind" is clean: updating...
-    [---] Repo "/home/dittrich/dims/git/dims-ci-utils" is dirty:
+    [dimsenv] dittrich@dimsdemo1:~ () $ dims.git.syncrepos
+    [+++] Found 46 available repos at git@git.prisem.washington.edu
+    [+++] Repo[1] "/home/dittrich/dims/git/ansible-inventory" clean:
+    [+++] Repo[2] "/home/dittrich/dims/git/ansible-playbooks" clean:
+    [+++] Repo[3] "/home/dittrich/dims/git/cif-client" clean:
+    [+++] Repo[4] "/home/dittrich/dims/git/cif-java" clean:
+    [+++] Repo[5] "/home/dittrich/dims/git/configs" clean:
+    [+++] Repo[6] "/home/dittrich/dims/git/dims" clean:
+    [+++] Repo[7] "/home/dittrich/dims/git/dims-ad" clean:
+    [+++] Repo[8] "/home/dittrich/dims/git/dims-asbuilt" clean:
+    [---] Repo[9] "/home/dittrich/dims/git/dims-ci-utils" is dirty:
+    ?? dims/diffs.1
+    ?? dims/manifest.dat
     ?? ubuntu-14.04.2/ubuntu-14.04.3-install.dd.bz2
-    ?? ubuntu-14.04.2/ubuntu-14.04.3-server-amd64.iso.sha256
-    [+++] Repo "/home/dittrich/dims/git/ipgrep" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/tupelo" is clean: updating...
-    [---] Repo "/home/dittrich/dims/git/MozDef" is dirty:
+    4bb5516 (feature/dims-406) Merge branch 'develop' into feature/dims-406
+
+    [+++] Repo[10] "/home/dittrich/dims/git/dims-dashboard" clean:
+    [+++] Repo[11] "/home/dittrich/dims/git/dims-db-recovery" clean:
+    [+++] Repo[12] "/home/dittrich/dims/git/dims-devguide" clean:
+    remote: Counting objects: 29, done.
+    remote: Compressing objects: 100% (22/22), done.
+    remote: Total 22 (delta 13), reused 0 (delta 0)
+    Unpacking objects: 100% (22/22), done.
+    From git.prisem.washington.edu:/opt/git/dims-devguide
+       daffa68..4b2462b  develop    -> origin/develop
+    Updating daffa68..4b2462b
+    Fast-forward
+     .bumpversion.cfg                |  2 +-
+     docs/source/conf.py             |  4 ++--
+     docs/source/deployconfigure.rst |  2 +-
+     docs/source/referenceddocs.rst  | 13 +++++++++++++
+     4 files changed, 17 insertions(+), 4 deletions(-)
+    [---] Repo[13] "/home/dittrich/dims/git/dims-dockerfiles" is dirty:
+    8a47fca (HEAD -> develop) Bump version: 1.1.11 → 1.1.12
+
+    [+++] Repo[14] "/home/dittrich/dims/git/dims-dsdd" clean:
+    [+++] Repo[15] "/home/dittrich/dims/git/dims-jds" clean:
+    [+++] Repo[16] "/home/dittrich/dims/git/dims-keys" clean:
+    [+++] Repo[17] "/home/dittrich/dims/git/dims-ocd" clean:
+    [+++] Repo[18] "/home/dittrich/dims/git/dims-packer" clean:
+    [+++] Repo[19] "/home/dittrich/dims/git/dims-sample-data" clean:
+    [+++] Repo[20] "/home/dittrich/dims/git/dims-sr" clean:
+    [+++] Repo[21] "/home/dittrich/dims/git/dims-supervisor" clean:
+    [+++] Repo[22] "/home/dittrich/dims/git/dims-svd" clean:
+    [+++] Repo[23] "/home/dittrich/dims/git/dimssysconfig" clean:
+    [+++] Repo[24] "/home/dittrich/dims/git/dims-tp" clean:
+    [+++] Repo[25] "/home/dittrich/dims/git/dims-tr" clean:
+    [+++] Repo[26] "/home/dittrich/dims/git/dims-vagrant" clean:
+    [+++] Repo[27] "/home/dittrich/dims/git/ELK" clean:
+    [+++] Adding Repo[28] fuse4j to /home/dittrich/dims/.mrconfig and checking it out.
+    mr checkout: /home/dittrich/dims/git/fuse4j
+    Cloning into 'fuse4j'...
+    remote: Counting objects: 523, done.
+    remote: Compressing objects: 100% (240/240), done.
+    remote: Total 523 (delta 186), reused 523 (delta 186)
+    Receiving objects: 100% (523/523), 180.86 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (186/186), done.
+    Checking connectivity... done.
+    Using default branch names.
+
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
+    mr checkout: finished (1 ok; 43 skipped)
+    [+++] Repo[29] "/home/dittrich/dims/git/ipgrep" clean:
+    [+++] Adding Repo[30] java-native-loader to /home/dittrich/dims/.mrconfig and checking it out.
+    mr checkout: /home/dittrich/dims/git/java-native-loader
+    Cloning into 'java-native-loader'...
+    remote: Counting objects: 329, done.
+    remote: Compressing objects: 100% (143/143), done.
+    remote: Total 329 (delta 62), reused 329 (delta 62)
+    Receiving objects: 100% (329/329), 178.36 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (62/62), done.
+    Checking connectivity... done.
+    Using default branch names.
+
+    Which branch should be used for tracking production releases?
+       - master
+    Branch name for production releases: [master]
+    Branch name for "next release" development: [develop]
+
+    How to name your supporting branch prefixes?
+    Feature branches? [feature/]
+    Release branches? [release/]
+    Hotfix branches? [hotfix/]
+    Support branches? [support/]
+    Version tag prefix? []
+
+    mr checkout: finished (1 ok; 44 skipped)
+    [+++] Repo[31] "/home/dittrich/dims/git/java-stix-v1.1.1" clean:
+    [+++] Repo[32] "/home/dittrich/dims/git/mal4s" clean:
+    [---] Repo[33] "/home/dittrich/dims/git/MozDef" is dirty:
      M docker/Dockerfile
      M docker/Makefile
-    ?? docker/container/
-    [+++] Repo "/home/dittrich/dims/git/tsk4j" is clean: updating...
-    [+++] Repo "/home/dittrich/dims/git/dims-svd" is clean: updating...
-    [+++] All repos checked.
+
+    [+++] Repo[34] "/home/dittrich/dims/git/ops-trust-openid" clean:
+    [+++] Repo[35] "/home/dittrich/dims/git/ops-trust-portal" clean:
+    [+++] Repo[36] "/home/dittrich/dims/git/poster-deck-2014-noflow" clean:
+    [+++] Repo[37] "/home/dittrich/dims/git/prisem" clean:
+    [+++] Repo[38] "/home/dittrich/dims/git/prisem-replacement" clean:
+    [+++] Repo[39] "/home/dittrich/dims/git/pygraph" clean:
+    [+++] Repo[40] "/home/dittrich/dims/git/rwfind" clean:
+    [---] Repo[41] "/home/dittrich/dims/git/sphinx-autobuild" is clean:
+    [+++] Repo[42] "/home/dittrich/dims/git/stix-java" clean:
+    [+++] Repo[43] "/home/dittrich/dims/git/ticketing-redis" clean:
+    [+++] Repo[44] "/home/dittrich/dims/git/tsk4j" clean:
+    [+++] Repo[45] "/home/dittrich/dims/git/tupelo" clean:
+    [+++] Repo[46] "/home/dittrich/dims/git/umich-botnets" clean:
+    [+++] Updated 40 of 46 available repos.
     [+++] Summary of actions for repos that were updated:
     - Any changes to branches at origin have been downloaded to your local repository
     - Any branches that have been deleted at origin have also been deleted from your local repository
     - Any changes from origin/master have been merged into branch 'master'
     - Any changes from origin/develop have been merged into branch 'develop'
     - Any resolved merge conflicts have been pushed back to origin
+    [+++] Added 3 new repos: fuse4j java-native-loader tsk4j
+    [+++] Could not update 3 repos: dims-ci-utils dims-dockerfiles MozDef
+    [+++] Updating repos took 00:04:12
 
 ..
 
