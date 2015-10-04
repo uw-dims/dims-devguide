@@ -15,4 +15,4 @@ Referenced documents
 
 #. :ref:`dimsad:dimsarchitecturedesign`
 
-#. :ref:`dittrich:homepage`
+#. :ref:`dittrich:homepage` home page.
