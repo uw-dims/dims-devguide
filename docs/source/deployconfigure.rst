@@ -13,7 +13,7 @@ Deployment and Configuration
    components that make up a DIMS deployment through a combination
    of Docker containers, virtual machines, and bare metal servers.
    This may involve merging Section :ref:`dimsdockerfiles:usingdocker` and
-   Section :ref:`vmprovisioning`.
+   Section :ref:`dimspacker:vmprovisioning`.
 
 ..
 

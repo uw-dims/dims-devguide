@@ -370,6 +370,6 @@ intersphinx_mapping = {
         'dimsciutils': ("{}/dims-ci-utils".format(os.environ['DOCSURL']), None),
         'ansibleplaybooks': ("{}/ansible-playbooks".format(os.environ['DOCSURL']),None),
         'ansibleinventory': ("{}/ansible-inventory".format(os.environ['DOCSURL']),None),
-        'packer': ("{}/packer".format(os.environ['DOCSURL']),None),
+        'dimspacker': ("{}/dims-packer".format(os.environ['DOCSURL']),None),
         'dittrich': ('https://staff.washington.edu/dittrich/home/', None)
 }
