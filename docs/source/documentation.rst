@@ -1240,6 +1240,8 @@ consistent, add the ``:numbered:`` option to the ``toctree`` directive: ::
 
 See http://sphinx-doc.org/markup/toctree.html and http://stackoverflow.com/questions/20061577/sphinx-section-numbering-for-more-than-level-3-headings-sectnum
 
+.. _convertinghtml:
+
 Converting HTML content to Sphinx reST files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1285,7 +1287,9 @@ Section 5 from the original HTML: ::
 
 ..
 
-Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``: ::
+Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``:
+
+.. code-block:: none
 
     5. Requirements traceability.
     =============================
@@ -1311,7 +1315,9 @@ Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``: ::
 
 ..
 
-Section 5 in a separate file ``traceability.rst``: ::
+Section 5 in a separate file ``traceability.rst``: 
+
+.. code-block:: none
 
     .. _traceability:
     
@@ -1347,8 +1353,34 @@ The rendered HTML for section 5 can be seen in the
 figure :ref:`noteinlistcorrect`.
 
 
+.. _referencinglabels:
+
+Referencing subsections or figures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the last example covered in section :ref:`convertinghtml`, note the label
+definition ``.. _traceability:`` right before the section heading *Requirements
+traceability*.  A reference to this label will result in the section heading
+being used as the text for the hyperlink.  This section itself is preceded by
+the label ``referencinglabels``, which is rendered on reference as
+:ref:`referencinglabels`.  This is the way to reference a sub-section (or figure,
+table, etc.) of a document.
+
+..
+
+.. note::
+
+    The section :ref:`intersphinxlinking` builds on this concept of linking
+    to arbitrary locations in a file by label.
+
+..
+
+
+.. _commonproblems:
+
 Common Problems
 ---------------
+
 
 Improperly referencing links to external documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1362,7 +1394,7 @@ and need to be unique.
 
 Here is output of ``sphinx-autobuild`` showing this problem:
 
-::
+.. code-block:: none
 
     +--------- source/.vmprovisioning.rst.swp changed -------------------------------
     /Users/dittrich/git/dims-ci-utils/docs/source/vmprovisioning.rst:3: WARNING: Duplicate explicit target name: "here".
@@ -1556,11 +1588,15 @@ Having multiple colons in link target labels
 It is easy to get used to using directives like ``.. figure::``
 or ``.. note::`` and placing the double-colon after them.
 Labels look similar, but are not directives. They also have
-the underscore in front of them and should look like: ::
+the underscore in front of them and should look like:
+
+.. code-block:: none
 
     .. _label:
 
     This is a reference to :ref:`label`.
+
+..
 
 
 Advanced Use of Sphinx Features
@@ -1617,16 +1653,27 @@ If the documentation must be hand-edited for each user, that places a huge
 burden on those wanting to implement DIMS and the system will not be used
 widely enough to have the intended impact.
 
+
 .. _intersphinxlinking:
 
 Cross-referencing between documents with the ``sphinx.ext.intersphinx`` extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Sphinx extension ``sphinx.ext.intersphinx`` allows mapping of labels
-across documents. (See http://sphinx-doc.org/ext/intersphinx.html). This allows
-for cross referencing, for example linking a test in the Test Plan document to
-a requirement or user story in the Requirements document to provide
+ReST supports `Cross-referencing arbitrary locations`_ within a document using
+``:ref:``. To reference arbitrary locations (by their label) in other documents
+requires the Sphinx extension ``sphinx.ext.intersphinx``.
+(See the documentation for `sphinx.ext.intersphinx`_ and Section
+:ref:`referencinglabels` for more on labels.)
+ 
+.. _Cross-referencing arbitrary locations: http://sphinx-doc.org/markup/inline.html?highlight=ref#role-ref
+.. _sphinx.ext.intersphinx: http://sphinx-doc.org/ext/intersphinx.html
+
+Intersphinx links allow, for example, cross referencing a test in the Test Plan
+document to a requirement or user story in the Requirements document to provide
 requirements traceability in testing.
+
+Mapping URLs to documents
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step is to enable the extension by making sure it
 is included in the ``conf.py`` file:
@@ -1705,6 +1752,9 @@ define a label namespace for use in ``:ref:`` directives.
     }
 
 ..
+
+Linking to the label
+^^^^^^^^^^^^^^^^^^^^
 
 In the reST document (in this case, the ``referenceddocs.rst`` file), 
 normal ``:ref:`` directives are used, but the target of the ``:ref:``
@@ -1787,7 +1837,7 @@ release number visible for precise cross-referencing.
 When you build the document, you will see the ``objects.inv`` files
 being loaded:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 7,8,9
 
    (dimsenv)[dittrich@localhost dims-sr (develop)]$ make html
@@ -1805,22 +1855,8 @@ being loaded:
    reading sources... [ 12%] appendices
    reading sources... [ 25%] index
    ...
+
 ..
-
-.. _intersphinxtitlelinking
-
-Intersphinx linking to a subsection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To expand on the prior section of intersphinx linking, you can link directly to a subsection of that document using ``:ref:`doc:section```.
-
-Example:
-
-`http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-packer/vmprovisioning.html#vm-creation-guide <http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-packer/vmprovisioning.html#vm-creation-guide>`_ links directly to a subsection titled vm-creation-guide in dims-packer(this works with a web browser).  However if you tried to link to that section using ``:ref:`dimspacker:vm-creation-guide``` it would fail because that section is not known in objects.inv as vm-creation-guide.
-
-Instead you would use ``:ref:`dimspacker:vmquickstart``` because if you looked at the code for that section, the title is actually ``.. _vmquickstart:``.
-
-E.G. :ref:`dimspacker:vmquickstart`
 
 .. _textsubstitution:
 
