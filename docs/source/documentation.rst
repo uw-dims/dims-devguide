@@ -1807,6 +1807,21 @@ being loaded:
    ...
 ..
 
+.. _intersphinxtitlelinking
+
+Intersphinx linking to a subsection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To expand on the prior section of intersphinx linking, you can link directly to a subsection of that document using ``:ref:`doc:section```.
+
+Example:
+
+`http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-packer/vmprovisioning.html#vm-creation-guide <http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-packer/vmprovisioning.html#vm-creation-guide>`_ links directly to a subsection titled vm-creation-guide in dims-packer(this works with a web browser).  However if you tried to link to that section using ``:ref:`dimspacker:vm-creation-guide``` it would fail because that section is not known in objects.inv as vm-creation-guide.
+
+Instead you would use ``:ref:`dimspacker:vmquickstart``` because if you looked at the code for that section, the title is actually ``.. _vmquickstart:``.
+
+E.G. :ref:`dimspacker:vmquickstart`
+
 .. _textsubstitution:
 
 Insertion of text using direct substitution
