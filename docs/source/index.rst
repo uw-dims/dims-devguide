@@ -39,6 +39,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    deployconfigure
    programming
    communication
+   opstrustdb
    appendices
 
 .. note::
