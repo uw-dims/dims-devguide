@@ -33,6 +33,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    introduction
    referenceddocs
    policy
+   onboarding
    sourcemanagement
    documentation
    continuousintegration
