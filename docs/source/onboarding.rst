@@ -136,7 +136,10 @@ systems set up properly.
 
 #. Copy their key pair into the account on the system where they will be
    doing their development (i.e., a DIMS developer laptop, Vagrant virtual
-   machine, or bare-metal workstation.)
+   machine, or bare-metal workstation.) Also make sure their key is
+   included in the ``authorized_keys`` file in the ``git`` account on
+   ``git.prisem.washington.edu`` in order for them to be able to read/write
+   source code using Git.
 
    .. todo::
 
