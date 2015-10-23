@@ -32,6 +32,24 @@ which are covered in the sections below. These tasks include things like:
 + Keeping up to date with new repositories (or starting fresh with a new
   development system by cloning all DIMS repositories a new.)
 
+.. attention::
+
+    Every now and then, you may do something with Git and immediately
+    think, "Oh, snap! I did *not* want to do *that*..." :(
+
+    There are resource on Dave Dittrich's home page in the
+    :ref:`dittrich:usinggit` section.  Two good resources for learning how things
+    work with Git (and how to undo them) are:
+
+    + `How to undo (almost) anything with Git`_, GitHub blog post by jaw6, June 8, 2015
+    + `Undo Almost Anything with Git webinar`_, YouTube video by Peter Bell and Michael Smith, February 11, 2014
+
+..
+
+.. _How to undo (almost) anything with Git: https://github.com/blog/2019-how-to-undo-almost-anything-with-git
+.. _Undo Almost Anything with Git webinar: https://youtu.be/oUzbaCRoeFA
+
+
 .. caution::
 
     Mac OS X (by default) uses an HFS file system *with case sensitivity*.
@@ -59,9 +77,12 @@ which are covered in the sections below. These tasks include things like:
     working on the ``develop`` branch in a multi-branch workflow.
 
     Take a moment to read through the following Gist (original
-    source: `bevanhunt/hubflow_workflow`_). It provides an overview of
-    hubflow branch concepts and some other things about Git that are
-    good to keep in mind.
+    source: `bevanhunt/hubflow_workflow`_), just to get an overview
+    of ``hubflow`` concepts. This Gist provides an overview of
+    ``hubflow`` branch concepts and some other things about Git that are
+    good to keep in mind, but this is *not* the totality of information
+    in this guide about using ``hubflow`` (keep reading further down for
+    more DIMS-specific examples of using ``hubflow`` commands).
 
     .. code-block:: none
 
@@ -120,6 +141,7 @@ which are covered in the sections below. These tasks include things like:
 ..
 
 .. _bevanhunt/hubflow_workflow: https://gist.github.com/bevanhunt/903740bf7306d806f943
+
 
 .. _gitconfiguration:
 
