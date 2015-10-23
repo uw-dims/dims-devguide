@@ -110,4 +110,47 @@ as needed.
 .. _DIMS-64: http://jira.prisem.washington.edu/browse/DIMS-64
 
 
+.. _sshkeys:
+
+Installing initial SSH key(s)
+-----------------------------
+
+Before someone can clone Git repositories, or use SSH to log in to DIMS
+systems for interactive shell access, they must (a) have a DIMS SSH key,
+and (b) have the public key and ``authorized_keys`` file(s) on target
+systems set up properly.
+
+#. Create the user's DIMS SSH key pair...
+
+   .. todo::
+
+      Replace this with example...
+
+      make key
+      git commit it
+
+   ..
+
+#. Generate accounts using Ansible playbook ($whatever), which creates
+   the accounts and installs their public key.
+
+#. Copy their key pair into the account on the system where they will be
+   doing their development (i.e., a DIMS developer laptop, Vagrant virtual
+   machine, or bare-metal workstation.)
+
+   .. todo::
+
+      Replace this with example...
+
+   ..
+
+#.  Set the password on they are supposed to use so they can log in to it,
+    and/or securely transfer their public SSH key to them so they can use it
+    to access the account without needing a password.
+
+   .. todo::
+
+      Replace this with example...
+
+   ..
 
