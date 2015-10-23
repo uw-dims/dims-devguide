@@ -676,6 +676,50 @@ The default when you just invoke ``dims.bumpversion`` is to do ``bumpversion pat
 the most frequent version increment. To use a different increment, just add it as
 an argument on the command line (e.g., ``dims.bumpvesion minor``).
 
+Here is an example of how this section edit was done, showing
+the version number increment in the workflow:
+
+.. code-block:: none
+   :emphasize-lines: 7
+
+    [dimsenv] dittrich@localhost:~/dims/git/dims-devguide/docs (develop*) $ git add source/sourcemanagement.rst
+    [dimsenv] dittrich@localhost:~/dims/git/dims-devguide/docs (develop*) $ git stat
+    M  docs/source/sourcemanagement.rst
+    [dimsenv] dittrich@localhost:~/dims/git/dims-devguide/docs (develop*) $ git commit -m "Add subsection on version numbers and bumpversion/dims.bumpversion"
+    [develop b433bae] Add subsection on version numbers and bumpversion/dims.bumpversion
+     1 file changed, 92 insertions(+)
+    [dimsenv] dittrich@localhost:~/dims/git/dims-devguide/docs (develop*) $ dims.bumpversion
+    [dimsenv] dittrich@localhost:~/dims/git/dims-devguide/docs (develop*) $ git hf push
+    Fetching origin
+    Already up-to-date.
+    Counting objects: 11, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (11/11), done.
+    Writing objects: 100% (11/11), 2.53 KiB | 0 bytes/s, done.
+    Total 11 (delta 7), reused 0 (delta 0)
+    remote: Running post-receive hook: Thu Oct 22 22:31:50 PDT 2015
+    remote: [+++] post-receive-06jenkinsalldocs started
+    remote: [+++] REPONAME=dims-devguide
+    remote: [+++] BRANCH=develop
+    remote: [+++] newrev=00727d53dbc8130cdbdbe35be80f1f4c2d2ee7fa
+    remote: [+++] oldrev=e8e7d4db40dd852a044525fdfbada1fe80d81739
+    remote: [+++] Branch was updated.
+    remote: [+++] This repo has a documentation directory.
+    remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+    remote:                                  Dload  Upload   Total   Spent    Left  Speed
+    remote: 100    79    0     0  100    79      0   2613 --:--:-- --:--:-- --:--:--  3761
+    remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+    remote:                                  Dload  Upload   Total   Spent    Left  Speed
+    remote: 100    78    0     0  100    78      0   2524 --:--:-- --:--:-- --:--:--  3250
+    remote: [+++] post-receive-06jenkinsalldocs finished
+    To git@git.prisem.washington.edu:/opt/git/dims-devguide.git
+       e8e7d4d..00727d5  develop -> develop
+
+    Summary of actions:
+    - The remote branch 'origin/develop' was updated with your changes
+
+..
+
 .. _bumpversion: https://github.com/peritus/bumpversion
 .. _bumpversion screencast: https://asciinema.org/a/3828
 .. _A Python Versioning Workflow With Bumpversion: http://kylepurdon.com/blog/2015/01/25/a-python-versioning-workflow-with-bumpversion/
