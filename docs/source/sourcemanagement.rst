@@ -590,6 +590,96 @@ starting a sync.)
 
 ..
 
+.. _versionnumbers:
+
+Managing Version Numbers
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The DIMS project uses the Python program `bumpversion`_ to
+update version numbers in Git repositories, following
+`PEP 440 -- Version Identification and Dependency Specification`_.
+You can learn how `bumpversion`_ works from these resources:
+
+   + `bumpversion screencast`_ showing bumpversion in action
+   + `A Python Versioning Workflow With Bumpversion`_
+
+.. note::
+
+    You can find examples of using `bumpversion`_ (including its configuration file
+    ``.bumpversion.cfg`` and how it is used to manage version numbers in files) in
+    this document in Sections :ref:`creatingdocumentonlyrepo` and
+    :ref:`cherrypickingcommits`.
+..
+
+The program ``bumpversion`` is included in the Python virtual environment
+``dimsenv`` that is created for use in DIMS development.
+
+.. todo::
+
+    Add a cross reference to description of the ``dimsenv``
+    Python Virtual Environment.
+
+..
+
+.. code-block:: none
+
+    [dimsenv] dittrich@27b:~/git/homepage (develop*) $ which bumpversion
+    /Users/dittrich/dims/envs/dimsenv/bin/bumpversion
+
+..
+
+.. caution::
+
+    Because you must be in the same directory as the ``.bumpversion.cfg`` file
+    when you invoke ``bumpversion``, it is sometimes problematic when using it
+    to work in a sub-directory one or more levels below the configuration file.
+    You may see example command lines like ``(cd ..; bumpversion patch)`` that
+    use sub-shells to temporarily change to the right directory, do the
+    ``bumpversion patch``, then exit leaving you in the same directory where you
+    are editing files.  That is a little more work than is desirable, but
+    doing a bunch of ``cd ..``, ``bumpersion patch``, ``cd backagain``
+    is even more work.
+
+..
+
+To make it easier to increment version numbers, a helper
+script ``dims.bumpversion`` is available as well:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@27b:~/git/homepage (develop*) $ which dims.bumpversion
+    /Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion
+    [dimsenv] dittrich@27b:~/git/homepage (develop*) $ dims.bumpversion --help
+    Usage:
+    /Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion [options] [args]
+
+    Use "/Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion --help" to see options.
+    Use "/Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion --usage" to see help on "bumpversion" itself.
+
+    /Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion -- [bumpversion_options] [bumpversion_args]
+
+    Follow this second usage example and put -- before any bumpversion
+    options and arguments to pass them on bumpversion (rather than
+    process them as though they were /Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion arguments.) After
+    all, /Users/dittrich/dims/envs/dimsenv/bin/dims.bumpversion is just a shell wrapping bumpversion.
+
+
+    Options:
+      -h, --help     show this help message and exit
+      -d, --debug    Enable debugging
+      -u, --usage    Print usage information.
+      -v, --verbose  Be verbose (on stdout) about what is happening.
+
+..
+
+The default when you just invoke ``dims.bumpversion`` is to do ``bumpversion patch``,
+the most frequent version increment. To use a different increment, just add it as
+an argument on the command line (e.g., ``dims.bumpvesion minor``).
+
+.. _bumpversion: https://github.com/peritus/bumpversion
+.. _bumpversion screencast: https://asciinema.org/a/3828
+.. _A Python Versioning Workflow With Bumpversion: http://kylepurdon.com/blog/2015/01/25/a-python-versioning-workflow-with-bumpversion/
+.. _PEP 440 -- Version Identification and Dependency Specification: http://legacy.python.org/dev/peps/pep-0440/
 
 .. _initializingforhubflow:
 
@@ -2394,6 +2484,7 @@ new commit hashes:
 
 ..
 
+.. _creatingdocumentonlyrepo:
 
 Creating a new documentation-only repo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2620,6 +2711,7 @@ Following those steps, initialize the repo for ``hub-flow``.
     * [new branch]      develop -> develop
 
 ..
+
 
 Set up ``bumpversion``:
 
