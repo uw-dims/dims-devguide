@@ -53,7 +53,7 @@ Overview
   framework for adding or managing the open source components that are used
   in a DIMS deployment.
 
-+ See :ref:`packer:lifecycle` and :ref:`dittrich:swdev`.
++ See :ref:`dimspacker:lifecycle` and :ref:`dittrich:swdev`.
 
   .. todo::
 
