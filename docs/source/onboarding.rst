@@ -161,13 +161,21 @@ systems set up properly.
 
 .. _public-keys-configure: http://jenkins.prisem.washington.edu/job/public-keys-configure/
 
-#.  Set the password on they are supposed to use so they can log in to it,
+#.  Set the password on the account they are supposed to use so they can log in to it,
     and/or securely transfer their public SSH key to them so they can use it
     to access the account without needing a password.
 
-   .. todo::
+    .. note::
 
-      Replace this with example...
+        They will need a password on the account for ``sudo`` on commands
+        like ``dims-ci-utils.install.user`` that ask for the ``sudo``
+        password in order to pass it to Ansible.
 
-   ..
+    ..
+
+    .. todo::
+
+        Replace this with example...
+
+    ..
 
