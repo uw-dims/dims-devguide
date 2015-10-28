@@ -147,6 +147,20 @@ systems set up properly.
 
    ..
 
+#.  Trigger a Jenkins build job for `public-keys-configure`_ to push the
+    new user's key to all DIMS-DevOps and DIMS-OPS systems.
+
+
+    .. todo::
+
+        This step could be added to a script, which invokes the job using
+        the REST API. That saves the manual step of clicking the
+        *Build Now* button in a browser.
+
+    ..
+
+.. _public-keys-configure: http://jenkins.prisem.washington.edu/job/public-keys-configure/
+
 #.  Set the password on they are supposed to use so they can log in to it,
     and/or securely transfer their public SSH key to them so they can use it
     to access the account without needing a password.
