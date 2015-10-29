@@ -75,7 +75,7 @@ produces search indexes, dynamic tables of contents, forward
 and back buttons in HTML pages, and many other helpful
 features for documenting a project. Because it effectively
 compiles the documentation, things like unit tests, functional
-tests, software version descriptions, insertion of Graphviz
+tests, software version descriptions, insertion of `Graphviz`_
 directed and undirected graphs to illustrate relationships
 between system components... The list goes on.
 
@@ -2045,13 +2045,30 @@ with a browser (in this case, ``lynx``), you get the following:
 Inserting a graph using Graphviz
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Sphinx uses `Graphviz`_ to render directed and undirected graphs inline in a
+document. To insert a graph, create a `DOT`_ language file to describe
+the graph, then reference the file using the ``graphviz::`` directive.
+
 .. graphviz:: tools.dot
+   :caption: Relationships between tools and processes in DIMS
 
-..  Disable caption for now due to bug in Sphinx 1.3.1b3 and 1.3.1.
-..  https://github.com/sphinx-doc/sphinx/issues/1788
+THe `DOT`_ file for the graph above looks like this:
+
+.. literalinclude:: tools.dot
+
+.. note::
+
+    You can find a `Gallery`_ of example `DOT`_ files at the
+    `Graphviz web site`_ that shows how to do more advanced
+    things, such as `labelled edges`_.
+
 ..
-..   :caption: Relationships between tools and processes in DIMS
 
+.. _Graphviz: https://en.wikipedia.org/wiki/Graphviz
+.. _DOT: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+.. _Graphviz web site: http://ftp.graphviz.org/Documentation.php
+.. _Gallery: http://ftp.graphviz.org/Gallery.php
+.. _labelled edges: http://ftp.graphviz.org/content/fsm
 
 .. _Sphinx: http://sphinx-doc.org
 .. _Restructured Text (reST): http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html
