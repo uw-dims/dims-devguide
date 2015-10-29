@@ -227,10 +227,11 @@ Transfer SSH Keys to Remote Machine
 
 *  Securely transfer DIMS RSA keys from local machine to remote machine
 
-   Keys are located in ~/.ssh/.
-   Should be named dims_$dimsusername_rsa for private key
-                   dims_$dimsusername_rsa.pub for public key
-                   dims_$dimsusername_rsa.sig for signature
+   Keys are located in ``~/.ssh/`` and should be named:
+
+   * ``dims_${dimsusername}_rsa`` for private key
+   * ``dims_${dimsusername}rsa.pub`` for public key
+   * ``dims_${dimsusername}_rsa.sig`` for signature
 
    Copy all three files from local machine with DIMS RSA keys:
 
