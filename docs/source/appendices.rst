@@ -573,4 +573,4 @@ space by allocating a disk image larger than is necessary.
 
 .. _Shrink a .sparseimage: http://superuser.com/questions/275148/shrink-a-sparseimage
 
-# eof
+.. EOF
