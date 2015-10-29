@@ -553,4 +553,24 @@ space by allocating a disk image larger than is necessary.
 
    ..
 
+   If/when the sparse image becomes filled, you can compact it using
+   ``hdiutil`` as described in the *superuser* post `Shrink a .sparseimage`_.
+
+   .. code-block:: bash
+
+       [dimsenv] dittrich@27b:~ () $ hdiutil eject /Users/dittrich/dims/git
+       "disk2" unmounted.
+       "disk2" ejected.
+       [dimsenv] dittrich@27b:~ () $ hdiutil compact ~/Desktop/DIMS_HFS_CaseSensitive.sparseimage
+       Starting to compact…
+       Reclaiming free space…
+       ................................................................................................................................................................................................
+       Finishing compaction…
+       ....................................................................................................................................................................................................
+       Reclaimed 1.3 GB out of 6.2 GB possible.
+
+   ..
+
+.. _Shrink a .sparseimage: http://superuser.com/questions/275148/shrink-a-sparseimage
+
 # eof
