@@ -196,7 +196,9 @@ The following are user-specific settings that you should alter for your own acco
 .. _idempotent: http://docs.ansible.com/ansible/glossary.html#idempotency
 
 
-The following are general and can be applied to anyone's configuration:
+The following are general and can be applied to anyone's configuration
+(included here without a prompt so you can cut/paste to a command
+line):
 
 .. code-block:: bash
 
@@ -216,10 +218,13 @@ The following are convenience aliases that help with certain tasks:
 
 .. code-block:: bash
 
-    git config --global alias.find '!git log --color -p -S'
-    git config --global alias.stat '!git status -s'
+    git config --global alias.find 'log --color -p -S'
+    git config --global alias.stat 'status -s'
     git config --global alias.unstage "reset HEAD --"
     git config --global alias.uncommit "reset --soft HEAD^"
+    git config --global alias.gr 'log --full-history --decorate=short --all --color --graph'
+    git config --global alias.lg 'log --oneline --decorate=short --abbrev-commit --all --color --graph'
+    git config --global alias.log1 'log --oneline --decorate=short'
 
 ..
 
