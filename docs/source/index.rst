@@ -41,6 +41,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    programming
    communication
    opstrustdb
+   dimscli
    appendices
 
 .. note::
