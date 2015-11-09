@@ -1119,7 +1119,7 @@ new repositories on both systems.
 .. _creatingreposongithub:
 
 Creating repositories on GitHub
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""""""""""""""""""""""""""""""
 
 .. todo::
 
@@ -1134,7 +1134,7 @@ Creating repositories on GitHub
 .. _settingupremotedimsrepos:
 
 Setting up remote Git repositories on ``git.prisem.washington.edu``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Before a repository can be shared between DIMS team members, a remote
 repository must be set up on ``git.prisem.washington.edu`` for sharing.
@@ -1152,7 +1152,7 @@ Operations*).
     dittrich@jira:~$ sudo su - gituser
     [sudo] password for dittrich:
     git@jira:~$ cd /opt/git
-    git@jira:/opt/git$ ./newrepo dims-ocd.git
+    git@jira:/opt/git$ newrepo dims-ocd.git
     Initialized empty Git repository in /opt/git/dims-ocd.git/
     git@jira:/opt/git$ echo "DIMS Operational Concept Description" > dims-ocd.git/description
     git@jira:/opt/git$ tree dims-ocd.git
@@ -1215,7 +1215,7 @@ the following command as well:
 .. _settinguplocalrepo:
 
 Setting up a local Git repository before pushing to remote
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 After setting up the remote repository, you should create the
 initial local repository. The basic steps are as follows:
