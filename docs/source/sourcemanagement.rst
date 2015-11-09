@@ -2898,6 +2898,6 @@ this case, cutting/pasting the hook from another repo to get the link correct).
 
 ..
 
-.. _github.com/uw-dims: UW-DIMS: https://github.com/uw-dims
+.. _github.com/uw-dims: https://github.com/uw-dims
 .. _ReadTheDocs: https://readthedocs.org/
 
