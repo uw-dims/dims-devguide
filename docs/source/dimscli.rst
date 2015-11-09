@@ -246,6 +246,166 @@ Bootstrapping the ``dimscli`` app for development
    
      ..
 
+
+.. _completingdimscli:
+
+Completing commands in ``dimscli``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The initial implementation of ``dimscli`` ported from the ``openstacklient``
+code base does not have much actual code underlying it, though the
+scaffolding of ``openstacklient`` and many of its defined modules are
+currently configured in the code. You can see the modules that are
+not there by simply asking for ``dimscli --help`` and noting the
+errors (and what they point to, which indicates which code you
+need to seek out to use and/or replace.)
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop) $ dimscli --help
+    defaults: {u'auth_type': 'password', u'compute_api_version': u'2', 'key': None, u'database_api_version': u'1.0', 'api_timeout': None, u'baremetal_api_version': u'1', 'cacert': None, u'image_api_use_tasks
+    ': False, u'floating_ip_source': u'neutron', u'orchestration_api_version': u'1', u'interface': None, u'network_api_version': u'2.0', u'image_format': u'qcow2', u'object_api_version': u'1', u'image_api_ve
+    rsion': u'2', 'verify': True, u'identity_api_version': u'2.0', u'volume_api_version': u'1', 'cert': None, u'secgroup_source': u'neutron', u'dns_api_version': u'2', u'disable_vendor_agent': {}}
+    cloud cfg: {'auth_type': 'password', u'compute_api_version': u'2', u'orchestration_api_version': u'1', u'database_api_version': u'1.0', 'cacert': None, u'network_api_version': u'2.0', u'image_format': u'
+    qcow2', u'object_api_version': u'1', u'image_api_version': u'2', 'verify': True, u'dns_api_version': u'2', 'verbose_level': '1', 'region_name': '', 'api_timeout': None, u'baremetal_api_version': u'1', 'a
+    uth': {}, 'default_domain': 'default', u'image_api_use_tasks': False, u'floating_ip_source': u'neutron', 'key': None, 'timing': False, 'deferred_help': True, u'identity_api_version': u'2.0', u'volume_api
+    _version': u'1', 'cert': None, u'secgroup_source': u'neutron', u'interface': None, u'disable_vendor_agent': {}}
+    compute API version 2, cmd group dims.compute.v2
+    network version 2.0 is not in supported versions 2
+    network API version 2.0, cmd group dims.network.v2
+    image API version 2, cmd group dims.image.v2
+    volume API version 1, cmd group dims.volume.v1
+    identity API version 2.0, cmd group dims.identity.v2
+    object_store API version 1, cmd group dims.object_store.v1
+    usage: dimscli [--version] [-v] [--log-file LOG_FILE] [-q] [-h] [--debug]
+                   [--os-cloud <cloud-config-name>]
+                   [--os-region-name <auth-region-name>]
+                   [--os-cacert <ca-bundle-file>] [--verify | --insecure]
+                   [--os-default-domain <auth-domain>]
+     ...
+
+      --os-object-api-version <object-api-version>
+                            Object API version, default=1 (Env:
+                            OS_OBJECT_API_VERSION)
+    
+    Commands:
+    Could not load EntryPoint.parse('aggregate_add_host = dimscli.compute.v2.aggregate:AddAggregateHost')
+    Could not load EntryPoint.parse('aggregate_create = dimscli.compute.v2.aggregate:CreateAggregate')
+    Could not load EntryPoint.parse('aggregate_delete = dimscli.compute.v2.aggregate:DeleteAggregate')
+    Could not load EntryPoint.parse('aggregate_list = dimscli.compute.v2.aggregate:ListAggregate')
+    Could not load EntryPoint.parse('aggregate_remove_host = dimscli.compute.v2.aggregate:RemoveAggregateHost')
+    Could not load EntryPoint.parse('aggregate_set = dimscli.compute.v2.aggregate:SetAggregate')
+    Could not load EntryPoint.parse('aggregate_show = dimscli.compute.v2.aggregate:ShowAggregate')
+    Could not load EntryPoint.parse('catalog_list = dimscli.identity.v2_0.catalog:ListCatalog')
+    Could not load EntryPoint.parse('catalog_show = dimscli.identity.v2_0.catalog:ShowCatalog')
+    Could not load EntryPoint.parse('command_list = dimscli.common.module:ListCommand')
+      complete       print bash completion command
+    Could not load EntryPoint.parse('configuration_show = dimscli.common.configuration:ShowConfiguration')
+    Could not load EntryPoint.parse('console_log_show = dimscli.compute.v2.console:ShowConsoleLog')
+    Could not load EntryPoint.parse('console_url_show = dimscli.compute.v2.console:ShowConsoleURL')
+    Could not load EntryPoint.parse('container_create = dimscli.object.v1.container:CreateContainer')
+    Could not load EntryPoint.parse('container_delete = dimscli.object.v1.container:DeleteContainer')
+    Could not load EntryPoint.parse('container_list = dimscli.object.v1.container:ListContainer')
+    Could not load EntryPoint.parse('container_save = dimscli.object.v1.container:SaveContainer')
+    Could not load EntryPoint.parse('container_show = dimscli.object.v1.container:ShowContainer')
+    Could not load EntryPoint.parse('endpoint_create = dimscli.identity.v2_0.endpoint:CreateEndpoint')
+    Could not load EntryPoint.parse('endpoint_delete = dimscli.identity.v2_0.endpoint:DeleteEndpoint')
+    Could not load EntryPoint.parse('endpoint_list = dimscli.identity.v2_0.endpoint:ListEndpoint')
+    Could not load EntryPoint.parse('endpoint_show = dimscli.identity.v2_0.endpoint:ShowEndpoint')
+    Could not load EntryPoint.parse('extension_list = dimscli.common.extension:ListExtension')
+    Could not load EntryPoint.parse('flavor_create = dimscli.compute.v2.flavor:CreateFlavor')
+    Could not load EntryPoint.parse('flavor_delete = dimscli.compute.v2.flavor:DeleteFlavor')
+    Could not load EntryPoint.parse('flavor_list = dimscli.compute.v2.flavor:ListFlavor')
+    Could not load EntryPoint.parse('flavor_set = dimscli.compute.v2.flavor:SetFlavor')
+    Could not load EntryPoint.parse('flavor_show = dimscli.compute.v2.flavor:ShowFlavor')
+    Could not load EntryPoint.parse('flavor_unset = dimscli.compute.v2.flavor:UnsetFlavor')
+      help           print detailed help for another command
+    Could not load EntryPoint.parse('host_list = dimscli.compute.v2.host:ListHost')
+    Could not load EntryPoint.parse('host_show = dimscli.compute.v2.host:ShowHost')
+    Could not load EntryPoint.parse('ip_fixed_add = dimscli.compute.v2.fixedip:AddFixedIP')
+    Could not load EntryPoint.parse('ip_fixed_remove = dimscli.compute.v2.fixedip:RemoveFixedIP')
+    Could not load EntryPoint.parse('ip_floating_add = dimscli.compute.v2.floatingip:AddFloatingIP')
+    Could not load EntryPoint.parse('ip_floating_create = dimscli.compute.v2.floatingip:CreateFloatingIP')
+    Could not load EntryPoint.parse('ip_floating_delete = dimscli.compute.v2.floatingip:DeleteFloatingIP')
+    Could not load EntryPoint.parse('ip_floating_list = dimscli.compute.v2.floatingip:ListFloatingIP')
+    Could not load EntryPoint.parse('ip_floating_pool_list = dimscli.compute.v2.floatingippool:ListFloatingIPPool')
+    Could not load EntryPoint.parse('ip_floating_remove = dimscli.compute.v2.floatingip:RemoveFloatingIP')
+    Could not load EntryPoint.parse('keypair_create = dimscli.compute.v2.keypair:CreateKeypair')
+    Could not load EntryPoint.parse('keypair_delete = dimscli.compute.v2.keypair:DeleteKeypair')
+    Could not load EntryPoint.parse('keypair_list = dimscli.compute.v2.keypair:ListKeypair')
+    Could not load EntryPoint.parse('keypair_show = dimscli.compute.v2.keypair:ShowKeypair')
+    Could not load EntryPoint.parse('module_list = dimscli.common.module:ListModule')
+    Could not load EntryPoint.parse('network_create = dimscli.network.v2.network:CreateNetwork')
+    Could not load EntryPoint.parse('network_delete = dimscli.network.v2.network:DeleteNetwork')
+    Could not load EntryPoint.parse('network_list = dimscli.network.v2.network:ListNetwork')
+    Could not load EntryPoint.parse('network_set = dimscli.network.v2.network:SetNetwork')
+    Could not load EntryPoint.parse('network_show = dimscli.network.v2.network:ShowNetwork')
+    Could not load EntryPoint.parse('object_create = dimscli.object.v1.object:CreateObject')
+    Could not load EntryPoint.parse('object_delete = dimscli.object.v1.object:DeleteObject')
+    Could not load EntryPoint.parse('object_list = dimscli.object.v1.object:ListObject')
+    Could not load EntryPoint.parse('object_save = dimscli.object.v1.object:SaveObject')
+    Could not load EntryPoint.parse('object_show = dimscli.object.v1.object:ShowObject')
+    Could not load EntryPoint.parse('project_create = dimscli.identity.v2_0.project:CreateProject')
+    Could not load EntryPoint.parse('project_delete = dimscli.identity.v2_0.project:DeleteProject')
+    Could not load EntryPoint.parse('project_list = dimscli.identity.v2_0.project:ListProject')
+    Could not load EntryPoint.parse('project_set = dimscli.identity.v2_0.project:SetProject')
+    Could not load EntryPoint.parse('project_show = dimscli.identity.v2_0.project:ShowProject')
+    Could not load EntryPoint.parse('role_add = dimscli.identity.v2_0.role:AddRole')
+    Could not load EntryPoint.parse('role_create = dimscli.identity.v2_0.role:CreateRole')
+    Could not load EntryPoint.parse('role_delete = dimscli.identity.v2_0.role:DeleteRole')
+    Could not load EntryPoint.parse('role_list = dimscli.identity.v2_0.role:ListRole')
+    Could not load EntryPoint.parse('role_remove = dimscli.identity.v2_0.role:RemoveRole')
+    Could not load EntryPoint.parse('role_show = dimscli.identity.v2_0.role:ShowRole')
+    Could not load EntryPoint.parse('security_group_create = dimscli.compute.v2.security_group:CreateSecurityGroup')
+    Could not load EntryPoint.parse('security_group_delete = dimscli.compute.v2.security_group:DeleteSecurityGroup')
+    Could not load EntryPoint.parse('security_group_list = dimscli.compute.v2.security_group:ListSecurityGroup')
+    Could not load EntryPoint.parse('security_group_rule_create = dimscli.compute.v2.security_group:CreateSecurityGroupRule')
+    Could not load EntryPoint.parse('security_group_rule_delete = dimscli.compute.v2.security_group:DeleteSecurityGroupRule')
+    Could not load EntryPoint.parse('security_group_rule_list = dimscli.compute.v2.security_group:ListSecurityGroupRule')
+    Could not load EntryPoint.parse('security_group_set = dimscli.compute.v2.security_group:SetSecurityGroup')
+    Could not load EntryPoint.parse('security_group_show = dimscli.compute.v2.security_group:ShowSecurityGroup')
+    Could not load EntryPoint.parse('server_create = dimscli.compute.v2.server:CreateServer')
+    Could not load EntryPoint.parse('server_delete = dimscli.compute.v2.server:DeleteServer')
+    Could not load EntryPoint.parse('server_image_create = dimscli.compute.v2.server:CreateServerImage')
+    Could not load EntryPoint.parse('server_list = dimscli.compute.v2.server:ListServer')
+    Could not load EntryPoint.parse('server_reboot = dimscli.compute.v2.server:RebootServer')
+    Could not load EntryPoint.parse('server_rebuild = dimscli.compute.v2.server:RebuildServer')
+    Could not load EntryPoint.parse('server_set = dimscli.compute.v2.server:SetServer')
+    Could not load EntryPoint.parse('server_show = dimscli.compute.v2.server:ShowServer')
+    Could not load EntryPoint.parse('server_ssh = dimscli.compute.v2.server:SshServer')
+    Could not load EntryPoint.parse('service_create = dimscli.identity.v2_0.service:CreateService')
+    Could not load EntryPoint.parse('service_delete = dimscli.identity.v2_0.service:DeleteService')
+    Could not load EntryPoint.parse('service_list = dimscli.identity.v2_0.service:ListService')
+    Could not load EntryPoint.parse('service_show = dimscli.identity.v2_0.service:ShowService')
+    Could not load EntryPoint.parse('token_issue = dimscli.identity.v2_0.token:IssueToken')
+    Could not load EntryPoint.parse('token_revoke = dimscli.identity.v2_0.token:RevokeToken')
+    Could not load EntryPoint.parse('user_create = dimscli.identity.v2_0.user:CreateUser')
+    Could not load EntryPoint.parse('user_delete = dimscli.identity.v2_0.user:DeleteUser')
+    Could not load EntryPoint.parse('user_list = dimscli.identity.v2_0.user:ListUser')
+    Could not load EntryPoint.parse('user_role_list = dimscli.identity.v2_0.role:ListUserRole')
+    Could not load EntryPoint.parse('user_set = dimscli.identity.v2_0.user:SetUser')
+    Could not load EntryPoint.parse('user_show = dimscli.identity.v2_0.user:ShowUser')
+    END return value: 1
+    [dimscli] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop) $
+
+..
+
+Using the last error message above as an example, there needs to be a module
+named ``$GIT/python-dimscli/dimscli/identity/v2_0/user.py`` with a 
+class ``ShowUser``. Look in the ``python-openstack/openstack/identity/v2_0/``
+directory for their ``user.py`` and build off that example.
+
+.. attention:: 
+
+    Clone the ``python-openstackclient`` repo using ``git clone
+    https://git.openstack.org/openstack/python-openstackclient`` and
+    see the ``cliff`` documentation, Section `Exploring the Demo App`_, for how
+    this works.
+
+..
+
+.. _Exploring the Demo App: http://docs.openstack.org/developer/cliff/demoapp.html
+
 .. attention::
 
     See the file ``$GIT/python-dimscli/README.rst`` for more
