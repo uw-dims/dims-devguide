@@ -101,8 +101,8 @@ as needed.
     events in the ``ops-trust`` portal, or from an administration panel accessible
     only to users in the "admin" group in the DIMS web application.)
 
-    See :ref:`dimssr:dimssystemrequirements` sections :ref:`dimssr:accountaccesscontrols`,
-    :ref:`dimssr:diutuserstory5`, and :ref:`dimssr:accountsuspension`, and
+    See :ref:`dimssr:dimssystemrequirements` sections :ref:`dimssr:accountAccessControls`,
+    :ref:`dimssr:diutUserStory5`, and :ref:`dimssr:accountSuspension`, and
     Jira Epic `DIMS-64`_.
 
 ..
