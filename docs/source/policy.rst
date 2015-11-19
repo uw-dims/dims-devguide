@@ -31,6 +31,111 @@ but to help *everyone* on the team be more productive.
 
 ..
 
+.. _generalphilosophy:
+
+General Software Development Philosophy
+---------------------------------------
+
+This section covers some very high-level philosophical points
+that DIMS software developers should keep in mind.
+
+There are a huge `List of software development philosophies`_ on
+Wikipedia. One of the most relevant to the DIMS project, based on
+a contractual requirement (see :ref:`dimssr:agileDevelopment`)
+is the `Agile Manifesto`_. This manifesto is based on twelve
+principles:
+
+#. Customer satisfaction by early and continuous delivery of valuable software
+#. Welcome changing requirements, even in late development
+#. Working software is delivered frequently (weeks rather than months)
+#. Close, daily cooperation between business people and developers
+#. Projects are built around motivated individuals, who should be trusted
+#. Face-to-face conversation is the best form of communication (co-location)
+#. Working software is the principal measure of progress
+#. Sustainable development, able to maintain a constant pace
+#. Continuous attention to technical excellence and good design
+#. Simplicity—the art of maximizing the amount of work not done—is essential
+#. Self-organizing teams
+#. Regular adaptation to changing circumstance
+
+.. _Agile Manifesto: http://www.agilemanifesto.org/principles.html
+.. _List of software development philosophies: https://en.wikipedia.org/wiki/List_of_software_development_philosophies
+
+* **Avoid friction** - "Friction" is anything that slows down an otherwise
+  smooth running process. Little things that are broken, missing facts,
+  new programs that you wrote that don't yet have any documentation,
+  all make it harder for someone to get work done because something
+  causes friction. Everything grinds to a halt until the little roadblock
+  can be removed and then it takes more time to ramp back up to speed.
+
+* **Take control** - Relying on the default behaviors that are programmed into
+  an open source product that we use within the DIMS project, without fully
+  understanding them, can cause problems. When possible, being explicit about
+  how programs are configured and how they are invoked can make these opaque
+  default behaviors less of a problem.
+
+* **Make it simple** - It may take a little effort, but being focused on
+  finding a simple solution that can be applied uniformly makes it easier
+  to intergrate a large set of components. The more differences there are
+  the way a subsystem or service is configured on multiple hosts (like
+  DNS, for example) means the behavior is random and unpredictable from
+  one computer system to another, causing friction
+
+* **Make it work first, then make it better** - Trying to engineer a complete
+  solution to some need can mean delays in getting something working, which
+  delays getting that component integrated with other components. Or worrying
+  about how slow something might be during initial development and trying to
+  optimize the solution before it is even working and tested by someone
+  else. Make it work first, doing something simple, then deal with
+  optimization and a comprehensive feature set later.
+
+* **Avoid hard coding!!!** - When ever possible, avoid using hard-coded
+  values in programs, configuration files, or other places where a
+  simple change of plans or naming conventions results in having to
+  go find and edit dozens of files.  A complete system made up of
+  multiple services and software components that must be replicated
+  as a whole *cannot* possibly be replicated if someone has to hunt
+  down and change hundreds of values in files spread all over the
+  place.
+
+* **Ansible-ize all the things** - All configuration, package installation,
+  or entity creation on a computer system should be looked at in terms
+  of how it can be automated with Ansible. Whenever you are tempted to
+  run a command to change something, or fire up an editor to set a
+  variable, *put it in Ansible and use Ansible to apply it*. Manual
+  processes are not well documented, are not managed under version
+  control, are not programatically repeatable, and make it harder to
+  scale or replicate a system of systems because they cause *huge*
+  amounts of friction.
+
+* **Template and version control all configuration** - Adding a new service
+  (e.g., Nginx, or RabbitMQ) that may have several configuration files is not
+  just a one-time task. It will be repeated many times, for testing, for
+  alternate deployments, or when hardware fails or virtual machines get
+  upgraded.  Don't think that cutting corners to get something up and running
+  fast by just hand-configuration is the right way to go, because doing it
+  again will take as much time (or maybe even longer, if someone unfamiliar
+  with the process has to do it the next time).  Take the time when adding a
+  new service to learn how it is configured, put all of its configuration files
+  under Ansible control, and use Ansible playbooks or other scripts to do the
+  configuration at deployment time and at runtime.
+
+* **Done means someone else can do it, not just you.** A program that
+  compiles, but nobody else can run, is not done. A bug that was fixed,
+  but hasn't been tested by someone other than the person who wrote the
+  code or fixed the bug, is not done. Something that doesn't have
+  documentation, or test steps that explain how to replicate the
+  results, are not done.
+
+* **You can't grade your own exam** Tickets should not be closed until
+  someone else on the team has been able to validate the results.
+
+* **Document early, document often** - A program that has no documentation,
+  or a process someone learns that has no documentation to record that
+  knowledge and how to use it, doesn't contribute much to moving the
+  project forward. We are a team who mostly works independently, across
+  multiple timezones and on different daily schedules.
+
 .. _sourcecontrol:
 
 Source Code Control
