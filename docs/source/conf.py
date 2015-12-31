@@ -66,7 +66,7 @@ author = u'Dave Dittrich'
 # built documents.
 #
 # The short X.Y version.
-version = '0.0.54'
+version = '0.0.55'
 
 # The full version, including alpha/beta/rc tags.
 release = version
