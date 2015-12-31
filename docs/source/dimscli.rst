@@ -45,7 +45,7 @@ Bootstrapping the ``dimscli`` app for development
 
    The new ``dimscli`` virtual environment should show up as an option for
    ``workon``:
-   
+
    .. code-block:: none
 
        [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop) $ workon
@@ -172,7 +172,7 @@ Bootstrapping the ``dimscli`` app for development
      arguments or options.
 
      .. code-block:: none
-   
+
           [dimscli] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop) $ dimscli
           defaults: {u'auth_type': 'password', u'compute_api_version': u'2', 'key': None, u'database_api_version': u'1.0',
           'api_timeout': None, u'baremetal_api_version': u'1', 'cacert': None, u'image_api_use_tasks': False,
@@ -195,16 +195,16 @@ Bootstrapping the ``dimscli`` app for development
           identity API version 2.0, cmd group dims.identity.v2
           object_store API version 1, cmd group dims.object_store.v1
           (dimscli) help
-      
+
           Shell commands (type help <topic>):
           ===================================
           cmdenvironment  edit  hi       l   list  pause  r    save  shell      show
           ed              help  history  li  load  py     run  set   shortcuts
-      
+
           Undocumented commands:
           ======================
           EOF  eof  exit  q  quit
-      
+
           Application commands (type help <topic>):
           =========================================
           aggregate add host     host show              role list
@@ -239,11 +239,11 @@ Bootstrapping the ``dimscli`` app for development
           flavor unset           role add               user role list
           help                   role create            user set
           host list              role delete            user show
-      
+
           (dimscli) exit
           END return value: 0
           [dimscli] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop) $
-   
+
      ..
 
 
@@ -287,7 +287,7 @@ need to seek out to use and/or replace.)
       --os-object-api-version <object-api-version>
                             Object API version, default=1 (Env:
                             OS_OBJECT_API_VERSION)
-    
+
     Commands:
     Could not load EntryPoint.parse('aggregate_add_host = dimscli.compute.v2.aggregate:AddAggregateHost')
     Could not load EntryPoint.parse('aggregate_create = dimscli.compute.v2.aggregate:CreateAggregate')
@@ -391,11 +391,11 @@ need to seek out to use and/or replace.)
 ..
 
 Using the last error message above as an example, there needs to be a module
-named ``$GIT/python-dimscli/dimscli/identity/v2_0/user.py`` with a 
+named ``$GIT/python-dimscli/dimscli/identity/v2_0/user.py`` with a
 class ``ShowUser``. Look in the ``python-openstack/openstack/identity/v2_0/``
 directory for their ``user.py`` and build off that example.
 
-.. attention:: 
+.. attention::
 
     Clone the ``python-openstackclient`` repo using ``git clone
     https://git.openstack.org/openstack/python-openstackclient`` and
@@ -418,6 +418,270 @@ directory for their ``user.py`` and build off that example.
         is working for that repo.
 
     ..
+
+..
+
+``cliff`` supports list formatting in tables, CSV, JSON, etc., but not in shell
+format. That is only supported by the ``ShowOne`` class, which is not what we
+want for producing a set of variables for insertion into shell environments.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli list nodes
+    +----------------+---------------+
+    | Node           | Address       |
+    +----------------+---------------+
+    | b52            | 10.86.86.7    |
+    | consul-breathe | 10.142.29.117 |
+    | consul-echoes  | 10.142.29.116 |
+    | consul-seamus  | 10.142.29.120 |
+    | dimsdemo1      | 10.86.86.2    |
+    | dimsdev1       | 10.86.86.5    |
+    | dimsdev2       | 10.86.86.5    |
+    | four           | 192.168.0.101 |
+    +----------------+---------------+
+
+..
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli list nodes -f csv
+    "Node","Address"
+    "b52","10.86.86.7"
+    "consul-breathe","10.142.29.117"
+    "consul-echoes","10.142.29.116"
+    "consul-seamus","10.142.29.120"
+    "dimsdemo1","10.86.86.2"
+    "dimsdev1","10.86.86.5"
+    "dimsdev2","10.86.86.5"
+    "four","192.168.0.101"
+
+..
+
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli list nodes -f json
+    [{"Node": "b52", "Address": "10.86.86.7"}, {"Node": "consul-breathe", "Address": "10.142.29.117"}, {"Node": "consul-echoes", "Address": "10.142.29.116"}, {"Node": "consul-seamus", "Address": "10.142.29.120"}, {"Node": "dimsdemo1", "Address": "10.86.86.2"}, {"Node": "dimsdev1", "Address": "10.86.86.5"}, {"Node": "dimsdev2", "Address": "10.86.86.5"}, {"Node": "four", "Address": "192.168.0.101"}]
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli list nodes -f json | python -m json.tool
+    [
+        {
+            "Address": "10.86.86.7",
+            "Node": "b52"
+        },
+        {
+            "Address": "10.142.29.117",
+            "Node": "consul-breathe"
+        },
+        {
+            "Address": "10.142.29.116",
+            "Node": "consul-echoes"
+        },
+        {
+            "Address": "10.142.29.120",
+            "Node": "consul-seamus"
+        },
+        {
+            "Address": "10.86.86.2",
+            "Node": "dimsdemo1"
+        },
+        {
+            "Address": "10.86.86.5",
+            "Node": "dimsdev1"
+        },
+        {
+            "Address": "10.86.86.5",
+            "Node": "dimsdev2"
+        },
+        {
+            "Address": "192.168.0.101",
+            "Node": "four"
+        }
+    ]
+
+..
+
+
+To produce the list in the form of shell variables, we need to create a custom
+formatter and load it into the ``dimscli`` shell via Stevedore.
+
+.. TODO(dittrich): Integrate a description of Git commit 30d096e4f2b25a37fb5eae4dfe9420b0e3960757
+
+.. todo::
+
+    Integrate a description of this Git commit:
+
+    .. code-block:: git
+
+        commit 30d096e4f2b25a37fb5eae4dfe9420b0e3960757
+        Author: Dave Dittrich <dittrich@u.washington.edu>
+        Date:   Wed Dec 30 23:25:19 2015 -0800
+
+            Add initial lister with custom shell formatter for listing Consul nodes
+
+        diff --git a/dimscli/formatters/shell.py b/dimscli/formatters/shell.py
+        new file mode 100644
+        index 0000000..a9c86d7
+        --- /dev/null
+        +++ b/dimscli/formatters/shell.py
+        @@ -0,0 +1,50 @@
+        +"""Output formatters using shell syntax.
+        +"""
+        +
+        +from cliff.formatters.base import ListFormatter, SingleFormatter
+        +
+        +import argparse
+        +import six
+        +
+        +
+        +class DIMSShellFormatter(ListFormatter, SingleFormatter):
+        +
+        +    def add_argument_group(self, parser):
+        +        group = parser.add_argument_group(
+        +            title='shell formatter',
+        +            description='a format a UNIX shell can parse (variable="value")',
+        +        )
+        +        group.add_argument(
+        +            '--variable',
+        +            action='append',
+        +            default=[],
+        +            dest='variables',
+        +            metavar='VARIABLE',
+        +            help=argparse.SUPPRESS,
+        +        )
+        +        group.add_argument(
+        +            '--prefix',
+        +            action='store',
+        +            default='',
+        +            dest='prefix',
+        +            help='add a prefix to all variable names',
+        +        )
+        +
+        +    def emit_one(self, column_names, data, stdout, parsed_args):
+        +        variable_names = [c.lower().replace(' ', '_')
+        +                          for c in column_names
+        +                          ]
+        +        desired_columns = parsed_args.variables
+        +        for name, value in zip(variable_names, data):
+        +            if name in desired_columns or not desired_columns:
+        +                if isinstance(value, six.string_types):
+        +                    value = value.replace('"', '\\"')
+        +                stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
+        +        return
+        +
+        +    def emit_list(self, column_names, data, stdout, parsed_args):
+        +        for name, value in data:
+        +            if isinstance(value, six.string_types):
+        +                value = value.replace('"', '\\"')
+        +            stdout.write('%s%s="%s"\n' % (parsed_args.prefix, name, value))
+        +        return
+        \ No newline at end of file
+        diff --git a/dimscli/list.py b/dimscli/list.py
+        index 3dcee4a..45acdda 100644
+        --- a/dimscli/list.py
+        +++ b/dimscli/list.py
+        @@ -1,8 +1,10 @@
+         import logging
+         import os
+        +import consulate
+        +import json
+
+         from cliff.lister import Lister
+        -
+        +from cliff.show import ShowOne
+
+         class Files(Lister):
+             """Show a list of files in the current directory.
+        @@ -16,3 +18,17 @@ class Files(Lister):
+                 return (('Name', 'Size'),
+                         ((n, os.stat(n).st_size) for n in os.listdir('.'))
+                         )
+        +
+        +class Nodes(Lister):
+        +    """Show a list of nodes registered in Consul.
+        +
+        +    """
+        +
+        +    log = logging.getLogger(__name__)
+        +
+        +    def take_action(self, parsed_args):
+        +        consul = consulate.Consul()
+        +        nodes = consul.catalog.nodes()
+        +        columns = ('Node', 'Address')
+        +        data = ((node['Node'], node['Address']) for node in nodes)
+        +        return (columns, data)
+        diff --git a/requirements.txt b/requirements.txt
+        index b74529f..7c54111 100644
+        --- a/requirements.txt
+        +++ b/requirements.txt
+        @@ -22,3 +22,4 @@ stevedore>=1.5.0 # Apache-2.0
+         unicodecsv>=0.8.0
+         PyYAML>=3.1.0
+         python-openstackclient>=1.8.0
+        +consulate==0.6.0
+        diff --git a/setup.cfg b/setup.cfg
+        index f869411..2f17c6c 100644
+        --- a/setup.cfg
+        +++ b/setup.cfg
+        @@ -35,9 +35,16 @@ dims.cli =
+             command_list = dimscli.common.module:ListCommand
+             module_list = dimscli.common.module:ListModule
+             list_files = dimscli.list:Files
+        +    list_nodes = dimscli.list:Nodes
+             files = dimscli.list:Files
+             show_file = dimscli.show:File
+
+        +cliff.formatter.list =
+        +    shell = dimscli.formatters.shell:DIMSShellFormatter
+        +
+        +cliff.formatter.show =
+        +    shell = dimscli.formatters.shell:DIMSShellFormatter
+        +
+         dims.cli.base =
+             compute = dimscli.compute.client
+         #   identity = dimscli.identity.client
+
+    ..
+
+..
+
+After adding the new formatter, it is possible to extract the list of nodes registered
+with Consul and produce a set of variable declarations from the list.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli list nodes -f shell
+    b52="10.86.86.7"
+    consul_breathe="10.142.29.117"
+    consul_echoes="10.142.29.116"
+    consul_seamus="10.142.29.120"
+    dimsdemo1="10.86.86.2"
+    dimsdev1="10.86.86.5"
+    dimsdev2="10.86.86.5"
+    four="192.168.0.101"
+
+..
+
+In practice, you may wish to insert these as variables in the shell's ``set`` using
+the ``eval`` statement for use when invoking shell commands:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ eval $(dimscli list nodes -f shell --prefix=DIMS_)
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ set | grep DIMS_
+    DIMS_REV=unspecified
+    DIMS_VERSION='1.6.124 (dims-ci-utils)'
+    DIMS_b52=10.86.86.7
+    DIMS_consul_breathe=10.142.29.117
+    DIMS_consul_echoes=10.142.29.116
+    DIMS_consul_seamus=10.142.29.120
+    DIMS_dimsdemo1=10.86.86.2
+    DIMS_dimsdev2=10.86.86.5
+    DIMS_four=192.168.0.101
+        echo "REV:     $DIMS_REV";
+        echo "[dims-ci-utils version $(version) (rev $DIMS_REV)]";
+            echo "$PROGRAM $DIMS_VERSION";
+            echo "$BASE $DIMS_VERSION";
 
 ..
 
