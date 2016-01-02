@@ -246,6 +246,44 @@ Bootstrapping the ``dimscli`` app for development
 
      ..
 
+.. _commandStructure:
+
+Command Structure
+~~~~~~~~~~~~~~~~~
+
+The ``dimscli`` shell follows the ``openstack`` client in the manner in which
+commands are to be constructed. See the Openstack `Command Structure`_ page
+for details. To quote:
+
+.. epigraph::
+
+    *Commands consist of an object described by one or more words followed by an
+    action. Commands that require two objects have the primary object ahead of
+    the action and the secondary object after the action. Any positional
+    arguments identifying the objects shall appear in the same order as the
+    objects. In badly formed English it is expressed as “(Take) object1 (and
+    perform) action (using) object2 (to it)."*
+
+    .. code-block:: none
+
+        <object-1> <action> <object-2>
+
+    ..
+
+    *Examples:*
+
+    .. code-block:: none
+
+        $ group add user <group> <user>
+
+        $ volume type list   # 'volume type' is a two-word single object
+
+    ..
+
+..
+
+.. _Command Structure: http://docs.openstack.org/developer/python-openstackclient/commands.html
+
 
 .. _completingdimscli:
 
@@ -685,3 +723,400 @@ the ``eval`` statement for use when invoking shell commands:
 
 ..
 
+
+Adding New Commands
+~~~~~~~~~~~~~~~~~~~
+
+In this example, we will add a new command ``ansible`` with a subcommand
+``execute`` that will use Ansible's `Python API`_ (specifically the
+``ansible.runner.Runner`` class) to execute arbitrary commands on hosts
+via Ansible.
+
+.. _Python API: http://docs.ansible.com/ansible/developing_api.html
+
+Here are the changes that implement this new command:
+
+.. code-block:: none
+
+    Put git log --patch output here...
+
+..
+
+Here is what the command can do (as seen in the ``--help`` output).
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --help
+    usage: dimscli ansible execute [-h]
+                                   [-f {csv,html,json,json,shell,table,value,yaml,yaml}]
+                                   [-c COLUMN] [--prefix PREFIX]
+                                   [--max-width <integer>] [--noindent]
+                                   [--quote {all,minimal,none,nonnumeric}]
+                                   [--host-list <host-list>] [--program <program>]
+
+    Execute a command via Ansible and return a list of results.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --host-list <host-list>
+                            Hosts file (default: /etc/ansible/hosts)
+      --program <program>   Program to run (default: /usr/bin/uptime)
+
+    output formatters:
+      output formatter options
+
+      -f {csv,html,json,json,shell,table,value,yaml,yaml}, --format {csv,html,json,json,shell,table,value,yaml,yaml}
+                            the output format, defaults to table
+      -c COLUMN, --column COLUMN
+                            specify the column(s) to include, can be repeated
+
+    shell formatter:
+      a format a UNIX shell can parse (variable="value")
+
+      --prefix PREFIX       add a prefix to all variable names
+
+    table formatter:
+      --max-width <integer>
+                            Maximum display width, 0 to disable
+
+    json formatter:
+      --noindent            whether to disable indenting the JSON
+
+    CSV Formatter:
+      --quote {all,minimal,none,nonnumeric}
+                            when to include quotes, defaults to nonnumeric
+
+..
+
+The script defaults to using the standard Ansible ``/etc/ansible/hosts`` file to get its inventory. In this case,
+the DIMS ``$GIT/ansible-inventory/development`` file was copied to the default location. Using this file to
+execute the default command ``/usr/bin/uptime`` on the defined ``development`` hosts results in the following:
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute
+    +-------------------------------------+--------+------------------------------------------------------------------------+
+    | Host                                | Status | Results                                                                |
+    +-------------------------------------+--------+------------------------------------------------------------------------+
+    | linda-vm1.prisem.washington.edu     | GOOD   |  18:31:22 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | u12-dev-ws-1.prisem.washington.edu  | GOOD   |  18:31:21 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | hub.prisem.washington.edu           | GOOD   |  02:31:22 up 128 days,  8:42,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | floyd2-p.prisem.washington.edu      | GOOD   |  18:31:21 up 20 days, 56 min,  1 user,  load average: 0.02, 0.04, 0.05 |
+    | u12-dev-svr-1.prisem.washington.edu | GOOD   |  18:31:22 up 142 days, 11:22,  1 user,  load average: 0.00, 0.01, 0.05 |
+    +-------------------------------------+--------+------------------------------------------------------------------------+
+
+..
+
+Using the ``--program`` command line option, a different command can be run:
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --program "ip addr"
+    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+    | Host                                | Status | Results                                                                                                          |
+    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+    | linda-vm1.prisem.washington.edu     | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:3b:3a:65 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:36:2b:2c brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 192.168.88.11/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    | u12-dev-svr-1.prisem.washington.edu | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 ::1/128 scope host                                                                                     |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:38:db:8c brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 fe80::a00:27ff:fe38:db8c/64 scope link                                                                 |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:e7:80:52 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 192.168.88.13/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 fe80::a00:27ff:fee7:8052/64 scope link                                                                 |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    | hub.prisem.washington.edu           | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default                                |
+    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 ::1/128 scope host                                                                                     |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
+    |                                     |        |     link/ether 08:00:27:9c:f8:95 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 fe80::a00:27ff:fe9c:f895/64 scope link                                                                 |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
+    |                                     |        |     link/ether 08:00:27:28:63:2a brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 192.168.88.14/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 fe80::a00:27ff:fe28:632a/64 scope link                                                                 |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default                      |
+    |                                     |        |     link/ether 56:84:7a:fe:97:99 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        |     inet6 fe80::5484:7aff:fefe:9799/64 scope link                                                                |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 22: veth6dc6dd5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
+    |                                     |        |     link/ether 8e:d6:f5:66:fb:88 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet6 fe80::8cd6:f5ff:fe66:fb88/64 scope link                                                                |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 42: vethdc35259: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
+    |                                     |        |     link/ether 46:c3:87:32:83:a1 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet6 fe80::44c3:87ff:fe32:83a1/64 scope link                                                                |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    | floyd2-p.prisem.washington.edu      | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 52:54:00:17:19:9a brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 172.22.29.175/24 brd 172.22.29.255 scope global eth0                                                    |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000                                          |
+    |                                     |        |     link/ether 52:54:00:85:34:b7 brd ff:ff:ff:ff:ff:ff                                                           |
+    | u12-dev-ws-1.prisem.washington.edu  | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:07:6b:00 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                                     |        |     link/ether 08:00:27:75:a0:25 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 192.168.88.12/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                                     |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN                               |
+    |                                     |        |     link/ether 5a:cb:bd:c2:f5:82 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                                     |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
+    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
+    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+
+..
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --program "cat /etc/hosts"
+    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+    | Host                                | Status | Results                                                                                                                                     |
+    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+    | linda-vm1.prisem.washington.edu     | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                                     |        | 127.0.1.1      ubu12-generic                                                                                                                |
+    |                                     |        |                                                                                                                                             |
+    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
+    |                                     |        |                                                                                                                                             |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
+    | u12-dev-svr-1.prisem.washington.edu | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                                     |        | 127.0.1.1      u12-dev-svr-1                                                                                                                |
+    |                                     |        |                                                                                                                                             |
+    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
+    | hub.prisem.washington.edu           | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                                     |        | 127.0.1.1      hub                                                                                                                          |
+    |                                     |        |                                                                                                                                             |
+    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                                     |        | ::1     localhost ip6-localhost ip6-loopback                                                                                                |
+    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
+    |                                     |        | 127.0.1.1 hub                                                                                                                               |
+    | floyd2-p.prisem.washington.edu      | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                                     |        | 127.0.0.1      floyd2-p floyd2-p.prisem.washington.edu                                                                                      |
+    | u12-dev-ws-1.prisem.washington.edu  | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                                     |        | 127.0.1.1      u12-dev-1                                                                                                                    |
+    |                                     |        |                                                                                                                                             |
+    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
+    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+
+..
+
+To run a command across the full set of ansible-compatible hosts, we can use the helper ``Makefile`` in the
+``$GIT/ansible-inventory`` repo to extract a list of *all* hosts specified in *any* inventory file to
+form a complete set.
+
+.. note::
+
+    This helper ``Makefile`` was originally written to take a set of static inventory files
+    and generate a set, rather than forcing someone to manually edit a file and manually
+    combine all hosts from any file (which is error prone, tedious, difficult to remember
+    how to do... basically impractical for a scalable solution.)
+
+..
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ (cd $GIT/ansible-inventory; make help)
+    usage: make [something]
+
+    Where 'something' is one of:
+
+     help - Show this help information
+     all -           Default is create complete_inventory file.
+
+     inventory -     Create file 'complete_inventory' with all hosts
+                     from any file with an '[all]' section in it.
+
+     tree -          Produce a tree listing of everything except
+                     'older-*' directories.
+
+     clean -         Clean up files.
+
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ (cd $GIT/ansible-inventory; make inventory)
+    echo '[all]' > complete_inventory
+    cat development hosts-old infrastructure Makefile prisem project | awk '\
+                /^\[all\]/ { echo = 1; next; }\
+                /^$/     { echo = 0; }\
+                           { if (echo == 1) { print; } }' |\
+                    sort | uniq >> complete_inventory
+
+..
+
+Now this list can be used to run the command across the full set of hosts under Ansible control.
+
+.. code-block:: none
+
+    [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --host-list /home/dittrich/dims/git/ansible-inventory/complete_inventory
+    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Host                                | Status | Results                                                                                                                                                                    |
+    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | rabbitmq.prisem.washington.edu      | GOOD   |  18:35:04 up 20 days,  1:00,  1 user,  load average: 0.00, 0.04, 0.05                                                                                                      |
+    | wellington.prisem.washington.edu    | GOOD   |  18:35:06 up 146 days,  8:43,  1 user,  load average: 0.43, 0.64, 0.43                                                                                                     |
+    | hub.prisem.washington.edu           | GOOD   |  02:35:02 up 128 days,  8:46,  1 user,  load average: 0.11, 0.06, 0.05                                                                                                     |
+    | git.prisem.washington.edu           | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
+    | time.prisem.washington.edu          | GOOD   |  18:35:04 up 20 days,  1:00,  2 users,  load average: 0.06, 0.13, 0.13                                                                                                     |
+    | jira-int.prisem.washington.edu      | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
+    | u12-dev-ws-1.prisem.washington.edu  | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
+    | sso.prisem.washington.edu           | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.00, 0.02, 0.05                                                                                                     |
+    | lapp-int.prisem.washington.edu      | GOOD   |  18:35:02 up 146 days,  8:31,  2 users,  load average: 0.16, 0.05, 0.06                                                                                                    |
+    | foswiki-int.prisem.washington.edu   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.00, 0.01, 0.05                                                                                                     |
+    | u12-dev-svr-1.prisem.washington.edu | GOOD   |  18:35:03 up 142 days, 11:26,  1 user,  load average: 0.03, 0.04, 0.05                                                                                                     |
+    | linda-vm1.prisem.washington.edu     | GOOD   |  18:35:05 up 146 days,  8:31,  1 user,  load average: 0.13, 0.04, 0.05                                                                                                     |
+    | floyd2-p.prisem.washington.edu      | GOOD   |  18:35:02 up 20 days, 59 min,  1 user,  load average: 0.08, 0.04, 0.05                                                                                                     |
+    | jenkins-int.prisem.washington.edu   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
+    | lapp.prisem.washington.edu          | GOOD   |  18:35:02 up 146 days,  8:31,  1 user,  load average: 0.16, 0.05, 0.06                                                                                                     |
+    | eclipse.prisem.washington.edu       | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
+    | lancaster.prisem.washington.edu     | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
+    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+..
+
+.. note::
+
+    As can be seen here, the hosts ``eclipse.prisem.washington.edu`` and
+    ``lancaster.prisem.washington.edu`` do not conform with the standard use of
+    Ansible via SSH. These kind of *one-off* or manually-configured hosts
+    limit the scalability and consistent use of Ansible as a system
+    configuration and management tool.
+
+    .. TODO(dittrich): Fix these two hosts so they are in compliance.
+    .. todo::
+
+       Fix these two hosts so they are in compliance. See Jira
+       ticket `DIMS-338`_.
+
+
+    ..
+
+..
+
+.. _DIMS-338: http://jira.prisem.washington.edu/browse/DIMS-338
+
+.. _addingModules:
+
+Adding a Module in Another Repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO(dittrich): Clean up these notes on adding dimscli modules to repos
+.. todo::
+
+    These are just raw notes, preserved until they can be cleaned up and turned
+    into meaningful instructions.
+
+    dittrich Fri Jan  1 16:22:55 PST 2016
+
+..
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/git/ansible-playbooks () $ cookiecutter https://git.openstack.org/openstack-dev/cookiecutter.git
+    Cloning into 'cookiecutter'...
+    remote: Counting objects: 602, done.
+    remote: Compressing objects: 100% (265/265), done.
+    remote: Total 602 (delta 345), reused 563 (delta 310)
+    Receiving objects: 100% (602/602), 81.17 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (345/345), done.
+    Checking connectivity... done.
+    module_name [replace with the name of the python module]: dims_ansible_playbook
+    repo_group [openstack]: dims
+    repo_name [replace with the name for the git repo]: ansible-playbooks
+    launchpad_project [replace with the name of the project on launchpad]:
+    project_short_description [OpenStack Boilerplate contains all the boilerplate you need to create an OpenStack package.]: Python ansible-playbook module for dimscli
+    Initialized empty Git repository in /home/dittrich/git/ansible-playbooks/ansible-playbooks/.git/
+    [master (root-commit) 7d01bbe] Initial Cookiecutter Commit.
+     26 files changed, 647 insertions(+)
+     create mode 100644 .coveragerc
+     create mode 100644 .gitignore
+     create mode 100644 .gitreview
+     create mode 100644 .mailmap
+     create mode 100644 .testr.conf
+     create mode 100644 CONTRIBUTING.rst
+     create mode 100644 HACKING.rst
+     create mode 100644 LICENSE
+     create mode 100644 MANIFEST.in
+     create mode 100644 README.rst
+     create mode 100644 babel.cfg
+     create mode 100644 dims_ansible_playbook/__init__.py
+     create mode 100644 dims_ansible_playbook/tests/__init__.py
+     create mode 100644 dims_ansible_playbook/tests/base.py
+     create mode 100644 dims_ansible_playbook/tests/test_dims_ansible_playbook.py
+     create mode 100755 doc/source/conf.py
+     create mode 100644 doc/source/contributing.rst
+     create mode 100644 doc/source/index.rst
+     create mode 100644 doc/source/installation.rst
+     create mode 100644 doc/source/readme.rst
+     create mode 100644 doc/source/usage.rst
+     create mode 100644 requirements.txt
+     create mode 100644 setup.cfg
+     create mode 100644 setup.py
+     create mode 100644 test-requirements.txt
+     create mode 100644 tox.ini
+    [dimsenv] dittrich@dimsdemo1:~/git/ansible-playbooks () $ ls -l
+    total 4
+    drwxrwxr-x 5 dittrich dittrich 4096 Jan  1 16:17 ansible-playbooks
+
+..
