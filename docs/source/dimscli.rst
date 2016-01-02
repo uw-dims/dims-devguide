@@ -549,7 +549,7 @@ formatter and load it into the ``dimscli`` shell via Stevedore.
 
     Integrate a description of this Git commit:
 
-    .. code-block:: git
+    .. code-block:: diff
 
         commit 30d096e4f2b25a37fb5eae4dfe9420b0e3960757
         Author: Dave Dittrich <dittrich@u.washington.edu>
@@ -723,6 +723,134 @@ the ``eval`` statement for use when invoking shell commands:
 
 ..
 
+Adding New Columns to Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Say we want to also include the Consul status, to help determine which node is
+currently the *Leader* in a cluster, which are a *Peer* in the cluster, and which
+are simply an *Agent* that is proxying to the cluster.
+
+The changes to existing code to affect this new feature are shown here:
+
+.. code-block:: diff
+
+    commit caab2d05274898878e1123bd337b431c8d2f2a8e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sat Jan 2 12:53:56 2016 -0800
+
+        Add Consul node status to 'nodes list' output
+
+    diff --git a/dimscli/list.py b/dimscli/list.py
+    index 45acdda..3893b10 100644
+    --- a/dimscli/list.py
+    +++ b/dimscli/list.py
+    @@ -26,9 +26,35 @@ class Nodes(Lister):
+
+         log = logging.getLogger(__name__)
+
+    +    def get_node_status(self):
+    +        """
+    +        Determine the status from Consul
+    +
+    +        :return: None
+    +        """
+    +        self.leaderDict = dict(zip(['Address', 'Port'],
+    +                                   self.consul.status.leader().split(":")))
+    +        self.peersDictList = [dict(zip(['Address', 'Port'], p.split(":")))
+    +                              for p in self.consul.status.peers()]
+    +
+    +    def status(self, address):
+    +        """
+    +        Determine node status as returned from Consul.
+    +
+    +        :param address: IP address to check
+    +        :return: One of: "Leader", "Peer", or "Agent"
+    +        """
+    +        if address in self.leaderDict.values():
+    +            return "Leader"
+    +        elif address in [p['Address'] for p in self.peersDictList]:
+    +            return "Peer"
+    +        else:
+    +            return "Agent"
+    +
+         def take_action(self, parsed_args):
+    -        consul = consulate.Consul()
+    -        nodes = consul.catalog.nodes()
+    -        columns = ('Node', 'Address')
+    -        data = ((node['Node'], node['Address']) for node in nodes)
+    +        self.consul = consulate.Consul()
+    +        nodes = self.consul.catalog.nodes()
+    +        self.get_node_status()
+    +        columns = ('Node', 'Address', 'Status')
+    +        data = ((node['Node'], node['Address'], self.status(node['Address'])) for node in nodes)
+             return (columns, data)
+
+..
+
+.. code-block:: none
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli nodes list
+    +-----------+---------------+--------+
+    | Node      | Address       | Status |
+    +-----------+---------------+--------+
+    | b52       | 10.86.86.2    | Agent  |
+    | breathe   | 10.142.29.117 | Leader |
+    | dimsdemo1 | 10.86.86.3    | Agent  |
+    | echoes    | 10.142.29.116 | Peer   |
+    | seamus    | 10.142.29.120 | Peer   |
+    +-----------+---------------+--------+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli nodes list -f csv
+    "Node","Address","Status"
+    "b52","10.86.86.2","Agent"
+    "breathe","10.142.29.117","Leader"
+    "dimsdemo1","10.86.86.3","Agent"
+    "echoes","10.142.29.116","Peer"
+    "seamus","10.142.29.120","Peer"
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli nodes list -f json | python -mjson.tool
+    [
+        {
+            "Address": "10.86.86.2",
+            "Node": "b52",
+            "Status": "Agent"
+        },
+        {
+            "Address": "10.142.29.117",
+            "Node": "breathe",
+            "Status": "Leader"
+        },
+        {
+            "Address": "10.86.86.3",
+            "Node": "dimsdemo1",
+            "Status": "Agent"
+        },
+        {
+            "Address": "10.142.29.116",
+            "Node": "echoes",
+            "Status": "Peer"
+        },
+        {
+            "Address": "10.142.29.120",
+            "Node": "seamus",
+            "Status": "Peer"
+        }
+    ]
+
+..
+
+If we wish to turn a subset of this table into variables, using the ``shell`` output
+feature added above, we need to select a pair of columns (to map to *Variable=Value*
+in the output). The results could then be used in Ansible playbooks, shell scripts,
+selecting color for nodes in a graph, or any number of other purposes.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli nodes list --column Node --column Status -f shell
+    b52="Agent"
+    breathe="Leader"
+    dimsdemo1="Agent"
+    echoes="Peer"
+    seamus="Peer"
+
+..
 
 Adding New Commands
 ~~~~~~~~~~~~~~~~~~~
@@ -732,13 +860,115 @@ In this example, we will add a new command ``ansible`` with a subcommand
 ``ansible.runner.Runner`` class) to execute arbitrary commands on hosts
 via Ansible.
 
+.. note::
+
+    What is being demonstrated here is adding a new subcommand to the
+    ``dimscli`` repo directly. It is also possible to add a new command
+    from a module in another repo using Stevedore.
+
+    .. TODO(dittrich) Add a cross-reference here to external module loading via Stevedore
+    .. todo::
+        Add a cross-reference here to external module loading via Stevedore.
+
+    ..
+
+..
+
+
 .. _Python API: http://docs.ansible.com/ansible/developing_api.html
 
 Here are the changes that implement this new command:
 
-.. code-block:: none
+.. code-block:: diff
 
-    Put git log --patch output here...
+    commit eccf3af707aac5a13144580bfbf548b45616d49f
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Fri Jan 1 20:34:42 2016 -0800
+
+        Add 'ansible execute' command
+
+    diff --git a/dimscli/dimsansible/__init__.py b/dimscli/dimsansible/__init__.py
+    new file mode 100644
+    index 0000000..e69de29
+    diff --git a/dimscli/dimsansible/ansiblerunner.py b/dimscli/dimsansible/ansiblerunner.py
+    new file mode 100644
+    index 0000000..68cd3ea
+    --- /dev/null
+    +++ b/dimscli/dimsansible/ansiblerunner.py
+    @@ -0,0 +1,61 @@
+    +#!/usr/bin/python
+    +
+    +import sys
+    +import logging
+    +
+    +from cliff.lister import Lister
+    +from ansible.runner import Runner
+    +
+    +HOST_LIST = "/etc/ansible/hosts"
+    +CMD = "/usr/bin/uptime"
+    +
+    +class Execute(Lister):
+    +    """Execute a command via Ansible and return a list of results.
+    +
+    +    """
+    +
+    +    log = logging.getLogger(__name__)
+    +
+    +    def get_parser(self, prog_name):
+    +        parser = super(Execute, self).get_parser(prog_name)
+    +        parser.add_argument(
+    +            "--host-list",
+    +            metavar="<host-list>",
+    +            default=HOST_LIST,
+    +            help="Hosts file (default: {})".format(HOST_LIST),
+    +        )
+    +        parser.add_argument(
+    +            "--program",
+    +            metavar="<program>",
+    +            default=CMD,
+    +            help="Program to run (default: {})".format(CMD),
+    +        )
+    +        return parser
+    +
+    +    def take_action(self, parsed_args):
+    +
+    +        results = Runner(
+    +                host_list=parsed_args.host_list,
+    +                pattern='*',
+    +                forks=10,
+    +                module_name='command',
+    +                module_args=parsed_args.program,
+    +        ).run()
+    +
+    +        if results is None:
+    +           print "No hosts found"
+    +           sys.exit(1)
+    +
+    +        outtable = []
+    +
+    +        for (hostname, result) in results['contacted'].items():
+    +            if not 'failed' in result:
+    +                outtable.append((hostname, 'GOOD', result['stdout']))
+    +            elif 'failed' in result:
+    +                outtable.append((hostname, 'FAIL', result['msg']))
+    +        for (hostname, result) in results['dark'].items():
+    +            outtable.append((hostname, 'DARK', result['msg']))
+    +
+    +        column_names = ('Host', 'Status', 'Results')
+    +
+    +        return column_names, outtable
+    diff --git a/setup.cfg b/setup.cfg
+    index 14f6ce7..9571d4f 100644
+    --- a/setup.cfg
+    +++ b/setup.cfg
+    @@ -37,6 +37,7 @@ dims.cli =
+         files_list = dimscli.list:Files
+         nodes_list = dimscli.list:Nodes
+         show_file = dimscli.show:File
+    +    ansible_execute = dimscli.dimsansible.ansiblerunner:Execute
+
+     cliff.formatter.list =
+         shell = dimscli.formatters.shell:DIMSShellFormatter
 
 ..
 
