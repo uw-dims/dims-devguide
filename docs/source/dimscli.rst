@@ -852,6 +852,8 @@ selecting color for nodes in a graph, or any number of other purposes.
 
 ..
 
+.. _addingNewCommands:
+
 Adding New Commands
 ~~~~~~~~~~~~~~~~~~~
 
