@@ -788,6 +788,7 @@ The changes to existing code to affect this new feature are shown here:
 ..
 
 .. code-block:: none
+
     [dimsenv] dittrich@dimsdemo1:~/dims/git/python-dimscli (develop*) $ dimscli nodes list
     +-----------+---------------+--------+
     | Node      | Address       | Status |
