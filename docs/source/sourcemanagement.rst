@@ -1301,6 +1301,35 @@ Here is an edited transcript of performing the above tasks.
 
 ..
 
+.. _deletingsensitivedata:
+
+Deleting Sensitive Data From Repos
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before publishing once private repositories on an internal Git repo server to
+a public server like GitHub requires making sure that **all** sensitive
+data is premanantly removed from the local repository's history **before**
+first pushing it to GitHub.
+
+.. danger::
+
+   Read what GitHub has to say in the Danger block at the top of their
+   `Remove sensitive data`_ page. In short, any time extremely sensitive
+   data (like a password or private key) is published to GitHub, it
+   should **be considered compromised**, reported to the project lead,
+   and changed as soon as possible.
+
+..
+
+Follow the instructions in GitHub's `Remove sensitive data`_ page to use
+either ``git filter-branch`` or the `BFG Repo-Cleaner`_ to remove
+files from a clone of the repo and then push the clean version
+to GitHub.
+
+.. _Remove sensitive data: https://help.github.com/articles/remove-sensitive-data
+.. _BFG Repo-Cleaner: http://rtyley.github.io/bfg-repo-cleaner/
+
+
 .. _cherrypickingcommits:
 
 Cherry-picking a commit from one branch to another
