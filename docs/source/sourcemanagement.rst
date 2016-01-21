@@ -68,6 +68,16 @@ Foundational Git Resources
 .. _git-flow: http://danielkummer.github.io/git-flow-cheatsheet/
 .. _HubFlow: http://datasift.github.io/gitflow/
 
+.. note::
+
+    There is a large body of references on Git that are constantly being
+    updated in the `Software Development>Git`_ section of Dave Dittrich's web
+    page.
+
+..
+
+.. _Software Development>Git: https://staff.washington.edu/dittrich/home/swdev.html#git
+
 
 .. caution::
 
