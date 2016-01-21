@@ -49,6 +49,25 @@ which are covered in the sections below. These tasks include things like:
 .. _How to undo (almost) anything with Git: https://github.com/blog/2019-how-to-undo-almost-anything-with-git
 .. _Undo Almost Anything with Git webinar: https://youtu.be/oUzbaCRoeFA
 
+.. _gitfoundation:
+
+Foundational Git Resources
+--------------------------
+
++ `Yan Pritzker's Git Workflows book`_
++ `The Thing About Git`_
++ `Commit Often, Perfect Later, Publish Once: Git Best Practices`_
++ `Git Tips`_
++ `git-flow`_ utilities to follow Vincent Dreisen branching workflow
++ `HubFlow`_ (GitFlow for GitHub)
+
+.. _Yan Pritzker's Git Workflows book: http://documentup.com/skwp/git-workflows-book
+.. _The Thing About Git: http://tomayko.com/writings/the-thing-about-git
+.. _Commit Often, Perfect Later, Publish Once\: Git Best Practices: http://sethrobertson.github.io/GitBestPractices/
+.. _Git Tips: http://mislav.uniqpath.com/2010/07/git-tips/
+.. _git-flow: http://danielkummer.github.io/git-flow-cheatsheet/
+.. _HubFlow: http://datasift.github.io/gitflow/
+
 
 .. caution::
 
