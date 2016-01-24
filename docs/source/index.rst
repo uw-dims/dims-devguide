@@ -33,13 +33,13 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    introduction
    referenceddocs
    policy
+   communication
    onboarding
    sourcemanagement
    documentation
    continuousintegration
    deployconfigure
    programming
-   communication
    opstrustdb
    dimscli
    appendices
