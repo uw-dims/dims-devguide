@@ -42,6 +42,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    programming
    opstrustdb
    dimscli
+   servicediscovery
    appendices
 
 .. note::
