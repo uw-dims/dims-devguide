@@ -3,28 +3,35 @@
 Service Discovery Using Consul
 ------------------------------
 
-Consul provides DNS service, among other things. DIMS takes advantage of
-this by having ``dnsmasq`` on each host direct certain queries to
-the Consul cluster for resolution of DNS for service discovery.
+
+Consul provides many services that are used by DIMS components, including
+a key/value store and DNS service. DIMS takes advantage of the DNS
+service by having ``dnsmasq`` on each host direct certain queries to
+the Consul cluster for resolution, which can be used for service discovery (as
+opposed to hard-coding IP addresses or specific host names and port numbers
+in source code or configuration files.) The chapter :ref:`dimscli` discusses
+some of the ways Consul is accessed by ``dimscli`` (e.g., see Section
+:ref:`addingnewcolumns`)
 
 A program named ``ianitor`` (GitHub `ClearcodeHQ/ianitor`_) facilitates using
-this Consul DNS capability to wrap services and register them in Consul's DNS.
-(The ``ianitor`` package from PyPi is installed in the DIMS Python Virtual
-Environment.) This can be illustrated using the ``netcat`` (``nc``) program to
-create a listening process that will demonstrate how this works.
+this Consul DNS capability by wrapping services so they are registered in
+Consul's DNS and monitored by Consul's health checking features.  This
+would allow a monitoring application to notify someone when a DIMS service
+component (such as something in the backend data store) becomes unavailable.
 
 .. _ClearcodeHQ/ianitor: https://github.com/ClearcodeHQ/ianitor
 
-.. attention::
+.. note::
 
-    When attempting to duplicate this example, keep in mind that
-    you must have already enabled ``iptables`` access to the port
-    on which ``nc`` is listening, otherwise any connection
-    attempt will be blocked and this won't work as shown here.
-    **Always** keep ``iptables`` in mind when trying to expose
-    network services and test them.
+    The ``ianitor`` package from PyPi is installed in the DIMS Python Virtual
+    Environment, so it should be available on all DIMS components that would
+    need it.
 
 ..
+
+This registration and service discovery process be illustrated using the
+``netcat`` (``nc``) program to create a listening process that will demonstrate
+how this works.
 
 First, we start ``nc`` on a specific listening port
 
@@ -122,7 +129,7 @@ via ``dnsmasq`` by asking for the DNS **SRV** record for
 ``netcat.service.consul``:
 
 .. code-block:: guess
-   :name: netcatConnection
+   :name: netcatDNS
    :emphasize-lines: 13
 
     [dimsenv] dittrich@dimsdemo1:~ () $ dig netcat.service.consul SRV
@@ -150,11 +157,23 @@ via ``dnsmasq`` by asking for the DNS **SRV** record for
 ..
 
 Now we can test connecting to the ``netcat`` listener (which will show anything
-that gets sent to it after the TCP connection is established.)  The first
-test will be using ``curl`` from the command line:
+that gets sent to it after the TCP connection is established.)
 
+.. attention::
+
+    When attempting to duplicate this example, keep in mind that
+    you must have already enabled ``iptables`` access to the port
+    on which ``nc`` is listening, otherwise any connection
+    attempt will be blocked and this won't work as shown here.
+    **Always** keep ``iptables`` in mind when trying to expose
+    network services and test them.
+
+..
+
+The first test will be using ``curl`` from the command line:
 
 .. code-block:: guess
+   :name: curlcommand
 
     [dimsenv] dittrich@dimsdemo1:~ () $ curl --data Hello http://dimsdemo1.node.dc1.consul:9999/areyouthere
 
@@ -163,6 +182,7 @@ test will be using ``curl`` from the command line:
 Going back to the window where we ran ``ianitor``, the result is the following:
 
 .. code-block:: guess
+   :name: netcatCurl
 
     [dimsenv] dittrich@dimsdemo1:~ () $ ianitor --port 9999 netcat -- netcat -l 9999
     POST /areyouthere HTTP/1.1
@@ -197,7 +217,7 @@ If you connect directly using ``http://dimsdemo1.node.dc1.consul:9999`` from a
 browser, you would get a slightly different result.
 
 .. code-block:: guess
-   :name: netcatConnection
+   :name: netcatMozilla
 
     [dimsenv] dittrich@dimsdemo1:~ () $ ianitor --port 9999 netcat -- netcat -l 9999
     GET / HTTP/1.1
@@ -210,4 +230,10 @@ browser, you would get a slightly different result.
     
 
 ..
+
+In practice, ``ianitor`` would be used to wrap a service that is being
+started by some process manager, such as ``supervisord``. See the
+`Example supervisord config`_ on the ``ianitor`` GitHub page.
+
+.. _Example supervisord config: https://github.com/ClearcodeHQ/ianitor#example-supervisord-config
 

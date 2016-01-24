@@ -723,6 +723,8 @@ the ``eval`` statement for use when invoking shell commands:
 
 ..
 
+.. _addingnewcolumns:
+
 Adding New Columns to Output
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
