@@ -1727,7 +1727,7 @@ the minor version number component.
 
 You should now be on the new release branch:
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (release/1.2.0)]$
 
@@ -1736,7 +1736,7 @@ You should now be on the new release branch:
 After making any textual changes, bump the version number
 to match the new release number:
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
 
@@ -2864,7 +2864,7 @@ Use the ``--dry-run`` option to test whether the configuration
 was done properly before attempting to actually bump the version
 number.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,48
 
    [dittrich@localhost dims-asbuilt (develop)]$ bumpversion --dry-run --verbose patch

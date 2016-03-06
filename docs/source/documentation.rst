@@ -312,7 +312,7 @@ The most simple way to render Sphinx documents is to use
 the ``Makefile`` created by ``sphinx-quickstart`` using
 ``make`` as shown here:
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost docs (dev)]$ make html
     sphinx-build -b html -d build/doctrees   source build/html
@@ -486,7 +486,7 @@ After starting ``sphinx-autobuild`` you then enter the URL that is produced
 (in this case, the URL is ``http://127.0.0.1:8000``).  Now edit files in
 another terminal or editor application window.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost docs (dev)]$ sphinx-autobuild --ignore '*.swp' source build/html
     Serving on http://127.0.0.1:8000
@@ -640,7 +640,7 @@ Fixing errors
 If there are any problems, Sphinx will call them out with warnings.
 Pay attention to the build output.
 
-.. code-block:: bash
+.. code-block:: none
 
     rm -rf build/*
     sphinx-build -b html -d build/doctrees   source build/html
@@ -934,7 +934,7 @@ embed output of ``tree``, which uses Unicode characters for line
 drawing.  (Not all do, which causes random failures when adding text to
 Sphinx documents.)
 
-.. code-block:: yaml
+.. code-block:: none
    :emphasize-lines: 10
 
     latex_elements = {
