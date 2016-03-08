@@ -43,6 +43,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    opstrustdb
    dimscli
    servicediscovery
+   dockerdatacenter
    appendices
 
 .. note::
