@@ -1,0 +1,668 @@
+####################################
+# DESTROY PREV DOCKER-MACHINE VMS: #
+# 1. STOP NODES                    #
+# 2. REMOVE NODES                  #
+# 3. REMOVE VIRTUALBOX HOST-ONLY-  #
+#    INTERFACE                     #
+####################################
+
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ls
+NAME    ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER    ERRORS
+node1   -        virtualbox   Running   tcp://192.168.99.100:2376           v1.10.2
+node2   -        virtualbox   Running   tcp://192.168.99.101:2376           v1.10.2
+node3   -        virtualbox   Running   tcp://192.168.99.102:2376           v1.10.2
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine stop node1
+Stopping "node1"...
+Machine "node1" was stopped.
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine stop node2
+Stopping "node2"...
+Machine "node2" was stopped.
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine stop node3
+Stopping "node3"...
+Machine "node3" was stopped.
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine rm  node1
+About to remove node1
+Are you sure? (y/n): y
+Successfully removed node1
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine rm node2
+About to remove node2
+Are you sure? (y/n): y
+Successfully removed node2
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine rm node3
+About to remove node3
+Are you sure? (y/n): y
+Successfully removed node3
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ls
+NAME   ACTIVE   DRIVER   STATE   URL   SWARM   DOCKER   ERRORS
+[dimsenv] mboggess@dimsdev2:~ () $ vboxmanage list hostonlyifs
+Name:            vboxnet0
+GUID:            786f6276-656e-4074-8000-0a0027000000
+DHCP:            Disabled
+IPAddress:       192.168.99.1
+NetworkMask:     255.255.255.0
+IPV6Address:     fe80:0000:0000:0000:0800:27ff:fe00:0000
+IPV6NetworkMaskPrefixLength: 64
+HardwareAddress: 0a:00:27:00:00:00
+MediumType:      Ethernet
+Status:          Up
+VBoxNetworkName: HostInterfaceNetworking-vboxnet0
+
+[dimsenv] mboggess@dimsdev2:~ () $ vboxmanage hostonlyif
+Usage:
+
+VBoxManage hostonlyif       ipconfig <name>
+                            [--dhcp |
+                            --ip<ipv4> [--netmask<ipv4> (def: 255.255.255.0)] |
+                            --ipv6<ipv6> [--netmasklengthv6<length> (def: 64)]]
+                            create |
+                            remove <name>
+
+[dimsenv] mboggess@dimsdev2:~ () $ vboxmanage hostonlyif remove vboxnet0
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+[dimsenv] mboggess@dimsdev2:~ () $ vboxmanage list hostonlyifs
+
+
+#################################
+# START NEW DOCKER MACHINE VMS: #  
+#################################
+
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine create -d virtualbox \
+> --virtualbox-memory "2000" \
+> --virtualbox-disk-size "5000" node0
+Running pre-create checks...
+(node0) You are using version 4.3.28r100309 of VirtualBox. If you encounter issues, you might want to upgrade to version 5 at https://www.virtualbox.org
+Creating machine...
+(node0) Copying /home/mboggess/.docker/machine/cache/boot2docker.iso to /home/mboggess/.docker/machine/machines/node0/boot2docker.iso...
+(node0) Creating VirtualBox VM...
+(node0) Creating SSH key...
+(node0) Starting the VM...
+(node0) Check network to re-create if needed...
+(node0) Found a new host-only adapter: "vboxnet0"
+(node0) Waiting for an IP...  
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env node0
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine create -d virtualbox \
+> --virtualbox-memory "2000" node1
+Running pre-create checks...
+(node1) You are using version 4.3.28r100309 of VirtualBox. If you encounter issues, you might want to upgrade to version 5 at https://www.virtualbox.org
+Creating machine...
+(node1) Copying /home/mboggess/.docker/machine/cache/boot2docker.iso to /home/mboggess/.docker/machine/machines/node1/boot2docker.iso...
+(node1) Creating VirtualBox VM...
+(node1) Creating SSH key...
+(node1) Starting the VM...
+(node1) Check network to re-create if needed...
+(node1) Waiting for an IP...
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env node1
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine create -d virtualbox --virtualbox-memory "2000" node2
+Running pre-create checks...
+(node2) You are using version 4.3.28r100309 of VirtualBox. If you encounter issues, you might want to upgrade to version 5 at https://www.virtualbox.org
+Creating machine...
+(node2) Copying /home/mboggess/.docker/machine/cache/boot2docker.iso to /home/mboggess/.docker/machine/machines/node2/boot2docker.iso...
+(node2) Creating VirtualBox VM...
+(node2) Creating SSH key...
+(node2) Starting the VM...
+(node2) Check network to re-create if needed...
+(node2) Waiting for an IP...
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with boot2docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env node2
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ls
+NAME    ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER    ERRORS
+node0   -        virtualbox   Running   tcp://192.168.99.100:2376           v1.10.2
+node1   -        virtualbox   Running   tcp://192.168.99.101:2376           v1.10.2
+node2   -        virtualbox   Running   tcp://192.168.99.102:2376           v1.10.2
+
+
+##############################
+# INSTALL UCP ON CONTROLLER: #
+##############################
+
+# The following command is important.
+# It sets up the shell environment to interact
+#  with the Docker engine on that node.
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node0)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run --rm -it \
+> -v /var/run/docker.sock:/var/run/docker.sock \
+> --name ucp docker/ucp install -i \
+> --swarm-port 3376 --host-address $(docker-machine ip node0)
+Unable to find image 'docker/ucp:latest' locally
+latest: Pulling from docker/ucp
+9ba637b863b8: Pull complete
+a3ed95caeb02: Pull complete
+Digest: sha256:1016db92f68ef6f9b58053e10eec8465efc7344a3f1e4cbb8fc3e446c42e89d4
+Status: Downloaded newer image for docker/ucp:latest
+INFO[0000] Verifying your system is compatible with UCP
+
+# Remember your password. The username is "admin".
+Please choose your initial Orca admin password:
+Confirm your initial password:
+INFO[0016] Pulling required images... (this may take a while)
+WARN[0044] None of the hostnames we'll be using in the UCP certificates [node0 127.0.0.1 172.17.0.1 192.168.99.100] contain a domain component.  Your generated certs may fail TLS validation unless you only use one of these shortnames or IPs to connect.  You can use the --san flag to add more aliases
+You may enter additional aliases (SANs) now or press enter to proceed with the above list.
+Additional aliases:
+INFO[0047] Installing UCP with host address 192.168.99.100 - If this is incorrect, please specify an alternative address with the '--host-address' flag
+INFO[0000] Generating UCP Cluster Root CA
+INFO[0018] Generating UCP Client Root CA
+INFO[0021] Deploying UCP Containers
+INFO[0026] UCP instance ID: 3RSF:3X4K:YW6L:I6E2:XFT3:3INP:JHBF:AFEB:PUXE:FNDU:SELW:43GE
+INFO[0026] UCP Server SSL: SHA1 Fingerprint=13:C0:19:5A:98:92:34:18:9A:CB:3E:4F:EB:A3:0E:D6:E3:8E:4E:C6
+INFO[0026] Login as "admin"/(your admin password) to UCP at https://192.168.99.100:443
+
+#######################################
+# JOIN OTHER NODES TO UCP CONTROLLER: #
+#######################################
+
+# Make sure to run the eval command for each node
+#  before the docker run command! 
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node1)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp join -i --host-address $(docker-machine ip node1)
+Please enter the URL to your UCP server: https://192.168.99.100
+UCP server https://192.168.99.100
+Subject: ucp
+Issuer: UCP Client Root CA
+SHA1 Fingerprint=13:C0:19:5A:98:92:34:18:9A:CB:3E:4F:EB:A3:0E:D6:E3:8E:4E:C6
+Do you want to trust this server and proceed with the join? (y/n): y
+Please enter your UCP Admin username: admin
+Please enter your UCP Admin password:
+INFO[0017] Pulling required images... (this may take a while)
+WARN[0048] None of the hostnames we'll be using in the UCP certificates [node1 127.0.0.1 172.17.0.1 192.168.99.101] contain a domain component.  Your generated certs may fail TLS validation unless you only use one of these shortnames or IPs to connect.  You can use the --san flag to add more aliases
+You may enter additional aliases (SANs) now or press enter to proceed with the above list.
+Additional aliases:
+INFO[0000] This engine will join UCP and advertise itself with host address 192.168.99.101 - If this is incorrect, please specify an alternative address with the '--host-address' flag
+INFO[0000] Verifying your system is compatible with UCP
+INFO[0006] Starting local swarm containers
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node2)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --name ucp docker/ucp join -i --host-address $(docker-machine ip node2)
+Please enter the URL to your UCP server: https://192.168.99.100
+UCP server https://192.168.99.100
+Subject: ucp
+Issuer: UCP Client Root CA
+SHA1 Fingerprint=13:C0:19:5A:98:92:34:18:9A:CB:3E:4F:EB:A3:0E:D6:E3:8E:4E:C6
+Do you want to trust this server and proceed with the join? (y/n): y
+Please enter your UCP Admin username: admin
+Please enter your UCP Admin password:
+INFO[0013] Pulling required images... (this may take a while)
+WARN[0043] None of the hostnames we'll be using in the UCP certificates [node2 127.0.0.1 172.17.0.1 192.168.99.102] contain a domain component.  Your generated certs may fail TLS validation unless you only use one of these shortnames or IPs to connect.  You can use the --san flag to add more aliases
+You may enter additional aliases (SANs) now or press enter to proceed with the above list.
+Additional aliases:
+INFO[0000] This engine will join UCP and advertise itself with host address 192.168.99.102 - If this is incorrect, please specify an alternative address with the '--host-address' flag
+INFO[0000] Verifying your system is compatible with UCP
+INFO[0003] Starting local swarm containers
+
+
+###############################
+# SETUP CONTAINER NETWORKING: #
+###############################
+
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node0)
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ssh node0
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""\___/ ===
+      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
+           \______ o           __/
+             \    \         __/
+              \____\_______/
+ _                 _   ____     _            _
+| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
+| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
+| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   <  __/ |
+|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
+Boot2Docker version 1.10.2, build master : 611be10 - Mon Feb 22 22:47:06 UTC 2016
+Docker version 1.10.2, build c3959b1
+
+# Run the engine-discovery command using the
+#  --update flag to force the update
+docker@node0:~$ docker run --rm -it --name ucp \
+> -v /var/run/docker.sock:/var/run/docker.sock \
+> docker/ucp engine-discovery \
+> --controller 192.168.99.100 \
+> --host-address 192.168.99.100 --update
+INFO[0000] This cluster does not have high availability because you only have a single controller.
+INFO[0000] If you plan to add additional replica nodes for HA, you should do this before running this tool to reduce downtime.
+WARN[0002] Configuration updated.  You will have to manually restart the docker daemon for the changes to take effect.
+
+# Restart docker. Since this is a boot2docker node,
+#  it's via init.d rather than the service command.
+docker@node0:~$ sudo /etc/init.d/docker restart
+Need TLS certs for node0,127.0.0.1,10.0.2.15,192.168.99.100
+-------------------
+
+# Check to see if docker is running.
+# If this is the first or second nodes, the etcd cluster
+#  will complain because it hasn't achieved a quorum yet.
+docker@node0:~$ sudo tail -f /var/log/docker.log
+time="2016-03-07T22:11:44.070183580Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A POSTROUTING -p tcp -s 172.17.0.6 -d 172.17.0.6 --dport 12382 -j MASQUERADE]"
+time="2016-03-07T22:11:44.093786359Z" level=debug msg="Assigning addresses for endpoint ucp-client-root-ca's interface on network bridge"
+time="2016-03-07T22:11:44.094136165Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A DOCKER -p tcp -d 0/0 --dport 12376 -j DNAT --to-destination 172.17.0.4:2376 ! -i docker0]"
+time="2016-03-07T22:11:44.097042994Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -A DOCKER ! -i docker0 -o docker0 -p tcp -d 172.17.0.4 --dport 2376 -j ACCEPT]"
+time="2016-03-07T22:11:44.097919349Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A POSTROUTING -p tcp -s 172.17.0.4 -d 172.17.0.4 --dport 2376 -j MASQUERADE]"
+time="2016-03-07T22:11:44.120796586Z" level=debug msg="Assigning addresses for endpoint ucp-proxy's interface on network bridge"
+time="2016-03-07T22:11:47.002871426Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:11:50.003202887Z" level=debug msg="could not find endpoint b605cdd78addde5cfde07aa525d67ce9855fc106b8477a6effdf1cc22a185254 in global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:11:53.005044110Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:11:55.240581226Z" level=debug msg="could not find endpoint 8e2956581574300e02f4efb367eb88e042f82a80985ed50f282f79d0529b0e23 in global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:11:58.240348551Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:01.240514251Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:04.240443463Z" level=error msg="discovery error: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:04.240519734Z" level=warning msg="Registering as \"192.168.99.100:12376\" in discovery failed: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:04.240552300Z" level=debug msg="could not find endpoint 87e7556fe7ffe84c25abe1a0838f51ef54389eb6c87468f8431eec495fcf4c5c in global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:07.240511596Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:07.241604653Z" level=error msg="discovery error: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:10.240455936Z" level=error msg="discovery error: Unexpected watch error"
+time="2016-03-07T22:12:10.240512021Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:13.240302992Z" level=debug msg="could not find endpoint 95bb73a58f52adcf1ca98ba9a1298eb6447684b5716a59c4b43481b13795bcc2 in global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:16.240504890Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:19.240514865Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:19.240580469Z" level=debug msg="Assigning addresses for endpoint ucp-cluster-root-ca's interface on network bridge"
+time="2016-03-07T22:12:19.240598629Z" level=debug msg="RequestAddress(LocalDefault/172.17.0.0/16, <nil>, map[])"
+time="2016-03-07T22:12:19.243498664Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A DOCKER -p tcp -d 0/0 --dport 12381 -j DNAT --to-destination 172.17.0.8:12381 ! -i docker0]"
+time="2016-03-07T22:12:19.246101114Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -A DOCKER ! -i docker0 -o docker0 -p tcp -d 172.17.0.8 --dport 12381 -j ACCEPT]"
+time="2016-03-07T22:12:19.248576494Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A POSTROUTING -p tcp -s 172.17.0.8 -d 172.17.0.8 --dport 12381 -j MASQUERADE]"
+time="2016-03-07T22:12:19.276450231Z" level=debug msg="Assigning addresses for endpoint ucp-cluster-root-ca's interface on network bridge"
+time="2016-03-07T22:12:22.240591811Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:25.240425959Z" level=warning msg="Registering as \"192.168.99.100:12376\" in discovery failed: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:25.240490015Z" level=debug msg="could not find endpoint b605cdd78addde5cfde07aa525d67ce9855fc106b8477a6effdf1cc22a185254 in global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:28.240338660Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:31.240448754Z" level=error msg="discovery error: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:12:31.240505330Z" level=debug msg="could not find network 1faf51793e49dbfb42520d09598c45431e0a4791ca280866d2d451965ef88b05: client: etcd cluster is unavailable or misconfigured"
+^C
+docker@node0:~$ exit
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ssh node1
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""\___/ ===
+      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
+           \______ o           __/
+             \    \         __/
+              \____\_______/
+ _                 _   ____     _            _
+| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
+| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
+| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   <  __/ |
+|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
+Boot2Docker version 1.10.2, build master : 611be10 - Mon Feb 22 22:47:06 UTC 2016
+Docker version 1.10.2, build c3959b1
+
+# Run the engine-discovery command using the
+#  --update flag to force the update
+docker@node1:~$ docker run --rm -it --name ucp \
+> -v /var/run/docker.sock:/var/run/docker.sock \
+> docker/ucp engine-discovery \
+> --controller 192.168.99.100 \
+> --host-address 192.168.99.101 --update
+INFO[0000] This cluster does not have high availability because you only have a single controller.
+INFO[0000] If you plan to add additional replica nodes for HA, you should do this before running this tool to reduce downtime.
+WARN[0002] Configuration updated.  You will have to manually restart the docker daemon for the changes to take effect.
+
+# Restart docker. Since this is a boot2docker node,
+#  it's via init.d rather than the service command.
+docker@node1:~$ sudo /etc/init.d/docker restart
+Need TLS certs for node1,127.0.0.1,10.0.2.15,192.168.99.101
+-------------------
+
+# Check to see if docker is running.
+# If this is the first or second nodes, the etcd cluster
+#  will complain because it hasn't achieved a quorum yet.
+docker@node1:~$ sudo tail -f /var/log/docker.log
+time="2016-03-07T22:13:46.271986099Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -n -L DOCKER]"
+time="2016-03-07T22:13:46.272800845Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -N DOCKER]"
+time="2016-03-07T22:13:46.273586600Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -n -L DOCKER]"
+time="2016-03-07T22:13:46.274353619Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -n -L DOCKER-ISOLATION]"
+time="2016-03-07T22:13:46.275113441Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C DOCKER-ISOLATION -j RETURN]"
+time="2016-03-07T22:13:46.276694579Z" level=debug msg="/usr/local/sbin/iptables, [--wait -I DOCKER-ISOLATION -j RETURN]"
+time="2016-03-07T22:13:49.257937305Z" level=debug msg="Registering ipam driver: \"default\""
+time="2016-03-07T22:13:49.258517657Z" level=error msg="discovery error: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:13:52.258733627Z" level=error msg="discovery error: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:13:52.259818156Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:13:55.257366820Z" level=debug msg="failed to get networks for scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:13:55.257706784Z" level=error msg="discovery error: Unexpected watch error"
+time="2016-03-07T22:13:55.258525392Z" level=debug msg="releasing IPv4 pools from network bridge (1000394495e2c6bd577004f17a75ed038c7f1696448275552fd1d7219e38f02e)"
+time="2016-03-07T22:13:55.258554539Z" level=debug msg="ReleaseAddress(LocalDefault/172.17.0.0/16, 172.17.0.1)"
+time="2016-03-07T22:13:55.258957934Z" level=debug msg="ReleasePool(LocalDefault/172.17.0.0/16)"
+time="2016-03-07T22:13:55.260916658Z" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be used to set a preferred IP address"
+time="2016-03-07T22:13:55.260932331Z" level=debug msg="Allocating IPv4 pools for network bridge (b88f0323c65d45add2d7b24c36a9206d006b420c6030273192d24721948d0e02)"
+time="2016-03-07T22:13:55.260946821Z" level=debug msg="RequestPool(LocalDefault, 172.17.0.0/16, , map[], false)"
+time="2016-03-07T22:13:55.263397489Z" level=debug msg="RequestAddress(LocalDefault/172.17.0.0/16, 172.17.0.1, map[RequestAddressType:com.docker.network.gateway])"
+time="2016-03-07T22:13:55.263939490Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -C POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE]"
+time="2016-03-07T22:13:55.265768161Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -C DOCKER -i docker0 -j RETURN]"
+time="2016-03-07T22:13:55.269104645Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -I DOCKER -i docker0 -j RETURN]"
+time="2016-03-07T22:13:55.279625706Z" level=debug msg="/usr/local/sbin/iptables, [--wait -D FORWARD -i docker0 -o docker0 -j DROP]"
+time="2016-03-07T22:13:55.281677039Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -i docker0 -o docker0 -j ACCEPT]"
+time="2016-03-07T22:13:55.283548456Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -i docker0 ! -o docker0 -j ACCEPT]"
+time="2016-03-07T22:13:55.285372426Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT]"
+time="2016-03-07T22:13:55.286692461Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -C PREROUTING -m addrtype --dst-type LOCAL -j DOCKER]"
+time="2016-03-07T22:13:55.288968983Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER]"
+time="2016-03-07T22:13:55.292775137Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -C OUTPUT -m addrtype --dst-type LOCAL -j DOCKER ! --dst 127.0.0.0/8]"
+time="2016-03-07T22:13:55.295829670Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A OUTPUT -m addrtype --dst-type LOCAL -j DOCKER ! --dst 127.0.0.0/8]"
+time="2016-03-07T22:13:55.297141841Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -o docker0 -j DOCKER]"
+time="2016-03-07T22:13:55.298264112Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -o docker0 -j DOCKER]"
+time="2016-03-07T22:13:55.299305220Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -C FORWARD -j DOCKER-ISOLATION]"
+time="2016-03-07T22:13:55.301557053Z" level=debug msg="/usr/local/sbin/iptables, [--wait -D FORWARD -j DOCKER-ISOLATION]"
+time="2016-03-07T22:13:55.302973335Z" level=debug msg="/usr/local/sbin/iptables, [--wait -I FORWARD -j DOCKER-ISOLATION]"
+time="2016-03-07T22:13:55.306115140Z" level=warning msg="Your kernel does not support cgroup blkio weight"
+time="2016-03-07T22:13:55.306137240Z" level=warning msg="Your kernel does not support cgroup blkio weight_device"
+time="2016-03-07T22:13:55.306368634Z" level=debug msg="Cleaning up old shm/mqueue mounts: start."
+time="2016-03-07T22:13:55.306436591Z" level=debug msg="Cleaning up old shm/mqueue mounts: done."
+time="2016-03-07T22:13:55.306847988Z" level=debug msg="Loaded container 21d865de28e79c10a80125d1fb13d72f3e6b3d44accf8264b3e285d3b5ddbe2d"
+time="2016-03-07T22:13:55.307060932Z" level=debug msg="Loaded container d5d7a3b2009769571f35029711c2564b7ee6231cbadfa858c9bad471a933f676"
+time="2016-03-07T22:13:55.307357391Z" level=debug msg="Starting container d5d7a3b2009769571f35029711c2564b7ee6231cbadfa858c9bad471a933f676"
+time="2016-03-07T22:13:55.309267051Z" level=debug msg="Starting container 21d865de28e79c10a80125d1fb13d72f3e6b3d44accf8264b3e285d3b5ddbe2d"
+time="2016-03-07T22:13:55.310005643Z" level=debug msg="container mounted via layerStore: /mnt/sda1/var/lib/docker/aufs/mnt/b8c1dc4410caf9f4fab300b45a9f0fbff089d70294540060f76f1f2f9f572ac1"
+time="2016-03-07T22:13:55.310584317Z" level=debug msg="container mounted via layerStore: /mnt/sda1/var/lib/docker/aufs/mnt/129e034a6b4e86ec6f8f294a1d900575fd811ac461509a392543bcf63a81e269"
+time="2016-03-07T22:13:58.257050034Z" level=debug msg="failed to get networks for scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:14:01.256474377Z" level=debug msg="failed to get networks for scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:14:04.256797930Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:14:04.257003090Z" level=debug msg="Assigning addresses for endpoint ucp-proxy's interface on network bridge"
+time="2016-03-07T22:14:04.257028352Z" level=debug msg="RequestAddress(LocalDefault/172.17.0.0/16, <nil>, map[])"
+time="2016-03-07T22:14:04.259816002Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A DOCKER -p tcp -d 0/0 --dport 12376 -j DNAT --to-destination 172.17.0.2:2376 ! -i docker0]"
+time="2016-03-07T22:14:04.263040050Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t filter -A DOCKER ! -i docker0 -o docker0 -p tcp -d 172.17.0.2 --dport 2376 -j ACCEPT]"
+time="2016-03-07T22:14:04.265142604Z" level=debug msg="/usr/local/sbin/iptables, [--wait -t nat -A POSTROUTING -p tcp -s 172.17.0.2 -d 172.17.0.2 --dport 2376 -j MASQUERADE]"
+time="2016-03-07T22:14:04.292801112Z" level=debug msg="Assigning addresses for endpoint ucp-proxy's interface on network bridge"
+time="2016-03-07T22:14:07.256722098Z" level=debug msg="failed to get endpoints for network bridge scope global: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:14:07.256809339Z" level=debug msg="Assigning addresses for endpoint ucp-swarm-join's interface on network bridge"
+time="2016-03-07T22:14:07.256832041Z" level=debug msg="RequestAddress(LocalDefault/172.17.0.0/16, <nil>, map[])"
+time="2016-03-07T22:14:07.259553952Z" level=debug msg="Assigning addresses for endpoint ucp-swarm-join's interface on network bridge"
+time="2016-03-07T22:14:08.636576527Z" level=warning msg="Registering as \"192.168.99.101:12376\" in discovery failed: client: etcd cluster is unavailable or misconfigured"
+time="2016-03-07T22:14:08.845887701Z" level=info msg="Daemon has completed initialization"
+time="2016-03-07T22:14:08.845913783Z" level=info msg="Docker daemon" commit=c3959b1 execdriver=native-0.2 graphdriver=aufs version=1.10.2
+time="2016-03-07T22:14:08.846256409Z" level=debug msg="Registering routers"
+time="2016-03-07T22:14:08.846270306Z" level=debug msg="Registering HEAD, /containers/{name:.*}/archive"
+time="2016-03-07T22:14:08.847061019Z" level=debug msg="Registering GET, /containers/json"
+time="2016-03-07T22:14:08.847153618Z" level=debug msg="Registering GET, /containers/{name:.*}/export"
+time="2016-03-07T22:14:08.847238114Z" level=debug msg="Registering GET, /containers/{name:.*}/changes"
+time="2016-03-07T22:14:08.847326718Z" level=debug msg="Registering GET, /containers/{name:.*}/json"
+time="2016-03-07T22:14:08.847399636Z" level=debug msg="Registering GET, /containers/{name:.*}/top"
+time="2016-03-07T22:14:08.847474180Z" level=debug msg="Registering GET, /containers/{name:.*}/logs"
+time="2016-03-07T22:14:08.847546361Z" level=debug msg="Registering GET, /containers/{name:.*}/stats"
+time="2016-03-07T22:14:08.847617874Z" level=debug msg="Registering GET, /containers/{name:.*}/attach/ws"
+time="2016-03-07T22:14:08.847760982Z" level=debug msg="Registering GET, /exec/{id:.*}/json"
+time="2016-03-07T22:14:08.847832158Z" level=debug msg="Registering GET, /containers/{name:.*}/archive"
+time="2016-03-07T22:14:08.847912683Z" level=debug msg="Registering POST, /containers/create"
+time="2016-03-07T22:14:08.847974072Z" level=debug msg="Registering POST, /containers/{name:.*}/kill"
+time="2016-03-07T22:14:08.848047654Z" level=debug msg="Registering POST, /containers/{name:.*}/pause"
+time="2016-03-07T22:14:08.848126808Z" level=debug msg="Registering POST, /containers/{name:.*}/unpause"
+time="2016-03-07T22:14:08.848204817Z" level=debug msg="Registering POST, /containers/{name:.*}/restart"
+time="2016-03-07T22:14:08.848278681Z" level=debug msg="Registering POST, /containers/{name:.*}/start"
+time="2016-03-07T22:14:08.848348615Z" level=debug msg="Registering POST, /containers/{name:.*}/stop"
+time="2016-03-07T22:14:08.848420618Z" level=debug msg="Registering POST, /containers/{name:.*}/wait"
+time="2016-03-07T22:14:08.848491251Z" level=debug msg="Registering POST, /containers/{name:.*}/resize"
+time="2016-03-07T22:14:08.848590568Z" level=debug msg="Registering POST, /containers/{name:.*}/attach"
+time="2016-03-07T22:14:08.848669165Z" level=debug msg="Registering POST, /containers/{name:.*}/copy"
+time="2016-03-07T22:14:08.848742896Z" level=debug msg="Registering POST, /containers/{name:.*}/exec"
+time="2016-03-07T22:14:08.848819642Z" level=debug msg="Registering POST, /exec/{name:.*}/start"
+time="2016-03-07T22:14:08.848889548Z" level=debug msg="Registering POST, /exec/{name:.*}/resize"
+time="2016-03-07T22:14:08.848958077Z" level=debug msg="Registering POST, /containers/{name:.*}/rename"
+time="2016-03-07T22:14:08.849037834Z" level=debug msg="Registering POST, /containers/{name:.*}/update"
+time="2016-03-07T22:14:08.849109277Z" level=debug msg="Registering PUT, /containers/{name:.*}/archive"
+time="2016-03-07T22:14:08.849190550Z" level=debug msg="Registering DELETE, /containers/{name:.*}"
+time="2016-03-07T22:14:08.849216845Z" level=debug msg="Registering GET, /images/json"
+time="2016-03-07T22:14:08.849318873Z" level=debug msg="Registering GET, /images/search"
+time="2016-03-07T22:14:08.849373401Z" level=debug msg="Registering GET, /images/get"
+time="2016-03-07T22:14:08.849428402Z" level=debug msg="Registering GET, /images/{name:.*}/get"
+time="2016-03-07T22:14:08.849509958Z" level=debug msg="Registering GET, /images/{name:.*}/history"
+time="2016-03-07T22:14:08.849580238Z" level=debug msg="Registering GET, /images/{name:.*}/json"
+time="2016-03-07T22:14:08.849658289Z" level=debug msg="Registering POST, /commit"
+time="2016-03-07T22:14:08.849710575Z" level=debug msg="Registering POST, /images/create"
+time="2016-03-07T22:14:08.849765617Z" level=debug msg="Registering POST, /images/load"
+time="2016-03-07T22:14:08.849832560Z" level=debug msg="Registering POST, /images/{name:.*}/push"
+time="2016-03-07T22:14:08.849910171Z" level=debug msg="Registering POST, /images/{name:.*}/tag"
+time="2016-03-07T22:14:08.849985573Z" level=debug msg="Registering DELETE, /images/{name:.*}"
+time="2016-03-07T22:14:08.850055502Z" level=debug msg="Registering GET, /networks"
+time="2016-03-07T22:14:08.850105467Z" level=debug msg="Registering GET, /networks/{id:.*}"
+time="2016-03-07T22:14:08.850177977Z" level=debug msg="Registering POST, /networks/create"
+time="2016-03-07T22:14:08.850235246Z" level=debug msg="Registering POST, /networks/{id:.*}/connect"
+time="2016-03-07T22:14:08.850306649Z" level=debug msg="Registering POST, /networks/{id:.*}/disconnect"
+time="2016-03-07T22:14:08.850389979Z" level=debug msg="Registering DELETE, /networks/{id:.*}"
+time="2016-03-07T22:14:08.850473015Z" level=debug msg="Registering OPTIONS, /{anyroute:.*}"
+time="2016-03-07T22:14:08.850537923Z" level=debug msg="Registering GET, /_ping"
+time="2016-03-07T22:14:08.850603214Z" level=debug msg="Registering GET, /events"
+time="2016-03-07T22:14:08.850654396Z" level=debug msg="Registering GET, /info"
+time="2016-03-07T22:14:08.850697470Z" level=debug msg="Registering GET, /version"
+time="2016-03-07T22:14:08.850746844Z" level=debug msg="Registering POST, /auth"
+time="2016-03-07T22:14:08.850784258Z" level=debug msg="Registering GET, /volumes"
+time="2016-03-07T22:14:08.850834588Z" level=debug msg="Registering GET, /volumes/{name:.*}"
+time="2016-03-07T22:14:08.850936508Z" level=debug msg="Registering POST, /volumes/create"
+time="2016-03-07T22:14:08.850995395Z" level=debug msg="Registering DELETE, /volumes/{name:.*}"
+time="2016-03-07T22:14:08.851065688Z" level=debug msg="Registering POST, /build"
+time="2016-03-07T22:14:08.851130299Z" level=info msg="API listen on [::]:2376"
+time="2016-03-07T22:14:08.851169803Z" level=info msg="API listen on /var/run/docker.sock"
+time="2016-03-07T22:14:09.137038800Z" level=debug msg="Calling GET /v1.15/info"
+time="2016-03-07T22:14:09.137075352Z" level=debug msg="GET /v1.15/info"
+time="2016-03-07T22:14:09.142123681Z" level=debug msg="Calling GET /v1.15/version"
+time="2016-03-07T22:14:09.142158720Z" level=debug msg="GET /v1.15/version"
+time="2016-03-07T22:14:09.144484526Z" level=debug msg="Calling GET /v1.15/containers/json"
+time="2016-03-07T22:14:09.144504295Z" level=debug msg="GET /v1.15/containers/json?all=1&size=0"
+time="2016-03-07T22:14:09.212279532Z" level=debug msg="Calling GET /v1.15/events"
+time="2016-03-07T22:14:09.212316010Z" level=debug msg="GET /v1.15/events"
+time="2016-03-07T22:14:09.222183110Z" level=debug msg="Calling GET /v1.15/containers/d5d7a3b2009769571f35029711c2564b7ee6231cbadfa858c9bad471a933f676/json"
+time="2016-03-07T22:14:09.222216653Z" level=debug msg="GET /v1.15/containers/d5d7a3b2009769571f35029711c2564b7ee6231cbadfa858c9bad471a933f676/json"
+time="2016-03-07T22:14:09.247701879Z" level=debug msg="Calling GET /v1.15/containers/21d865de28e79c10a80125d1fb13d72f3e6b3d44accf8264b3e285d3b5ddbe2d/json"
+time="2016-03-07T22:14:09.247740095Z" level=debug msg="GET /v1.15/containers/21d865de28e79c10a80125d1fb13d72f3e6b3d44accf8264b3e285d3b5ddbe2d/json"
+time="2016-03-07T22:14:09.271798719Z" level=debug msg="Calling GET /v1.15/images/json"
+time="2016-03-07T22:14:09.271838761Z" level=debug msg="GET /v1.15/images/json?all=1"
+time="2016-03-07T22:14:09.280243977Z" level=debug msg="Calling GET /v1.15/volumes"
+time="2016-03-07T22:14:09.280284281Z" level=debug msg="GET /v1.15/volumes"
+time="2016-03-07T22:14:09.295893747Z" level=debug msg="Calling GET /v1.15/networks"
+time="2016-03-07T22:14:09.295919607Z" level=debug msg="GET /v1.15/networks"
+^C
+docker@node1:~$ exit
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ssh node2
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""\___/ ===
+      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
+           \______ o           __/
+             \    \         __/
+              \____\_______/
+ _                 _   ____     _            _
+| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
+| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
+| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   <  __/ |
+|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
+Boot2Docker version 1.10.2, build master : 611be10 - Mon Feb 22 22:47:06 UTC 2016
+Docker version 1.10.2, build c3959b1
+
+# Run the engine-discovery command using the
+#  --update flag to force the update
+docker@node2:~$ docker run --rm -it --name ucp \
+> -v /var/run/docker.sock:/var/run/docker.sock \
+> docker/ucp engine-discovery \
+> --controller 192.168.99.100 \
+> --host-address 192.168.99.102 --update
+INFO[0000] This cluster does not have high availability because you only have a single controller.
+INFO[0000] If you plan to add additional replica nodes for HA, you should do this before running this tool to reduce downtime.
+WARN[0002] Configuration updated.  You will have to manually restart the docker daemon for the changes to take effect.
+
+# Restart docker. Since this is a boot2docker node,
+#  it's via init.d rather than the service command.
+docker@node2:~$ sudo /etc/init.d/docker restart
+Need TLS certs for node2,127.0.0.1,10.0.2.15,192.168.99.102
+-------------------
+
+# Check to see if docker is running.
+# If this is the first or second nodes, the etcd cluster
+#  will complain because it hasn't achieved a quorum yet.
+docker@node2:~$ sudo tail -f /var/log/docker.log
+time="2016-03-07T22:15:19.579838639Z" level=debug msg="Registering DELETE, /volumes/{name:.*}"
+time="2016-03-07T22:15:19.579943547Z" level=debug msg="Registering POST, /build"
+time="2016-03-07T22:15:19.580001959Z" level=info msg="API listen on [::]:2376"
+time="2016-03-07T22:15:19.580066049Z" level=info msg="API listen on /var/run/docker.sock"
+time="2016-03-07T22:15:19.680998567Z" level=debug msg="2016/03/07 22:15:19 [DEBUG] serf: messageJoinType: node2\n"
+time="2016-03-07T22:15:19.681292971Z" level=debug msg="2016/03/07 22:15:19 [DEBUG] serf: messageJoinType: node2\n"
+time="2016-03-07T22:15:19.701548847Z" level=debug msg="2016/03/07 22:15:19 [DEBUG] serf: messageJoinType: node2\n"
+time="2016-03-07T22:15:19.880935252Z" level=debug msg="2016/03/07 22:15:19 [DEBUG] serf: messageJoinType: node2\n"
+time="2016-03-07T22:15:19.901325865Z" level=debug msg="2016/03/07 22:15:19 [DEBUG] serf: messageJoinType: node2\n"
+time="2016-03-07T22:15:23.858113731Z" level=debug msg="Watch triggered with 3 nodes" discovery=etcd
+time="2016-03-07T22:15:25.639472644Z" level=debug msg="Watch triggered with 3 nodes" discovery=etcd
+^C
+docker@node2:~$ exit
+
+
+###########################
+# CREATE OVERLAY NETWORK: #
+###########################
+
+[dimsenv] mboggess@dimsdev2:~ () $ docker-machine ssh node0
+                        ##         .
+                  ## ## ##        ==
+               ## ## ## ## ##    ===
+           /"""""""""""""""""\___/ ===
+      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
+           \______ o           __/
+             \    \         __/
+              \____\_______/
+ _                 _   ____     _            _
+| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
+| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
+| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   <  __/ |
+|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
+Boot2Docker version 1.10.2, build master : 611be10 - Mon Feb 22 22:47:06 UTC 2016
+Docker version 1.10.2, build c3959b1
+docker@node0:~$ docker network create -d overlay --subnet=10.4.0.0/16 data.local
+96f50ce413255df69e8dfe616190c90d3380d25204c16b27be0c66ebe04057cf
+docker@node0:~$ docker network ls
+NETWORK ID          NAME                DRIVER
+96f50ce41325        data.local          overlay
+1faf51793e49        bridge              bridge
+b1b5091c0275        none                null
+4faefa7c2e28        host                host
+docker@node0:~$ exit
+[dimsenv] mboggess@dimsdev2:~ () $ docker info
+Containers: 7
+ Running: 7
+ Paused: 0
+ Stopped: 0
+Images: 7
+Server Version: 1.10.2
+Storage Driver: aufs
+ Root Dir: /mnt/sda1/var/lib/docker/aufs
+ Backing Filesystem: extfs
+ Dirs: 59
+ Dirperm1 Supported: true
+Execution Driver: native-0.2
+Logging Driver: json-file
+Plugins:
+ Volume: local
+ Network: host bridge overlay null
+Kernel Version: 4.1.18-boot2docker
+Operating System: Boot2Docker 1.10.2 (TCL 6.4.1); master : 611be10 - Mon Feb 22 22:47:06 UTC 2016
+OSType: linux
+Architecture: x86_64
+CPUs: 1
+Total Memory: 1.909 GiB
+Name: node0
+ID: AFDQ:Z3N3:OPVT:VTYE:CF5Y:FIZ6:7BIJ:6N6I:GXQ3:DFOP:QV6H:XQKM
+Debug mode (server): true
+ File Descriptors: 70
+ Goroutines: 113
+ System Time: 2016-03-07T22:17:05.675047056Z
+ EventsListeners: 1
+ Init SHA1:
+ Init Path: /usr/local/bin/docker
+ Docker Root Dir: /mnt/sda1/var/lib/docker
+Labels:
+ provider=virtualbox
+Cluster store: etcd://192.168.99.100:12379
+Cluster advertise: 192.168.99.100:12376
+
+##########################
+# RUN CONSUL CONTAINERS: #
+##########################
+
+# Remember to run the eval command for each node
+#  before running the Consul docker run command!
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node0)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run -d --name=consul-node0 --net=data.local -v /mnt:/data -p 192.168.99.100:8300:8300 -p 192.168.99.100:8301:8301 -p 192.168.99.100:8301:8301/udp -p 192.168.99.100:8302:8302 -p 192.168.99.100:8302:8302/udp -p 192.168.99.100:8400:8400 -p 192.168.99.100:8500:8500 -p 192.168.99.100:8600:8600 -p 172.17.0.1:53:53/udp progrium/consul -node node0 -server -dc local -advertise 192.168.99.100 -bootstrap-expect 3
+Unable to find image 'progrium/consul:latest' locally
+latest: Pulling from progrium/consul
+c862d82a67a2: Pull complete
+0e7f3c08384e: Pull complete
+0e221e32327a: Pull complete
+09a952464e47: Pull complete
+60a1b927414d: Pull complete
+4c9f46b5ccce: Pull complete
+417d86672aa4: Pull complete
+b0d47ad24447: Pull complete
+fd5300bd53f0: Pull complete
+a3ed95caeb02: Pull complete
+d023b445076e: Pull complete
+ba8851f89e33: Pull complete
+5d1cefca2a28: Pull complete
+Digest: sha256:8cc8023462905929df9a79ff67ee435a36848ce7a10f18d6d0faba9306b97274
+Status: Downloaded newer image for progrium/consul:latest
+678e7c48ef46be766e198a414d901078fad1110cf688425703758ce53f1d5758
+
+# EVAL!
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node1)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run -d --name=consul-node1 --net=data.local -v /mnt:/data -p 192.168.99.101:8300:8300 -p 192.168.99.101:8301:8301 -p 192.168.99.101:8301:8301/udp -p 192.168.99.101:8302:8302 -p 192.168.99.101:8302:8302/udp -p 192.168.99.101:8400:8400 -p 192.168.99.101:8500:8500 -p 192.168.99.101:8600:8600 -p 172.17.0.1:53:53/udp progrium/consul -node node1 -server -dc local -advertise 192.168.99.101 -join 192.168.99.100
+Unable to find image 'progrium/consul:latest' locally
+latest: Pulling from progrium/consul
+c862d82a67a2: Pull complete
+0e7f3c08384e: Pull complete
+0e221e32327a: Pull complete
+09a952464e47: Pull complete
+60a1b927414d: Pull complete
+4c9f46b5ccce: Pull complete
+417d86672aa4: Pull complete
+b0d47ad24447: Pull complete
+fd5300bd53f0: Pull complete
+a3ed95caeb02: Pull complete
+d023b445076e: Pull complete
+ba8851f89e33: Pull complete
+5d1cefca2a28: Pull complete
+Digest: sha256:8cc8023462905929df9a79ff67ee435a36848ce7a10f18d6d0faba9306b97274
+Status: Downloaded newer image for progrium/consul:latest
+e3b0881350ca414ac9a652f8fd65f80714c108d316d00a3810162a2f0fc5491e
+
+# EVAL!
+[dimsenv] mboggess@dimsdev2:~ () $ eval $(docker-machine env node2)
+[dimsenv] mboggess@dimsdev2:~ () $ docker run -d --name=consul-node2 --net=data.local -v /mnt:/data -p 192.168.99.102:8300:8300 -p 192.168.99.102:8301:8301 -p 192.168.99.102:8301:8301/udp -p 192.168.99.102:8302:8302 -p 192.168.99.102:8302:8302/udp -p 192.168.99.102:8400:8400 -p 192.168.99.102:8500:8500 -p 192.168.99.102:8600:8600 -p 172.17.0.1:53:53/udp progrium/consul -node node2 -server -dc local -advertise 192.168.99.102 -join 192.168.99.100
+Unable to find image 'progrium/consul:latest' locally
+latest: Pulling from progrium/consul
+c862d82a67a2: Pull complete
+0e7f3c08384e: Pull complete
+0e221e32327a: Pull complete
+09a952464e47: Pull complete
+60a1b927414d: Pull complete
+4c9f46b5ccce: Pull complete
+417d86672aa4: Pull complete
+b0d47ad24447: Pull complete
+fd5300bd53f0: Pull complete
+a3ed95caeb02: Pull complete
+d023b445076e: Pull complete
+ba8851f89e33: Pull complete
+5d1cefca2a28: Pull complete
+Digest: sha256:8cc8023462905929df9a79ff67ee435a36848ce7a10f18d6d0faba9306b97274
+Status: Downloaded newer image for progrium/consul:latest
+69f710905924070ae83f5833129cef38f7409b5ecabdc7335111fe5430571a45
