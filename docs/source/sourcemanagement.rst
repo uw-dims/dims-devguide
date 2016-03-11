@@ -2257,6 +2257,20 @@ following commands:
 
 ..
 
+
+.. _recoveringdeletedfiles:
+
+Recovering deleted files
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Files that have been deleted in the past, and the deletions commited, can be
+recovered by searching the Git history of deletions to identify the commit that
+included the deletion. The file can then be checked out using the predecessor
+to that commit. See `Find and restore a deleted file in a Git repository`_
+
+.. _Find and restore a deleted file in a Git repository: http://stackoverflow.com/questions/953481/find-and-restore-a-deleted-file-in-a-git-repository
+
+
 .. _fixingcomments:
 
 Fixing comments in unpublished commits
