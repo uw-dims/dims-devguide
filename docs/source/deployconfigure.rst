@@ -32,6 +32,33 @@ This section will outline the general types of DIMS systems we will deploy. For 
 These names were borrowed from the Hubflow documentation 
 at http://datasift.github.io/gitflow/Versioning.html
 
+.. TODO(dittrich): Define labels for DIMS instance deployments (used for host_group labels)
+.. todo::
+
+    This section needs to define labels for DIMS instance deployments so they can be used
+    used for ``host_group`` values. This list is a start at that.
+
+    .. list-table::
+       :widths: 10 90
+       :header-rows: 1
+
+       * - Deployment name
+         - Deployment purpose
+
+       * - ``local``
+         - Local development on a workstation using VMs and/or containers
+
+       * - ``develop``
+         - Our current development instance using the ``develop`` branch in Git repos
+
+       * - ``testeval``
+         - Test and evaluation instance (also used for application pen testing)
+
+       * - ``ectf``
+         - Deployment for US Secret Service ECTF pilot
+
+..
+
 .. _developerboxes:
 
 Developer boxes
