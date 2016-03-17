@@ -44,6 +44,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    dimscli
    servicediscovery
    dockerdatacenter
+   debugging
    appendices
 
 .. note::
