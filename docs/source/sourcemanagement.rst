@@ -2987,6 +2987,54 @@ this case, cutting/pasting the hook from another repo to get the link correct).
 
 ..
 
+.. _permanentremoval:
+
+Permanently Removing Files from a Git Repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are times when files exist in the repo (either active, or
+no longer active, but still included in past commits) that you want
+to permanently remove from the repo. Simply doing ``git rm file`` is
+not good enough. A common reason for doing this is if someone decided
+to commit many large binary archive files (e.g., some source packages,
+operating system installation ISOs, etc).
+
+.. caution::
+
+   Realize that if you are trying to permanently remove secrets, such
+   as passwords or encryption private keys, even doing these steps is
+   not enough. Right now, go read the GitHub `Remove sensitive data`_
+   and its warning before going any further.
+
+..
+
+   + `How to delete files permanently from your local and remote git repositories`_, by Anoopjohn, February 20, 2014
+   + GitHub `aaronzirbes/shrink-git-repo.sh`_ ("This script will help you remove large files from your git repo history and shrink the size of your repository.")
+   + `How to Shrink a Git Repository`_, by Steve Lorek, May 11, 2012
+
+The page `How to Shrink a Git Repository`_ was used successfully to perform
+cleanup of a large number of archives that were committed to the
+``ansible-playbooks`` repo. The string ``filename`` needed to be substituted
+with the paths of the files to delete, which were identified by the script
+``git-find-largest`` and edited with ``vi`` and ``awk`` to strip out just the
+paths. The following command was then used on the list:
+
+.. code-block:: bash
+
+    for f in $(cat largest.txt); do \
+      git filter-branch --tag-name-filter cat \
+        --index-filter "git rm -r --cached --ignore-unmatch $f" \
+        --prune-empty -f -- --all; \
+    done
+
+..
+
+After that, the steps to clear the cache, do garbage collection and pruning, etc. were followed.
+
+.. _How to delete files permanently from your local and remote git repositories: http://www.zyxware.com/articles/4027/how-to-delete-files-permanently-from-your-local-and-remote-git-repositories
+.. _aaronzirbes/shrink-git-repo.sh: https://gist.github.com/aaronzirbes/4570924
+.. _How to Shrink a Git Repository: http://stevelorek.com/how-to-shrink-a-git-repository.html
+
 
 .. todo::
 
