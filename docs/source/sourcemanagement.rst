@@ -469,7 +469,7 @@ what should be an up-to-date ``.mrconfig`` file, is covered in the Section
 After all repos have been cloned, they can be kept up to date on a daily
 basis. Start your work session with the following commands:
 
-.. code-block:: bash
+.. code-block:: none
 
     $ cd $GIT
     $ mr update
@@ -791,7 +791,7 @@ Initializing a repo for ``hub-flow``
 Every time you clone a new DIMS repo, it must be initialized with ``hub-flow``
 so that ``hub-flow`` commands work properly.  Initialize your repo this way:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,9,10
 
     (dimsenv)[dittrich@localhost git]$ git clone git@git.prisem.washington.edu:/opt/git/dims-ad.git
@@ -823,7 +823,7 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
 After initializing ``hub-flow``, there will be two new sections
 in your ``.git/config`` file starting with ``hubflow``:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 16-18, 23-28
 
    (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
@@ -887,7 +887,7 @@ DIMS-related customizations).
 To get a list of all repositories on ``git.prisem.washington.edu``,
 use the Git shell command ``list``:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1
 
     [dittrich@localhost ~]$ ssh git@git.prisem.washington.edu list
@@ -955,7 +955,7 @@ of a ``.mrconfig`` file (see ``man mr`` for more information).
    file. In this example, we will clone repos into ``~/dims/git`` by
    placing the ``.mrconfig`` file in the ``~/dims`` directory.
 
-   .. code-block:: bash
+   .. code-block:: none
 
        [dittrich@localhost dims]$ cat ~/.mrtrust
        /Users/dittrich/dims/.mrconfig
@@ -970,7 +970,7 @@ repositories that are cross-linked using the ``intersphinx`` extension to Sphinx
 as described in Section :ref:`intersphinxlinking`.
 
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,2,29,30,98
 
     [dittrich@localhost ~]$ cd ~/dims
@@ -1195,7 +1195,7 @@ The following is an example session creating a new repository named
 ``dims-ocd`` for *operational concept description* (a.k.a., *Concept of
 Operations*).
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,5,7,8,10,11
 
     [dittrich@localhost ~]$ slogin git.prisem.washington.edu
@@ -1236,7 +1236,7 @@ only create ``post-receive`` hooks for logging to AMQP and sending
 email when a ``git push`` is done. To add a Jenkins build hook, do
 the following command as well:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,2
 
     git@jira:/opt/git$ ln -s /opt/git/bin/post-receive-02jenkins dims-ocd.git/hooks/post-receive-02jenkins
@@ -1284,7 +1284,7 @@ initial local repository. The basic steps are as follows:
 
 Here is an edited transcript of performing the above tasks.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ~]$ cd $GIT
     [dittrich@localhost git]$ mkdir dims-ocd
@@ -1401,7 +1401,7 @@ things synchronized. Here is an example of the steps:
 Let's say the bug was discovered by noticing this error message shows up when
 rendering a Sphinx document using ``sphinx-autobuild``:
 
-.. code-block:: bash
+.. code-block:: none
 
    +--------- source/index.rst changed ---------------------------------------------
    /Users/dittrich/git/dims-ci-utils/docs/source/lifecycle.rst:306: WARNING: External Graphviz file u'/Users/dittrich/git/dims-ci-utils/Makefile.dot' not found or reading it failed
@@ -1414,7 +1414,7 @@ The file ``Makefile.dot`` is not found.  (The reason is that the
 file it included was not.)  We first stash our work (if necessary)
 and check out the develop branch. Next, locate the missing file:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,4
 
    [dittrich@localhost docs (feature/coreos)]$ git checkout develop
@@ -1429,7 +1429,7 @@ We now copy the file to where we believe it should reside, and
 to trigger a new ``sphinx-autobuild``, we touch the file that
 includes it:
 
-.. code-block:: bash
+.. code-block:: none
 
    [dittrich@localhost docs (develop)]$ cp ../../packer/Makefile.dot ..
    [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst
@@ -1439,7 +1439,7 @@ includes it:
 Switching to the ``sphinx-autobuild`` status window, we see the error
 message has gone away.
 
-.. code-block:: bash
+.. code-block:: none
 
    +--------- source/lifecycle.rst changed -----------------------------------------
    +--------------------------------------------------------------------------------
@@ -1466,7 +1466,7 @@ message has gone away.
 Now we double-check to make sure we have the change
 we expect, add, and commit the fix:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,3,4
 
    [dittrich@localhost docs (develop)]$ git stat
@@ -1482,7 +1482,7 @@ we expect, add, and commit the fix:
 Make note of the commit that includes just the new file: commit ``d5a948e``
 in this case. Now you could bump the version if necessary before pushing.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,2
 
    [dittrich@localhost docs (develop)]$ (cd ..; bumpversion patch)
@@ -1527,7 +1527,7 @@ in this case. Now you could bump the version if necessary before pushing.
 Now you can go back to the feature branch you were working on,
 and cherry-pick the commit with the missing file.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,5,10
 
    [dittrich@localhost docs (develop)]$ git checkout feature/coreos
@@ -1679,7 +1679,7 @@ By convention, DIMS repositories have at least one file, named ``VERSION``,
 that contains the release version number. You can see the current release by
 looking at the contents of this file.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (dev)]$ cat VERSION
     1.1.4
@@ -1701,7 +1701,7 @@ a release branch with ``hub-flow``, knowing that the new numbr will be.
 In this case, we will create a release branch ``1.2.0`` to increment
 the minor version number component.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (dev)]$ git hf release start 1.2.0
     Fetching origin
@@ -1745,7 +1745,7 @@ to match the new release number:
 Now the release can be finished. You will be placed in an editor
 to create comments for actions like merges and tags.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
     [dittrich@localhost ansible-playbooks (release/1.2.0)]$ cat VERSION
@@ -1864,7 +1864,7 @@ doesn't look like you are using code from the *last tagged* ``master``
 branch.  That completely defeats the purpose of using version numbers for
 dependency checks or debugging.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost ansible-playbooks (dev)]$ bumpversion patch
     [dittrich@localhost ansible-playbooks (dev)]$ git push
@@ -1910,7 +1910,7 @@ renaming can be done.  The best source found was
 https://gist.github.com/lttlrck/9628955, who suggested a three-part
 operation
 
-.. code-block:: bash
+.. code-block:: none
 
    # Rename branch locally
    git branch -m old_branch new_branch
@@ -1931,7 +1931,7 @@ First, we create a bare repo.  This will mimic our authoratitive repos
 on ``git.prisem.washington.edu``.  We'll call this repo ``dims-328.git``, named after the DIMS
 Jira ticket created to study the branch rename issue:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd
    $ mkdir depot
@@ -1943,7 +1943,7 @@ Jira ticket created to study the branch rename issue:
 Next, we clone this repo a first time, which simulates the first
 'user' (replace /home/stuart/ with your local path):
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd
    $ mkdir scratch
@@ -1954,7 +1954,7 @@ Next, we clone this repo a first time, which simulates the first
 
 Next, we dd some content in master branch
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd dims-328
    $ echo content > foo
@@ -1970,7 +1970,7 @@ the avenue to share work.  Notice how the second user clones into the
 specified directory ``dims-328-2``, so as not to tread on the first user's
 work:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~/scratch
    $ git clone file:///home/stuart/depot/dims-328.git dims-328-2
@@ -1980,7 +1980,7 @@ work:
 `user1` (first clone) then creates a ``dev`` branch and adds some content to
 it:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~/scratch/dims-328
    $ git branch dev
@@ -1996,7 +1996,7 @@ This will create a ``dev`` branch in the origin repo, i.e the depot.
 
 Next, as the second user, pull the changes, checkout ``dev`` and edit:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~scratch/dims-328-2
    $ git pull
@@ -2017,7 +2017,7 @@ Using instructions from https://gist.github.com/lttlrck/9628955, and
 noting the impacts to each user, we first act as `user1`, who will be
 deemed 'in charge' of the renaming process:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~scratch/dims-328
    $ git branch -m dev develop
@@ -2049,7 +2049,7 @@ deemed 'in charge' of the renaming process:
 Here are the contents of `user1`'s ``.git/config`` after the 3-operation
 rename:
 
-.. code-block:: bash
+.. code-block:: none
 
    [stuart@rejewski dims-328 (develop)]$ cat .git/config
    [core]
@@ -2075,7 +2075,7 @@ Note how there are references to ``develop`` but none to ``dev``.  As far as
 Now, what does `user2` see? With ``dev`` branch checked out, `and` with a
 local mod, we do a ``pull``:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~scratch/dims-328-2
    $ git pull
@@ -2089,7 +2089,7 @@ local mod, we do a ``pull``:
 This is some form of error message.  `user2`'s ``.git/config`` at this
 point is this:
 
-.. code-block:: bash
+.. code-block:: none
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
    [core]
@@ -2112,7 +2112,7 @@ point is this:
 Perhaps just the branch rename will work for `user2`? As `user2`, we do the
 first part of the `rename recipe`:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ git branch -m dev develop
 
@@ -2121,7 +2121,7 @@ first part of the `rename recipe`:
 No errors from this, but `user2`'s ``.git/config`` still refers to a
 ``dev`` branch:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 15
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
@@ -2145,7 +2145,7 @@ No errors from this, but `user2`'s ``.git/config`` still refers to a
 Next, as `user2`, we issued the third part of the `rename recipe` (but skipped
 the second part):
 
-.. code-block:: bash
+.. code-block:: none
 
    $ git push --set-upstream origin develop
    Branch develop set up to track remote branch develop from origin.
@@ -2169,7 +2169,7 @@ locally, no content was actually pushed.
 Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
 ``develop``:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 15
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
@@ -2192,7 +2192,7 @@ Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
 
 Next, as `user2`, commit the local change, and push to depot:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ git add devbranch
    $ git commit -m "msg"
@@ -2207,7 +2207,7 @@ origin :old_branch``), likely since this is an operation on the remote
 
 Finally, we switch back to `user1` and pull changes made by `user2`:
 
-.. code-block:: bash
+.. code-block:: none
 
    $ cd ~scratch/dims-328
    $ git pull
@@ -2285,7 +2285,7 @@ Fixing comments in unpublished commits
        Only do this if you have **not already pushed** the changes!!
        As noted in the ``git-commit`` man page for the ``--amend`` option:
 
-       .. code-block:: bash
+       .. code-block:: none
 
            You should understand the implications of rewriting history if you
            amend a commit that has already been published. (See the "RECOVERING
@@ -2305,7 +2305,7 @@ not related to the comment).
 Here is an example of three commits all made with ``git commit -am``
 using the same message:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 2,8,14,20,27
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git log
@@ -2353,7 +2353,7 @@ using the same message:
 Looking at the patch information shows these are clearly not
 all correctly commented:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 8-26,34-60,68-83
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
@@ -2446,7 +2446,7 @@ all correctly commented:
 The last commit is easy to fix. Just use ``git commit --amend``
 and edit the message:
 
-.. code-block:: bash
+.. code-block:: none
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend
 
@@ -2469,7 +2469,7 @@ and edit the message:
 Now we can see the message has been changed, but so has the
 commit hash!
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 2
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
@@ -2520,7 +2520,7 @@ To change the message for *only* commit ``f6f5d86``, start an interactive
 rebase at the commit immediately prior to that commit (in this case,
 commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 3
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git rebase -i 96575c9
@@ -2552,7 +2552,7 @@ commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
 As soon as you exit the editor, Git will begin the rebase
 and tell you what to do next:
 
-.. code-block:: bash
+.. code-block:: none
 
     Stopped at f6f5d868c8ddd12018ca662a54d1f58c150e6364... Fix intersphinx links to use DOCSURL env variable
     You can amend the commit now, with
@@ -2567,7 +2567,7 @@ and tell you what to do next:
 
 Now use ``git commit --amend`` to edit the comment:
 
-.. code-block:: bash
+.. code-block:: none
 
     (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git commit --amend
 
@@ -2589,7 +2589,7 @@ Now use ``git commit --amend`` to edit the comment:
 
 Finish off by continuing the rebase for the remaining commits.
 
-.. code-block:: bash
+.. code-block:: none
 
     (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git rebase --continue
     Successfully rebased and updated refs/heads/develop.
@@ -2599,7 +2599,7 @@ Finish off by continuing the rebase for the remaining commits.
 Now ``git log`` shows the correct comments, as well as
 new commit hashes:
 
-.. code-block:: bash
+.. code-block:: none
 
     (dimsenv)[dittrich@localhost docs (develop)]$ git log
     commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
@@ -2647,7 +2647,7 @@ Creating a new documentation-only repo
 
 ..
 
-.. code-block:: bash
+.. code-block:: none
    :linenos:
    :emphasize-lines: 1,2,3,5,6,13,18,23,26,27,34,35,43,47,53,56,59-67,72,73,86-88,100
 
@@ -2761,7 +2761,7 @@ to render a Sphinx document, you are almost ready to commit to Git. First,
 do ``make clean`` to get rid of any rendered files and make sure that only
 the source files and ``README.txt`` file are present:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,3
 
    [dittrich@localhost dims-asbuilt (master)]$ make clean
@@ -2788,7 +2788,7 @@ The next step is to add the source to the local git repo, set the upstream
 origin, tag the repository with the version number specified above, and push
 it to origin.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,2,10,20-22,31
 
    [dittrich@localhost dims-asbuilt (master)]$ git add .
@@ -2833,7 +2833,7 @@ it to origin.
 
 Following those steps, initialize the repo for ``hub-flow``.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1
 
    [dittrich@localhost dims-asbuilt (master)]$ git hf init
@@ -2860,7 +2860,7 @@ Following those steps, initialize the repo for ``hub-flow``.
 
 Set up ``bumpversion``:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1
 
    [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg
@@ -2934,7 +2934,7 @@ number.
 
 Now use ``hub-flow`` to push the current state of the local repo.
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1
 
    [dittrich@localhost dims-asbuilt (develop)]$ git hf push
@@ -2957,7 +2957,7 @@ Now use ``hub-flow`` to push the current state of the local repo.
 Finally, add the hook to trigger Jenkins documentation construction (in
 this case, cutting/pasting the hook from another repo to get the link correct).
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 1,9,10
 
    [git@jira git]$ tree dims-ad.git/hooks/
