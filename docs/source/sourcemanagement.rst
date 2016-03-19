@@ -2999,7 +2999,7 @@ not good enough. A common reason for doing this is if someone decided
 to commit many large binary archive files (e.g., some source packages,
 operating system installation ISOs, etc).
 
-.. caution::
+.. danger::
 
    Realize that if you are trying to permanently remove secrets, such
    as passwords or encryption private keys, even doing these steps is
