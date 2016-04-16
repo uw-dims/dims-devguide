@@ -1354,35 +1354,6 @@ Here is an edited transcript of performing the above tasks.
 
 ..
 
-.. _deletingsensitivedata:
-
-Deleting Sensitive Data From Repos
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Before publishing once private repositories on an internal Git repo server to
-a public server like GitHub requires making sure that **all** sensitive
-data is premanantly removed from the local repository's history **before**
-first pushing it to GitHub.
-
-.. danger::
-
-   Read what GitHub has to say in the Danger block at the top of their
-   `Remove sensitive data`_ page. In short, any time extremely sensitive
-   data (like a password or private key) is published to GitHub, it
-   should **be considered compromised**, reported to the project lead,
-   and changed as soon as possible.
-
-..
-
-Follow the instructions in GitHub's `Remove sensitive data`_ page to use
-either ``git filter-branch`` or the `BFG Repo-Cleaner`_ to remove
-files from a clone of the repo and then push the clean version
-to GitHub.
-
-.. _Remove sensitive data: https://help.github.com/articles/remove-sensitive-data
-.. _BFG Repo-Cleaner: http://rtyley.github.io/bfg-repo-cleaner/
-
-
 .. _cherrypickingcommits:
 
 Cherry-picking a commit from one branch to another
@@ -2992,19 +2963,29 @@ this case, cutting/pasting the hook from another repo to get the link correct).
 Permanently Removing Files from a Git Repo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are times when files exist in the repo (either active, or
-no longer active, but still included in past commits) that you want
-to permanently remove from the repo. Simply doing ``git rm file`` is
-not good enough. A common reason for doing this is if someone decided
-to commit many large binary archive files (e.g., some source packages,
-operating system installation ISOs, etc).
+Before publishing once private repositories on an internal Git repo server to
+a public server like GitHub requires making sure that **all** sensitive
+data is premanantly removed from the local repository's history **before**
+first pushing it to GitHub. Just going a ``git rm file`` on a file will remove
+it from the working directory, but not from Git's history. It still exists
+in a previous commit in the repo.
+
+A common reason for purging files from the Git history is when someone
+commits many large binary archive files (e.g., some source packages,
+operating system installation ISOs, etc). Those files exist in their
+original distribution servers and mirrors, so there isn't a need to put
+them under revision control. They just make the Git repo larger for
+no good reason.
 
 .. danger::
 
    Realize that if you are trying to permanently remove secrets, such
    as passwords or encryption private keys, even doing these steps is
-   not enough. Right now, go read the GitHub `Remove sensitive data`_
-   and its warning before going any further.
+   not enough.  Read what GitHub has to say in the Danger block at the top of their
+   `Remove sensitive data`_ page. In short, any time extremely sensitive
+   data (like a password or private key) is published to GitHub, it
+   should **be considered compromised**, reported to the project lead,
+   and changed as soon as possible.
 
 ..
 
@@ -3031,9 +3012,16 @@ paths. The following command was then used on the list:
 
 After that, the steps to clear the cache, do garbage collection and pruning, etc. were followed.
 
+See also GitHub's `Remove sensitive data`_ page to use
+either ``git filter-branch`` or the `BFG Repo-Cleaner`_ to remove
+files from a clone of the repo and then push the clean version
+to GitHub.
+
 .. _How to delete files permanently from your local and remote git repositories: http://www.zyxware.com/articles/4027/how-to-delete-files-permanently-from-your-local-and-remote-git-repositories
 .. _aaronzirbes/shrink-git-repo.sh: https://gist.github.com/aaronzirbes/4570924
 .. _How to Shrink a Git Repository: http://stevelorek.com/how-to-shrink-a-git-repository.html
+.. _Remove sensitive data: https://help.github.com/articles/remove-sensitive-data
+.. _BFG Repo-Cleaner: http://rtyley.github.io/bfg-repo-cleaner/
 
 
 .. todo::
