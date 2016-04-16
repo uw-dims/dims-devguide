@@ -1092,7 +1092,7 @@ as described in Section :ref:`intersphinxlinking`.
 ..
 
 Adding a newly-created repository
-"""""""""""""""""""""""""""""""""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Until the ``dims.git.syncrepos`` script has a new feature added to it
 to detect when a new repo exists on ``git.prisem.washington.edu`` that
