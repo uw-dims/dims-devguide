@@ -37,7 +37,7 @@ which are covered in the sections below. These tasks include things like:
     Every now and then, you may do something with Git and immediately
     think, "Oh, snap! I did *not* want to do *that*..." :(
 
-    There are resource on Dave Dittrich's home page in the
+    There are resources on Dave Dittrich's home page in the
     :ref:`dittrich:usinggit` section.  Two good resources for learning how things
     work with Git (and how to undo them) are:
 
