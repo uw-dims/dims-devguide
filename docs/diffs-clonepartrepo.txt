@@ -1,0 +1,36 @@
+diff --git a/docs/source/sourcemanagement.rst b/docs/source/sourcemanagement.rst
+index a98c114..e71903f 100644
+--- a/docs/source/sourcemanagement.rst
++++ b/docs/source/sourcemanagement.rst
+@@ -2656,6 +2651,31 @@ this case, cutting/pasting the hook from another repo to get the link correct).
+ 
+ ..
+ 
++Creating a new repo from portions of an existing repo
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++If you want to fork just part of an existing Git repo (e.g., just a single
++subdirectory in a larger repo) to use that as the foundation for a new project,
++follow these references to use ``git subtree``:
++
++    * `fun with git: making a subdirectory into a new repository`_
++
++    * `Detach subdirectory into separate Git repository`_ (The Easy Way)
++
++.. _fun with git\: making a subdirectory into a new repository: http://alyssafrazee.com/popping-a-subdirectory.html
++.. _Detach subdirectory into separate Git repository: http://stackoverflow.com/questions/359424/detach-subdirectory-into-separate-git-repository/17864475#17864475
++
++Alternatively, if you need all of a forked repo `except` for one
++or more directories, ``git filter-branch`` may be more appropriate.
++
++.. todo::
++
++    Add ``code-block::`` examples of doing this with a real repo
++    (e.g., ``demoapp`` from `openstack/cliff`_.)
++
++..
++
++.. _openstack/cliff: https://github.com/openstack/cliff
+ 
+ .. todo::
+ 
