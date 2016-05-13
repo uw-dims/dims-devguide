@@ -35,7 +35,7 @@ which are covered in the sections below. These tasks include things like:
 .. attention::
 
     Every now and then, you may do something with Git and immediately
-    think, "Oh, snap! I did *not* want to do *that*..." :(
+    think, "Oh, no! I did *not* want to do *that*..." :(
 
     There are resources on Dave Dittrich's home page in the
     :ref:`dittrich:usinggit` section.  Two good resources for learning how things
@@ -1496,7 +1496,7 @@ in this case. Now you could bump the version if necessary before pushing.
 ..
 
 Now you can go back to the feature branch you were working on,
-and cherry-pick the commit with the missing file.
+and ``cherry-pick`` the commit with the missing file.
 
 .. code-block:: none
    :emphasize-lines: 1,5,10
@@ -1581,7 +1581,7 @@ do the following:
 
         ..
 
-    #. Checkout the branch to sync (e.g., ``master``) and then merge
+    #. Checkout the branch to sync (e.g., ``master``) and then ``merge``
        any changes:
 
         .. code-block:: none
@@ -2604,6 +2604,14 @@ new commit hashes:
 
 Creating a new documentation-only repo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO(mboggess):
+.. todo::
+
+    Could this just be a link to cookiecutter stuff now?
+    :ref:`dimsciutils:dimscookiecutters`
+
+..
 
 .. note:: TBD
 

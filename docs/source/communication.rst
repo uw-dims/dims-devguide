@@ -89,7 +89,7 @@ When you make or join your first call
    email to each member of a meeting.
 #. Click the link in the email, and a new window will open for the Hangout
    session.
-#. If whomever starts the Hangout session knows your email and adds your to the
+#. If whomever starts the Hangout session knows your email and adds you to the
    call, a box will pop up in the bottom right hand of your Gmail window. The
    top of this box will be highlighted green.
 #. Click the part that says you've been invited to a Hangouts video chat.
@@ -139,7 +139,7 @@ Screensharing in Google Hangouts
     If two people are sharing the screen at the same time, and one of
     them puts the focus on the other person's shared screen, you will
     put Google Hangout into a feedback loop that will eventually bring
-    the internet to its knees.  Don't say I didn't warn you!!! :)
+    the internet to its knees. Don't say I didn't warn you!
 
 ..
 

@@ -159,7 +159,6 @@ systems set up properly.
 
     ..
 
-.. _public-keys-configure: http://jenkins.prisem.washington.edu/job/public-keys-configure/
 
 #.  Set the password on the account they are supposed to use so they can log in to it,
     and/or securely transfer their public SSH key to them so they can use it
@@ -186,13 +185,15 @@ systems set up properly.
 
    ..
 
+.. _public-keys-configure: http://jenkins.prisem.washington.edu/job/public-keys-configure/
+
 .. _remoteaccountsetup:
 
 Remote Account Setup
 --------------------
 
 This section details how to set up a new account for a current developer
-on a remote machine.
+on a remote machine, after being logged in to the remote machine.
 
 Change password
 ~~~~~~~~~~~~~~~

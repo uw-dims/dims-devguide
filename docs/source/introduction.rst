@@ -15,14 +15,19 @@ Overview
   understand in order to operate in a manner consistent with the rest of the
   team.
 
+  .. TODO(mboggess):
   .. todo::
 
-      .. note::
+        I'm not sure this is true anymore.
 
-          Section :ref:`policy` is not very well developed. It needs to be
-          completed or dropped.
+        Okay, well, look at 3.5 and 3.6
 
-      ..
+        .. note::
+
+            Section :ref:`policy` is not very well developed. It needs to be
+            completed or dropped.
+
+        ..
 
   ..
 
@@ -53,15 +58,6 @@ Overview
   framework for adding or managing the open source components that are used
   in a DIMS deployment.
 
-+ See :ref:`dimspacker:lifecycle` and :ref:`dittrich:swdev`.
-
-  .. todo::
-
-      .. note::
-
-          This `See ...` statement doesn't seem to fit very well. Either
-          work it in, or take it out.
-
-      ..
-
-  ..
++ For more information about the Lifecycle of DIMS Machines reference 
+  :ref:`dimspacker:lifecycle`. For more information about software development
+  in general, reference :ref:`dittrich:swdev`.
