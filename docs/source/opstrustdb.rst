@@ -9,6 +9,16 @@ If you have already created a server .box file, then you can skip the first part
 
 Section :ref:`dimspacker:vmquickstartrunansible` talks about running playbooks against the VM. 
 
+.. TODO(mboggess):
+.. todo::
+
+    Point back to the best way to run playbooks against a host. It is no
+    longer the script "run_playbook", as that does not exist anymore.
+    See todo block at the beginning of :ref:`ansibleplaybooks:runplaybooksoverview`.
+
+    This section can be kept for historical purposes or cleaned up.
+..
+
 For using the VM as a postgresql server, you don’t need to install the python virtual environment. Just run the following to prepare the VM:
 
 .. code-block:: none
@@ -18,6 +28,16 @@ For using the VM as a postgresql server, you don’t need to install the python 
 	$ ./run_playbook provision-dims-users.yml
 	$ ./run_playbook dims-ci-utils-deploy.yml -vv -e artifact_branch=develop
 
+..
+
+.. TODO(mboggess):
+.. todo::
+
+    Point back to the best way to run playbooks against a host. It is no
+    longer the script "run_playbook", as that does not exist anymore.
+    See todo block at the beginning of :ref:`ansibleplaybooks:runplaybooksoverview`.
+
+    This section can be kept for historical purposes or cleaned up.
 ..
 
 Then, run the ops-trust-testdb-configure.yml playbook:
