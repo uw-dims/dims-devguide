@@ -85,10 +85,10 @@ When you make or join your first call
    hand side, unless you've changed your settings.
 #. Since we all don't have each other's addresses for Gmail right now, you
    won't actually have any contacts.
-#. Whomever starts the Hangouts session can send a link can be sent out via
-   email to each member of a meeting.
-#. Click the link in the email, and a new window will open for the Hangout
-   session.
+#. Whomever starts the Hangouts session can send a link via email to each
+   member of a meeting.
+#. If you get an invitation via an email, click the link in the email,
+   and a new window will open for the Hangout session.
 #. If whomever starts the Hangout session knows your email and adds you to the
    call, a box will pop up in the bottom right hand of your Gmail window. The
    top of this box will be highlighted green.
@@ -122,16 +122,21 @@ When you make or join your first call
 Screensharing in Google Hangouts
 """"""""""""""""""""""""""""""""
 
+These docs have been update to reflect the changes Google has made
+to Hangouts. There is an 'original version', and sometimes the 'new version'
+is finicky, and we must resort to the 'original version'. As such, 
+the instructions for the 'original version' will be preserved in the 
+:ref:`appendices:orighangoutsinstructs`
+
 * Everyone can do it, at the same time!
-* Hover your cursor over the left hand edge of your Hangouts window.
-* A menu will slide out with lots of icons.
-* To screenshare, click the second icon down, a green monitor with a white
-  arrow pointing to the right.
+* Hover your cursor in the top right hand corner of your Hangouts window.
+* Click the option with the three vertically-aligned dots.
+* A menu will drop down, choose ``Screen Share``.
 * You can choose to share your whole desktop or individual windows of other
   applications you have open on your desktop. It doesn't appear you can share
   all windows of an application, such as Terminal. If you have 5 Terminal
-  windows open, you can only share 1 of them. You can open multiple tabs, and
-  those will be shared.
+  windows open, you can only share 1 of them, unless you share your entire
+  desktop. You can open multiple tabs, and those will be shared.
 * Resizing of windows works just fine when screensharing also.
 
 .. caution::

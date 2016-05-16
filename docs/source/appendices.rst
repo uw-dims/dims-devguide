@@ -573,4 +573,22 @@ space by allocating a disk image larger than is necessary.
 
 .. _Shrink a .sparseimage: http://superuser.com/questions/275148/shrink-a-sparseimage
 
+.. _orighangoutsinstructs:
+
+Google Hangouts 'Original Version' Screenshare Instructions
+-----------------------------------------------------------
+
+* Everyone can do it, at the same time!
+* Hover your cursor over the left hand edge of your Hangouts window.
+* A menu will slide out with lots of icons.
+* To screenshare, click the second icon down, a green monitor with a white
+  arrow pointing to the right.
+* You can choose to share your whole desktop or individual windows of other
+  applications you have open on your desktop. It doesn't appear you can share
+  all windows of an application, such as Terminal. If you have 5 Terminal
+  windows open, you can only share 1 of them. You can open multiple tabs, and
+  those will be shared.
+* Resizing of windows works just fine when screensharing also.
+
+
 .. EOF
