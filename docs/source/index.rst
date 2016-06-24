@@ -45,6 +45,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    servicediscovery
    dockerdatacenter
    debugging
+   testingwithrobot
    appendices
 
 .. note::
