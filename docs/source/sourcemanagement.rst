@@ -3038,6 +3038,150 @@ to GitHub.
 
 ..
 
+.. _gitandsecrets:
+
+Git and Secrets
+---------------
+
+There are a plethora of ways to deal with secrets in Git repos. Most are too
+comprehensive, i.e. they encrypt entire repos, whereas the DIMS project needs
+to encrypt certain secret things within repos that will be made public. The
+other option is to not encrypt anything and have to be very disciplined about
+keeping secret data or secret files completely outside of repos which will be
+made public. The DIMS project has already run into this problem, as has been
+documented in the section above, so this is not really a viable option.
+
+There are two different services we are currently considering:
+
+    * `Ansible Vault`_ 
+    
+    * `git-crypt`_
+
+Ansible Vault
+~~~~~~~~~~~~~
+
+Ansible Vault is a command-line tool provided by Ansible that creates new
+files and then encrypts them, encrypts already created files, and decrypts,
+edits, and views encrypted files. It allows for application of encryption at
+a very granular level. 
+
+Vault is a password-based encryption system. This password can be stored in
+a file, but it must be shared to every user who is allowed access to the 
+secret data files that are encrypted. This means there is still one step of
+having to figure out how to share the vault password.
+
+Once the password is known by all parties, the process is pretty simple. To
+create a file you want to be encrypted, 
+
+.. code-block:: none
+
+    $ ansible-vault create --vault-password-file=$PASS_FILE vaultfile.yml
+
+..
+
+To view the file, without being able to edit it,
+
+.. code-block:: none
+
+    $ ansible-vault view --vault-password-file=$PASS_FILE vaultfile.yml
+
+..
+
+To edit the file,
+
+.. code-block:: none
+
+    $ ansible-vault edit --vault-password-file=$PASS_FILE vaultfile.yml
+
+..
+
+To encrypt a file,
+
+.. code-block:: none
+
+    $ ansible-vault encrypt --vault-password-file=$PASS_FILE newvaultfile.yml
+
+..
+
+To decrypt a file,
+
+.. code-block:: none
+
+    $ ansible-vault decrypt --vault-password-file=$PASS_FILE newvaultfile.yml
+
+..
+
+When you commit a vault-protected file, it will be the encrypted file that is
+committed to Git. Thus, if you ``decrypt`` a file to view it, you'll have to
+``encrypt`` it again, and the file will change, so you'll have to commit it
+again. Before a certain version of ``ansible-vault``, there was no ``view``
+option, so maybe that was the only way to see the decrypted contents of an
+encrypted file. This version of ``ansible-vault`` is the version in the 
+``dimsenv`` Python virtual environment. You must be in a virtual environment
+with Ansible 2.0.1.0+ in order to have the ``view`` option.
+
+If you need to rekey a file,
+
+.. code-block:: none
+
+    $ ansible-vault rekey --new-vault-password-file=$NEW_PASS_FILE rekeyvaultfile.yml
+
+..
+
+To use Ansible to share secret information, one way is by copying an entire
+file of secrets. First, you must load a file with the secret information.
+This is generally done by creating a dictionary of information, including the
+destination of the secret file, the owner and group and mode of the file, as
+well as the actual contents of the file. You then run a task to load the secret
+file, which is decrypted with the Vault password and read by Ansible, then the
+information from that file is used to create the new file on the target machine.
+
+One important thing to note is that you must use the ``no_log`` module in these
+types of tasks to keep Ansible from printing the secret information in the
+output of running plays.
+
+.. code-block:: none
+ 
+    - name: Load secret password file
+      include_vars: "vault.yml"
+      no_log: true
+      when: ansible_os_family == "Debian"
+      tags: [ ansible-server ]
+    
+    - name: Copy secret password file
+      copy:
+        dest: "{{ item.key }}"
+        content: "{{ item.value.content }}"
+        owner: "{{ item.value.owner }}"
+        group: "{{ item.value.group }}"
+        mode: "{{ item.value.mode }}"
+      with_dict: "{{ vault_password }}"
+      when: ansible_os_family == "Debian"
+      no_log: true
+      tags: [ ansible-server ]
+
+..
+
+The following is an example of the ``vault.yml`` file:
+
+.. code-block:: none
+
+    ---
+
+    # File: unencrypted version of vault.yml
+
+    password:
+      /home/ansible/pass.txt
+        owner: "ansible"
+        group: "ansible"
+        mode: "u=r,go="
+        content: |
+          Secretsecretsecret
+
+..
+
+.. _git-crypt: https://github.com/AGWA/git-crypt
+.. _Ansible Vault: http://docs.ansible.com/ansible/playbooks_vault.html
 .. _github.com/uw-dims: https://github.com/uw-dims
 .. _ReadTheDocs: https://readthedocs.org/
 
