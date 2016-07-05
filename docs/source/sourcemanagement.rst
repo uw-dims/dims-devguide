@@ -3136,9 +3136,14 @@ well as the actual contents of the file. You then run a task to load the secret
 file, which is decrypted with the Vault password and read by Ansible, then the
 information from that file is used to create the new file on the target machine.
 
-One important thing to note is that you must use the ``no_log`` module in these
-types of tasks to keep Ansible from printing the secret information in the
-output of running plays.
+
+.. warning::
+
+    One important thing to note is that you must use the ``no_log`` module in these
+    types of tasks to keep Ansible from printing the secret information in the
+    output of running plays.
+
+..
 
 .. code-block:: none
  
@@ -3177,6 +3182,73 @@ The following is an example of the ``vault.yml`` file:
         mode: "u=r,go="
         content: |
           Secretsecretsecret
+
+    # eof
+
+..
+
+Additionally, you can use vault to keep variables secret that may not be
+used to create a whole file, like an SSH key. For example, a username and
+password might be needed in a service's configuration file. All you need
+to do is create a Vault-encrypted file with those secrets, include the
+secret vars file in a task before needing to use those secret variables
+(say, in a template), and then the secret will be populated on the target
+machine.
+
+However, unless using the ``ansible-vault view`` command, the secret
+variables file is encrypted, so it isn't searchable. A solution to this
+problem is to include a secret variable in a "normal" vars file, but
+don't include the actual secret there--set that variable to another
+variable.
+
+Let's say we need a username and password for Service X that is going to
+run on several machines in deployment ``local``. In our group_vars file 
+for this deployment, ``deployment-local.yml``, we'd define the 
+username and password variables for Service X as follows:
+
+.. code-block:: none
+
+    ...
+
+    serviceXUsername: "{{ vault_serviceXUsername }}"
+    serviceXPassword: "{{ vault_serviceXPassword }}"
+
+    ...
+
+..
+
+We would use the ``ansible-vault create`` command to then define the
+``vault_*`` variables with their actual secret data, as follows:
+
+.. code-block:: none
+
+    ---
+
+    # File: unencrypted version of deployment-local-vault.yml
+
+    vault_serviceXUsername: "secretUsername"
+    vault_serviceXPassword: "secretPassword"
+
+    # eof
+..
+
+Now, the secret variables file has to be included before any variable
+defined within it is used:
+
+.. code-block:: none
+
+    - name: Load deployment secret variables file
+      include_vars: "../../../inventory/group_vars/deployment-local-vault.yml"
+      no_log: true
+      when: ansible_os_family == "Debian"
+      tags: [ ansible-server ]
+
+    - name: Use secret variables
+      template: "src=test-secret.yml dest=/etc/test-secret.yml owner=root group=root mode={{ mode_0644 }}"
+      no_log: true
+      sudo: yes
+      when: ansible_os_family == "Debian"
+      tags: [ ansible-server ]
 
 ..
 
