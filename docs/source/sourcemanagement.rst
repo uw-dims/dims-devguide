@@ -3252,6 +3252,18 @@ defined within it is used:
 
 ..
 
+Helpful Links:
+
+    * http://docs.ansible.com/ansible/playbooks_best_practices.html#variables-and-vaults
+
+    * https://www.onwebsecurity.com/devops/safely-storing-ansible-playbook-secrets
+
+    * https://dantehranian.wordpress.com/2015/07/24/managing-secrets-with-ansible-vault-the-missing-guide-part-1-of-2/
+
+    * https://dantehranian.wordpress.com/2015/07/24/managing-secrets-with-ansible-vault-the-missing-guide-part-2-of-2/
+
+    * https://serversforhackers.com/video/ansible-using-vault
+
 .. _git-crypt: https://github.com/AGWA/git-crypt
 .. _Ansible Vault: http://docs.ansible.com/ansible/playbooks_vault.html
 .. _github.com/uw-dims: https://github.com/uw-dims
