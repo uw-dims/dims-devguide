@@ -3264,6 +3264,29 @@ Helpful Links:
 
     * https://serversforhackers.com/video/ansible-using-vault
 
+git-crypt
+~~~~~~~~~
+
+Another granular approach we looked at was ``git-crypt``. This integrates
+encryption using GPG keys within the ``git`` ecosystem. It allows
+for encryption by file, rather than repo. In addition, since the encryption
+integrated in the ``git`` ecosystem, you don't have to use special
+commands to view or edit encrypted files; encrypted files are decrypted
+when a repo is checked out and encrypted when committed.
+
+The trouble we have found is a problem many projects will have, especially
+open source ones. The files are encrypted with the GPG keys available at
+the time of a given file's encryption. This means that if other project
+members join after a file is encrypted, that file will have to be re-encrypted
+once the new member's GPG key has been integrated. All encrypted files
+would ahve to be ID'd and then re-encrypted. Additionally, this also
+compounds the key revocation problem as whoever has a private key to
+decrypt the files will still be able to see the old commits. The files
+can't just be re-encrypted, all the secrets they contain must be changed.
+
+At this time, we have chosen to stick with ``Vault`` over ``git-crypt``
+for the reasons listed above.
+
 .. _git-crypt: https://github.com/AGWA/git-crypt
 .. _Ansible Vault: http://docs.ansible.com/ansible/playbooks_vault.html
 .. _github.com/uw-dims: https://github.com/uw-dims
