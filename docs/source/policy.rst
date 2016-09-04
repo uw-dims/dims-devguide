@@ -61,12 +61,39 @@ principles:
 .. _Agile Manifesto: http://www.agilemanifesto.org/principles.html
 .. _List of software development philosophies: https://en.wikipedia.org/wiki/List_of_software_development_philosophies
 
+.. _credo:
+
+DIMS Development Credo
+~~~~~~~~~~~~~~~~~~~~~~
+
+The following are a series of guiding development principles that have
+become self-evident over time as the project progressed. It echoes some of the
+concepts expressed in the Agile Manifeto above.
+
 * **Avoid friction** - "Friction" is anything that slows down an otherwise
-  smooth running process. Little things that are broken, missing facts,
-  new programs that you wrote that don't yet have any documentation,
+  smoothly running process. Little things that are broken, missing facts,
+  new programs that were written but don't yet have any documentation,
   all make it harder for someone to get work done because something
   causes friction. Everything grinds to a halt until the little roadblock
   can be removed and then it takes more time to ramp back up to speed.
+
+* **Know your tools** - It is tempting to just start using a program without
+  first reading the fine manual (RTFM!?). While this may seem like a quick
+  way to get up and running, it can end up costing much more in the long
+  run. Take the time (a couple hours, perhaps) to read through as much of
+  a new tool's documentation to familiarize yourself with the tool's
+  capabilities and where to find answers to "how the heck to do I do X?"
+
+  .. note::
+
+    The PI has, for decades, maintained `an extensive web page`_ with
+    links to resources on tools and how to use them. Check there first,
+    and feel free to pass along any good resources you find that are not
+    yet included there.
+
+  ..
+
+.. _an extensive web page: https://staff.washington.edu/dittrich/home/
 
 * **Take control** - Relying on the default behaviors that are programmed into
   an open source product that we use within the DIMS project, without fully
@@ -164,7 +191,7 @@ project started (2013) and the current year, as shown here:
 
    #!/usr/bin/env python
    #
-   # Copyright (C) 2013, 2015 University of Washington. All rights reserved.
+   # Copyright (C) 2013-2016 University of Washington. All rights reserved.
    #
    # ...
 
@@ -237,25 +264,6 @@ cloning it to your local workstation: ::
 
 .. todo::
 
-    .. warning::
-
-        NOT FINISHED YET.
-
-    ..
-
-..
-
-Developing
-----------
-
-Developing new features for the DIMS CI Utilities...
-
-.. todo::
-
-    .. warning::
-
-        NOT FINISHED YET.
-
-    ..
+   NOT FINISHED YET.
 
 ..
