@@ -69,7 +69,7 @@ License
 
 .. include:: <isonum.txt>
 
-Copyright |copy| 2014, 2015 University of Washington. All rights reserved.
+Copyright |copy| 2014-2016 University of Washington. All rights reserved.
 
 .. include:: license.txt
    :literal:
