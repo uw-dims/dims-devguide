@@ -12,23 +12,6 @@ of DIMS components from a developer's perspective. It is related closely
 to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
 (``dims-ci-utils`` for short).
 
-.. note::
-
-   This is a `living document` that is being updated frequently to reflect
-   current practices within the DIMS team.  As such, it may undergo
-   restructuring frequently.
-
-..
-
-.. note::
-
-   Throughout this document, ``warning::``, ``note::``, or other
-   callout directives are used to let you know when to read carefully
-   and be aware of things that might not be exactly up-to-date or
-   safe for blind *cut+paste* into command lines.
-
-..
-
 .. toctree::
    :numbered:
    :maxdepth: 2
