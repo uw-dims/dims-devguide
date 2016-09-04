@@ -1,11 +1,7 @@
-=============
-Documentation
-=============
-
 .. _documentation:
 
-Documentation
--------------
+Documenting DIMS Components
+===========================
 
 This chapter covers `Sphinx`_ and `ReStructured Text (reST)`_,
 and how they are used with `ReadTheDocs`_ (a hosted documentation
@@ -79,7 +75,7 @@ produces search indexes, dynamic tables of contents, forward
 and back buttons in HTML pages, and many other helpful
 features for documenting a project. Because it effectively
 compiles the documentation, things like unit tests, functional
-tests, software version descriptions, insertion of Graphviz
+tests, software version descriptions, insertion of `Graphviz`_
 directed and undirected graphs to illustrate relationships
 between system components... The list goes on.
 
@@ -316,7 +312,7 @@ The most simple way to render Sphinx documents is to use
 the ``Makefile`` created by ``sphinx-quickstart`` using
 ``make`` as shown here:
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost docs (dev)]$ make html
     sphinx-build -b html -d build/doctrees   source build/html
@@ -381,6 +377,7 @@ You can now load the page with a browser:
 
 ..
 
+.. _manuallybuildpdf:
 
 Manually Building PDF using LaTeX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -489,7 +486,7 @@ After starting ``sphinx-autobuild`` you then enter the URL that is produced
 (in this case, the URL is ``http://127.0.0.1:8000``).  Now edit files in
 another terminal or editor application window.
 
-.. code-block:: bash
+.. code-block:: none
 
     [dittrich@localhost docs (dev)]$ sphinx-autobuild --ignore '*.swp' source build/html
     Serving on http://127.0.0.1:8000
@@ -643,7 +640,7 @@ Fixing errors
 If there are any problems, Sphinx will call them out with warnings.
 Pay attention to the build output.
 
-.. code-block:: bash
+.. code-block:: none
 
     rm -rf build/*
     sphinx-build -b html -d build/doctrees   source build/html
@@ -690,8 +687,13 @@ Pay attention to the build output.
 
 ..
 
-Both of these are simple typographical errors in the ``intro.rst``
-file.
+.. _typographicerrors:
+
+Typographic errors
+~~~~~~~~~~~~~~~~~~
+
+Both of the errors seen in this first example above are simple typographical
+errors in the ``intro.rst`` file.
 
 The first one, as it says, involves an improper literal on
 line 25:
@@ -747,6 +749,12 @@ starting out to get a refresher, and also have a browser window up with the
 `The reStructuredText_ Cheat Sheet: Syntax Reminders`_ or `Quick
 reStructuredText`_ quick reference guide to help while writing reST documents.
 
+
+.. _linkerrors:
+
+Link errors
+~~~~~~~~~~~
+
 A more subtle problem that comes up frequently when creating
 links to reference material in Sphinx documents is this
 error:
@@ -791,6 +799,11 @@ the URL, like this:
 
 ..
 
+.. _lateximageerrors:
+
+LaTeX image errors
+~~~~~~~~~~~~~~~~~~
+
 You may get errors rendering LaTeX PDF documents that include
 image files. Such an error may look like this:
 
@@ -826,6 +839,299 @@ image files. Such an error may look like this:
 
 The `solution to this`_ is to use ``mogrify -density 90 DD_home_page_small.png``
 to fix the image resolution metadata in the PNG file.
+
+.. _latexunicodeerrors:
+
+LaTeX Unicode rendering errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another error message that could occur when rendering the kind of
+text in the ``code-block`` seen in Section :ref:`typographicerrors` relates to
+the Unicode characters produced by the ``tree`` program to show the indentation
+levels.
+
+Here is an error message (with the specific lines highlighted) that can show up
+in a Jenkins build process FAILURE message:
+
+
+.. code-block:: bash
+    :linenos:
+    :emphasize-lines: 16,22,28
+
+    Running LaTeX files through pdflatex...
+    make -C build/latex all-pdf
+    make[1]: Entering directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/ansible-playbooks/docs/build/latex'
+    pdflatex  'AnsiblePlaybooksRepository.tex'
+    This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+    entering extended mode
+    (./AnsiblePlaybooksRepository.tex
+    
+    ...
+    
+    Underfull \hbox (badness 10000) in paragraph at lines 819--822
+    []\T1/ptm/m/n/10 While it is not re-quired to in-stall dims-ci-utils, you prob-
+    a-bly will want to run the play-book
+    [11] [12] [13]
+    
+    ! Package inputenc Error: Unicode char \u8:â”œ not set up for use with LaTeX.
+    
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...                                              
+                                                      
+    l.1040 â”œ-- defaults
+                         
+    ? 
+    ! Emergency stop.
+     ...                                              
+                                                      
+    l.1040 â”œ-- defaults
+                         
+    !  ==> Fatal error occurred, no output PDF file produced!
+    Transcript written on AnsiblePlaybooksRepository.log.
+    make[1]: *** [AnsiblePlaybooksRepository.pdf] Error 1
+    make[1]: Leaving directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/ansible-playbooks/docs/build/latex'
+    make: *** [latexpdf] Error 2
+    Build step 'Custom Python Builder' marked build as failure
+    Warning: you have no plugins providing access control for builds, so falling back to legacy behavior of permitting any downstream builds to be triggered
+    Finished: FAILURE
+
+..
+
+Here is the specific block of text that triggered the rendering
+error message:
+
+.. code-block:: rest
+   :emphasize-lines: 3
+
+    .. code-block:: bash
+    
+        ── defaults
+            ── main.yml
+        ── files
+            ── base-requirements.txt
+            ── debian-virtualenv-prereqs.sh
+            ── dimsenv-requirements.txt
+            ── macos-virtualenv-prereqs.sh
+        ── meta
+            ── main.yml
+        ── tasks
+            ── main.yml
+            ── post_tasks.yml -> ../../../dims/post_tasks.yml
+            ── pre_tasks.yml -> ../../../dims/pre_tasks.yml
+        ── templates
+            ── bashrc.dims.virtualenv.j2
+            ── builddimsenvmod.sh.j2
+
+    ..
+
+..
+
+The problem is that the long-dash character is not defined to
+LaTeX. This is done in the Sphinx ``conf.py`` file, and all DIMS
+documents should include these definitions because we frequently
+embed output of ``tree``, which uses Unicode characters for line
+drawing.  (Not all do, which causes random failures when adding text to
+Sphinx documents.)
+
+.. code-block:: none
+   :emphasize-lines: 10
+
+    latex_elements = {
+     ...
+    # Additional stuff for the LaTeX preamble.
+    #
+    # The following comes from
+    # https://github.com/rtfd/readthedocs.org/issues/416
+    #
+    'preamble': "".join((
+        '\DeclareUnicodeCharacter{00A0}{ }',     # NO-BREAK SPACE
+        '\DeclareUnicodeCharacter{2014}{\dash}', # LONG DASH
+        '\DeclareUnicodeCharacter{251C}{+}',     # BOX DRAWINGS LIGHT VERTICAL AND RIGHT
+        '\DeclareUnicodeCharacter{2514}{+}',     # BOX DRAWINGS LIGHT UP AND RIGHT
+    )),
+    }
+
+..
+
+.. note::
+
+   See http://tex.stackexchange.com/questions/34604/entering-unicode-characters-in-latex
+
+..
+
+.. _latexnottty:
+
+"LaTeX is not a TTY" errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another variation of errors during LaTeX rendering presents itself similarly
+to the previous error, but the problem is due to inability to map a Unicode
+character to a LaTeX macro: the problem is due to directly (or indirectly)
+sending output saved from Unix command line programs that do fancy things
+like coloring characters, etc, using ANSI escape sequences. While a terminal
+program that uses the Unix TTY subsystem may handle the ANSI escape
+sequences, and HTML renderers may know how to handle the ANSI escape
+sequences, LaTeX does not. Here is an example of this problem, excerpted
+from a Jenkins build job email message:
+
+.. code-block:: none
+   :linenos:
+   :emphasize-lines: 3,28,34,38
+
+    Started by user anonymous
+    [EnvInject] - Loading node environment variables.
+    Building in workspace /var/lib/jenkins/jobs/dims-docs-deploy/workspace
+
+    Deleting project workspace... done
+
+    [workspace] $ /bin/bash -xe /tmp/shiningpanda5607640542889107840.sh
+    + jenkins.logmon
+    [workspace] $ /bin/bash -xe /tmp/shiningpanda5535708223044870299.sh
+    + jenkins.dims-docs-deploy
+    [+++] jenkins.dims-docs-deploy: Deploying documentation
+    [+++] jenkins.dims-docs-deploy: Get global vars from jenkins.dims-defaults.
+    [+++] jenkins.dims-defaults Default variables
+    [+++]    PLAYBOOKSREPO=ansible-playbooks
+    [+++]    INVENTORYREPO=ansible-inventory
+    [+++]    GITURLPREFIX=git@git.devops.develop:/opt/git/
+    [+++]    MASTERBRANCH=master
+    [+++]    DEVBRANCH=develop
+    [+++]    DEVHOSTS=development
+    [+++]    MASTERHOSTS=production
+    [+++]    DEFAULTHOSTFILE=development
+    [+++]    DEFAULTANSIBLEBRANCH=develop
+    [+++]    DEFAULTINVENTORYBRANCH=develop
+    [+++]    DEFAULTREMOTEUSER=ansible
+
+    ...
+    ! Package inputenc Error: Keyboard character used is undefined
+    (inputenc)                in inputencoding `utf8'.
+
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...
+
+    l.5790 ...dl{}GIT/dims\PYGZhy{}dockerfiles/configu
+
+    !  ==> Fatal error occurred, no output PDF file produced!
+    Transcript written on UsingDockerinDIMS.log.
+    make[1]: *** [UsingDockerinDIMS.pdf] Error 1
+    make[1]: Leaving directory `/var/lib/jenkins/jobs/dims-docs-deploy/workspace/dims-dockerfiles/docs/build/latex'
+    make: *** [latexpdf] Error 2
+    Build step 'Custom Python Builder' marked build as failure
+    Warning: you have no plugins providing access control for builds, so falling back to legacy behavior of permitting any downstream builds to be triggered
+    Finished: FAILURE
+
+..
+
+To find the line in question (5790, in this case, called out in output
+line 34 above), manually trigger a LaTeX PDF build from the Sphinx
+document and then look for the LaTeX source file that corresponds with the
+PDF file name (seen in output line 38 above) in the ``build/latex`` subdirectory
+(in this case, it would be
+``$GIT/dims-dockerfiles/docs/build/latex/UsingDockerinDIMS.tex``) to
+find the character that causes the error:
+
+.. code-block:: none
+   :linenos:
+   :emphasize-lines: 14-19,32
+
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ make latexpdf
+
+     ...
+
+    ! Package inputenc Error: Keyboard character used is undefined
+    (inputenc)                in inputencoding `utf8'.
+
+    See the inputenc package documentation for explanation.
+    Type  H <return>  for immediate help.
+     ...
+
+    l.5789 ...dl{}GIT/dims\PYGZhy{}dockerfiles/configu
+
+    ? ^Cmake[1]: *** Deleting file `UsingDockerinDIMS.pdf'
+    ^Z
+    [1]+  Stopped                 make latexpdf
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ kill -9 %1
+    [1]+  Killed: 9               make latexpdf
+    [dimsenv] ~/dims/git/dims-dockerfiles/docs (develop) $ pr -n build/latex/UsingDockerinDIMS.tex | less
+
+      ...
+
+     5780    * VPN \PYGZsq{}01\PYGZus{}uwapl\PYGZus{}dimsdev2\PYGZsq{} is running
+     5781    * VPN \PYGZsq{}02\PYGZus{}prsm\PYGZus{}dimsdev2\PYGZsq{} is running
+     5782   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/bashrc.dims.virtualenv ...
+     5783   [+++] Activating DIMS virtual environment (dimsenv) [ansible\PYGZhy{}playbooks v1.2.93]
+     5784   [+++] (Create file /home/mboggess/.DIMS\PYGZus{}NO\PYGZus{}DIMSENV\PYGZus{}ACTIVATE to disable)
+     5785   [+++] Virtual environment \PYGZsq{}dimsenv\PYGZsq{} activated [ansible\PYGZhy{}playbooks v1.2.93]
+     5786   [+++] /opt/dims/bin/dims.install.dimscommands: won\PYGZsq{}t try to install scripts in /opt/dims
+     5787   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/git\PYGZhy{}prompt.sh ...
+     5788   [+++] Sourcing /opt/dims/etc/bashrc.dims.d/hub.bash\PYGZus{}completion.sh ...
+     5789   ESC[1;34m[dimsenv]ESC[0m ESC[1;33mmboggess@dimsdev2:\PYGZti{}/core\PYGZhy{}localESC[0m () \PYGZdl{} bash \PYGZdl{}GIT/dims\PYGZhy{}dockerfiles/configu
+     5790   rations/elasticsearch/setup\PYGZus{}cluster.sh
+     5791
+     5792   elasticsearch@.service                          0\PYGZpc{}    0     0.0KB/s   \PYGZhy{}\PYGZhy{}:\PYGZhy{}\PYGZhy{} ETA
+     5793   elasticsearch@.service                        100\PYGZpc{} 1680     1.6KB/s   00:00
+     5794
+     5795   start\PYGZus{}elasticsearch\PYGZus{}cluster.sh                  0\PYGZpc{}    0     0.0KB/s   \PYGZhy{}\PYGZhy{}:\PYGZhy{}\PYGZhy{} ETA
+     5796   start\PYGZus{}elasticsearch\PYGZus{}cluster.sh                100\PYGZpc{}   75     0.1KB/s   00:00
+     5797   ESC[1;34m[dimsenv]ESC[0m ESC[1;33mmboggess@dimsdev2:\PYGZti{}/core\PYGZhy{}localESC[0m () \PYGZdl{} vagrant ssh core\PYGZhy{}01 \PYGZhy{}\PYGZhy{} \PYGZhy{}A
+     5798   VM name: core\PYGZhy{}01 \PYGZhy{} IP: 172.17.8.101
+     5799   Last login: Wed Sep  9 13:50:22 2015 from 10.0.2.2
+     5800
+     5801   CoreESC[38;5;206mOESC[38;5;45mSESC[39m alpha (794.0.0)
+     5802   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[?1034hESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m ls
+     5803   ESC[0mESC[01;34minstancesESC[0m  start\PYGZus{}elasticsearch\PYGZus{}cluster.sh  ESC[01;34mstaticESC[0m  ESC[01;34mtemplatesESC[0m
+     5804   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m bash start\PYGZus{}elasticsearch\PYGZus{}cluster.sh
+     5805   ESC]0;core@core\PYGZhy{}01:\PYGZti{}^GESC[01;32mcore@core\PYGZhy{}01ESC[01;34m \PYGZti{} \PYGZdl{}ESC[00m ESC[Ketcdctl cluster\PYGZhy{}hea
+      ...
+
+..
+
+.. note::
+
+    Pay close attention to the commands used to reproduce the error that Jenkins
+    encountered from the command line. LaTeX, which is being invoked by Sphinx
+    (a Python program that invokes ``pdflatex`` as a subprocess) has some
+    problems getting the **CTRL-C** character (see line 14). To work around this,
+    do the following:
+
+    #. Suspend the process with **CTRL-Z** (see line 15).
+
+    #. Identify the suspended job's number found within the square brackets on
+       line 16: (``[1]+  Stopped ...``, in this case, job ``1``).
+
+    #. Use the ``kill`` command (see ``man kill`` and ``man signal``) to send
+       the ``-9`` (non-maskable interrupt) signal to the suspended job
+       (see line 17).
+
+    #. Use ``pr -n`` to add line numbers to the file and pass the output
+       to a pager like ``less`` to find the line number called out by
+       LaTeX (see lines 19 and 32).
+
+..
+
+As can be seen in line 32 above, the escape sequence **ESC[1;34m** (set
+foreground color 'Blue': see `Bash Prompt HOWTO: Chapter 6. ANSI Escape
+Sequences: Colours and Cursor Movement`_) is causing LaTeX to fail.
+
+The moral of the story is, only send properly mapped Unicode and/or UTF-8/ASCII
+text to Sphinx, so that when it does not fail when it invokes LaTeX.
+
+.. _Bash Prompt HOWTO\: Chapter 6. ANSI Escape Sequences\: Colours and Cursor Movement: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+
+.. note::
+
+    You can strip ANSI escape sequences in many ways. Google "strip ANSI
+    escape sequences" to find some. Another way to handle this is to
+    disable colorizing, or cut/paste command output as simple text
+    rather than capturing terminal output with programs like
+    ``script``.
+
+..
+
+.. commontasks:
 
 Common Tasks
 ------------
@@ -934,6 +1240,8 @@ consistent, add the ``:numbered:`` option to the ``toctree`` directive: ::
 
 See http://sphinx-doc.org/markup/toctree.html and http://stackoverflow.com/questions/20061577/sphinx-section-numbering-for-more-than-level-3-headings-sectnum
 
+.. _convertinghtml:
+
 Converting HTML content to Sphinx reST files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -979,7 +1287,9 @@ Section 5 from the original HTML: ::
 
 ..
 
-Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``: ::
+Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``:
+
+.. code-block:: none
 
     5. Requirements traceability.
     =============================
@@ -1005,7 +1315,9 @@ Section 5 from ``SRS.rst-orig`` after conversion with ``html2rest``: ::
 
 ..
 
-Section 5 in a separate file ``traceability.rst``: ::
+Section 5 in a separate file ``traceability.rst``: 
+
+.. code-block:: none
 
     .. _traceability:
     
@@ -1041,8 +1353,34 @@ The rendered HTML for section 5 can be seen in the
 figure :ref:`noteinlistcorrect`.
 
 
+.. _referencinglabels:
+
+Referencing subsections or figures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the last example covered in section :ref:`convertinghtml`, note the label
+definition ``.. _traceability:`` right before the section heading *Requirements
+traceability*.  A reference to this label will result in the section heading
+being used as the text for the hyperlink.  This section itself is preceded by
+the label ``referencinglabels``, which is rendered on reference as
+:ref:`referencinglabels`.  This is the way to reference a sub-section (or figure,
+table, etc.) of a document.
+
+..
+
+.. note::
+
+    The section :ref:`intersphinxlinking` builds on this concept of linking
+    to arbitrary locations in a file by label.
+
+..
+
+
+.. _commonproblems:
+
 Common Problems
 ---------------
+
 
 Improperly referencing links to external documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1056,7 +1394,7 @@ and need to be unique.
 
 Here is output of ``sphinx-autobuild`` showing this problem:
 
-::
+.. code-block:: none
 
     +--------- source/.vmprovisioning.rst.swp changed -------------------------------
     /Users/dittrich/git/dims-ci-utils/docs/source/vmprovisioning.rst:3: WARNING: Duplicate explicit target name: "here".
@@ -1250,11 +1588,15 @@ Having multiple colons in link target labels
 It is easy to get used to using directives like ``.. figure::``
 or ``.. note::`` and placing the double-colon after them.
 Labels look similar, but are not directives. They also have
-the underscore in front of them and should look like: ::
+the underscore in front of them and should look like:
+
+.. code-block:: none
 
     .. _label:
 
     This is a reference to :ref:`label`.
+
+..
 
 
 Advanced Use of Sphinx Features
@@ -1311,16 +1653,27 @@ If the documentation must be hand-edited for each user, that places a huge
 burden on those wanting to implement DIMS and the system will not be used
 widely enough to have the intended impact.
 
+
 .. _intersphinxlinking:
 
 Cross-referencing between documents with the ``sphinx.ext.intersphinx`` extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Sphinx extension ``sphinx.ext.intersphinx`` allows mapping of labels
-across documents. (See http://sphinx-doc.org/ext/intersphinx.html). This allows
-for cross referencing, for example linking a test in the Test Plan document to
-a requirement or user story in the Requirements document to provide
+ReST supports `Cross-referencing arbitrary locations`_ within a document using
+``:ref:``. To reference arbitrary locations (by their label) in other documents
+requires the Sphinx extension ``sphinx.ext.intersphinx``.
+(See the documentation for `sphinx.ext.intersphinx`_ and Section
+:ref:`referencinglabels` for more on labels.)
+ 
+.. _Cross-referencing arbitrary locations: http://sphinx-doc.org/markup/inline.html?highlight=ref#role-ref
+.. _sphinx.ext.intersphinx: http://sphinx-doc.org/ext/intersphinx.html
+
+Intersphinx links allow, for example, cross referencing a test in the Test Plan
+document to a requirement or user story in the Requirements document to provide
 requirements traceability in testing.
+
+Mapping URLs to documents
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step is to enable the extension by making sure it
 is included in the ``conf.py`` file:
@@ -1390,15 +1743,18 @@ define a label namespace for use in ``:ref:`` directives.
 
     intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
     intersphinx_mapping = {
-            'dimsocd': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd',
+            'dimsocd': ('http://app.devops.develop:8080/docs/develop/html/dims-ocd',
                         ('../../dims-ocd/build/html/objects.inv',None)),
-            'dimsad': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad',
+            'dimsad': ('http://app.devops.develop:8080/docs/develop/html/dims-ad',
                         ('../../dims-ad/build/html/objects.inv',None)),
-            'dimstp': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-tp',
+            'dimstp': ('http://app.devops.develop:8080/docs/develop/html/dims-tp',
                         ('../../dims-tp/build/html/objects.inv',None))
     }
 
 ..
+
+Linking to the label
+^^^^^^^^^^^^^^^^^^^^
 
 In the reST document (in this case, the ``referenceddocs.rst`` file), 
 normal ``:ref:`` directives are used, but the target of the ``:ref:``
@@ -1481,7 +1837,7 @@ release number visible for precise cross-referencing.
 When you build the document, you will see the ``objects.inv`` files
 being loaded:
 
-.. code-block:: bash
+.. code-block:: none
    :emphasize-lines: 7,8,9
 
    (dimsenv)[dittrich@localhost dims-sr (develop)]$ make html
@@ -1490,15 +1846,16 @@ being loaded:
    sphinx-build -b html -d build/doctrees   source build/html
    Running Sphinx v1.3.1+
    loading pickled environment... done
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd/objects.inv...
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad/objects.inv...
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-tp/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-ocd/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-ad/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-tp/objects.inv...
    building [mo]: targets for 0 po files that are out of date
    building [html]: targets for 0 source files that are out of date
    updating environment: [config changed] 8 added, 0 changed, 0 removed
    reading sources... [ 12%] appendices
    reading sources... [ 25%] index
    ...
+
 ..
 
 .. _textsubstitution:
@@ -1688,13 +2045,30 @@ with a browser (in this case, ``lynx``), you get the following:
 Inserting a graph using Graphviz
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Sphinx uses `Graphviz`_ to render directed and undirected graphs inline in a
+document. To insert a graph, create a `DOT`_ language file to describe
+the graph, then reference the file using the ``graphviz::`` directive.
+
 .. graphviz:: tools.dot
+   :caption: Relationships between tools and processes in DIMS
 
-..  Disable caption for now due to bug in Sphinx 1.3.1b3 and 1.3.1.
-..  https://github.com/sphinx-doc/sphinx/issues/1788
+THe `DOT`_ file for the graph above looks like this:
+
+.. literalinclude:: tools.dot
+
+.. note::
+
+    You can find a `Gallery`_ of example `DOT`_ files at the
+    `Graphviz web site`_ that shows how to do more advanced
+    things, such as `labelled edges`_.
+
 ..
-..   :caption: Relationships between tools and processes in DIMS
 
+.. _Graphviz: https://en.wikipedia.org/wiki/Graphviz
+.. _DOT: https://en.wikipedia.org/wiki/DOT_(graph_description_language)
+.. _Graphviz web site: http://ftp.graphviz.org/Documentation.php
+.. _Gallery: http://ftp.graphviz.org/Gallery.php
+.. _labelled edges: http://ftp.graphviz.org/content/fsm
 
 .. _Sphinx: http://sphinx-doc.org
 .. _Restructured Text (reST): http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html

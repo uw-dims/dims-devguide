@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# DIMS 
+# DIMS developers guide
 # (Copied from dims-ci-utils source tree on Sat May  9 14:44:33 PDT 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -14,6 +14,7 @@
 
 import sys
 import os
+import shlex
 from sphinx import __version__
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -57,14 +58,15 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DIMS Developer Guide'
-copyright = u'2014, 2015 David Dittrich'
+copyright = u'2014, 2015 University of Washington'
+author = u'Dave Dittrich'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.0.1'
+version = '0.1.0'
 
 # The full version, including alpha/beta/rc tags.
 release = version
@@ -214,6 +216,7 @@ latex_elements = {
     '\DeclareUnicodeCharacter{00A0}{ }',  # NO-BREAK SPACE
     '\DeclareUnicodeCharacter{251C}{+}',  # BOX DRAWINGS LIGHT VERTICAL AND RIGHT
     '\DeclareUnicodeCharacter{2514}{+}',  # BOX DRAWINGS LIGHT UP AND RIGHT
+    '\DeclareUnicodeCharacter{2588}{\textblock}',  # SOLID TEXT BLOCK
 )),
 }
 
@@ -356,11 +359,18 @@ os.environ['GITBRANCH'] = "develop"
 
 if os.environ.get('DOCSURL') is None:
     #os.environ['DOCSURL'] = "file://{}".format(os.environ.get('GIT'))
-    os.environ['DOCSURL'] = "http://u12-dev-svr-1.prisem.washington.edu:8080/docs/{}/html/".format(
+    os.environ['DOCSURL'] = "http://app.devops.develop:8080/docs/{}/html".format(
         os.environ['GITBRANCH'])
 
 intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
 intersphinx_mapping = {
+        'dimsad': ("{}/dims-ad".format(os.environ['DOCSURL']), None),
+        'dimssr': ("{}/dims-sr".format(os.environ['DOCSURL']), None),
+        'dimsocd': ("{}/dims-ocd".format(os.environ['DOCSURL']), None),
+        'dimsdockerfiles': ("{}/dims-dockerfiles".format(os.environ['DOCSURL']), None),
         'dimsciutils': ("{}/dims-ci-utils".format(os.environ['DOCSURL']), None),
+        'ansibleplaybooks': ("{}/ansible-playbooks".format(os.environ['DOCSURL']),None),
+        'ansibleinventory': ("{}/ansible-inventory".format(os.environ['DOCSURL']),None),
+        'dimspacker': ("{}/dims-packer".format(os.environ['DOCSURL']),None),
         'dittrich': ('https://staff.washington.edu/dittrich/home/', None)
 }
