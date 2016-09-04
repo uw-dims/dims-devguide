@@ -17,7 +17,7 @@ with an account on our internal ``ops-trust`` portal instance.
 Our FosWiki server has a page that was dedicated to the steps necessary
 for `Provisioning New DIMS Users`_.
 
-.. _Provisioning New DIMS Users: http://foswiki.prisem.washington.edu/Development/ProvisionNewUsers
+.. _Provisioning New DIMS Users: http://foswiki.devops.develop/Development/ProvisionNewUsers
 
 .. caution::
 
@@ -107,7 +107,7 @@ as needed.
 
 ..
 
-.. _DIMS-64: http://jira.prisem.washington.edu/browse/DIMS-64
+.. _DIMS-64: http://jira.devops.develop/browse/DIMS-64
 
 
 .. _sshkeys:
@@ -138,7 +138,7 @@ systems set up properly.
    doing their development (i.e., a DIMS developer laptop, Vagrant virtual
    machine, or bare-metal workstation.) Also make sure their key is
    included in the ``authorized_keys`` file in the ``git`` account on
-   ``git.prisem.washington.edu`` in order for them to be able to read/write
+   ``git.devops.develop`` in order for them to be able to read/write
    source code using Git.
 
    .. todo::
@@ -185,7 +185,7 @@ systems set up properly.
 
    ..
 
-.. _public-keys-configure: http://jenkins.prisem.washington.edu/job/public-keys-configure/
+.. _public-keys-configure: http://jenkins.devops.develop/job/public-keys-configure/
 
 .. _remoteaccountsetup:
 
@@ -263,7 +263,7 @@ Transfer SSH Keys to Remote Machine
    but when trying to go one hop further, keys are not available. For 
    example, I can log in to b52 just fine, but when I try to run 
    ``dims.git.syncrepos``, which requires access to 
-   ``git.prisem.washington.edu``, I ran into trouble because my keys 
+   ``git.devops.develop``, I ran into trouble because my keys 
    were not on b52.
 
 ..
@@ -322,7 +322,7 @@ Looking in ~/dims/ for .mrconfig:
    
       [dimsenv] mboggess@b52:~/dims () $ cd ..
       [dimsenv] mboggess@b52:~ () $ dims.git.syncrepos
-      [+++] Found 49 available repos at git@git.prisem.washington.edu
+      [+++] Found 49 available repos at git@git.devops.develop
       [+++] Adding Repo[1] ansible-inventory to /home/mboggess/dims/.mrconfig and checking it out.
       mr checkout: /home/mboggess/dims/git/ansible-inventory
       Cloning into 'ansible-inventory'...

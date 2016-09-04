@@ -4,7 +4,7 @@ Source Code Management with Git
 ===============================
 
 Daily development work on DIMS source code is done using a local server
-accessed via SSH to ``git.prisem.washington.edu``.  The public release of DIMS
+accessed via SSH to ``git.devops.develop``.  The public release of DIMS
 software will be from `github.com/uw-dims`_ with public
 documentation  delivered on `ReadTheDocs`_. (DIMS documentation is covered in
 Section :ref:`documentation`.)
@@ -294,7 +294,7 @@ The following are convenience aliases that help with certain tasks:
 
 ..
 
-.. _DIMS-470: http://jira.prisem.washington.edu/browse/DIMS-470
+.. _DIMS-470: http://jira.devops.develop/browse/DIMS-470
 
 .. _One weird trick for powerful Git aliases: http://blogs.atlassian.com/2014/10/advanced-git-aliases/
 .. _mwhite/git-aliases.md: https://gist.github.com/mwhite/6887990
@@ -316,7 +316,7 @@ using the ``hub flow`` tool described in Section :ref:`installingtools`.
    environment to make it easier for everyone on the team to access them and to
    stay up to date with instructions in this document. If you have `any`
    problems, file a `Jira
-   <http://jira.prisem.washington.edu/secure/Dashboard.jspa>`_ ticket or talk
+   <http://jira.devops.develop/secure/Dashboard.jspa>`_ ticket or talk
    to Dave immediately upon encountering a problem. Do not let yourself get
    blocked on something and block everyone else as a result!
 
@@ -371,7 +371,7 @@ are working on is up to date:
     remote: Total 165 (delta 56), reused 1 (delta 0)
     Receiving objects: 100% (165/165), 31.78 KiB | 0 bytes/s, done.
     Resolving deltas: 100% (56/56), completed with 13 local objects.
-    From git.prisem.washington.edu:/opt/git/ansible-playbooks
+    From git.devops.develop:/opt/git/ansible-playbooks
        001ba47..0e12ec3  develop    -> origin/develop
      * [new branch]      feature/dims-334 -> origin/feature/dims-334
     Updating 001ba47..0e12ec3
@@ -404,7 +404,7 @@ in testing), it would be deleted:
      remotes/origin/master
    [dittrich@localhost dims-asbuilt (develop)]$ git hf update
    Fetching origin
-   From git.prisem.washington.edu:/opt/git/dims-asbuilt
+   From git.devops.develop:/opt/git/dims-asbuilt
     x [deleted]         (none)     -> origin/feature/eliot
 
    Summary of actions:
@@ -460,7 +460,7 @@ within a repo, or by editing/writing the ``.mrconfig`` file directly.
 
 ..
 
-.. _DIMS-350: http://jira.prisem.washington.edu/browse/DIMS-350
+.. _DIMS-350: http://jira.devops.develop/browse/DIMS-350
 
 Cloning all of the DIMS source repos at once, or getting the contents of
 what should be an up-to-date ``.mrconfig`` file, is covered in the Section
@@ -519,7 +519,7 @@ starting a sync.)
    :emphasize-lines: 1,11-15,19-32,33-34,50-73,75-98,101-103,118,125-127
 
     [dimsenv] dittrich@dimsdemo1:~ () $ dims.git.syncrepos
-    [+++] Found 46 available repos at git@git.prisem.washington.edu
+    [+++] Found 46 available repos at git@git.devops.develop
     [+++] Repo[1] "/home/dittrich/dims/git/ansible-inventory" clean:
     [+++] Repo[2] "/home/dittrich/dims/git/ansible-playbooks" clean:
     [+++] Repo[3] "/home/dittrich/dims/git/cif-client" clean:
@@ -541,7 +541,7 @@ starting a sync.)
     remote: Compressing objects: 100% (22/22), done.
     remote: Total 22 (delta 13), reused 0 (delta 0)
     Unpacking objects: 100% (22/22), done.
-    From git.prisem.washington.edu:/opt/git/dims-devguide
+    From git.devops.develop:/opt/git/dims-devguide
        daffa68..4b2462b  develop    -> origin/develop
     Updating daffa68..4b2462b
     Fast-forward
@@ -770,7 +770,7 @@ the version number increment in the workflow:
     remote:                                  Dload  Upload   Total   Spent    Left  Speed
     remote: 100    78    0     0  100    78      0   2524 --:--:-- --:--:-- --:--:--  3250
     remote: [+++] post-receive-06jenkinsalldocs finished
-    To git@git.prisem.washington.edu:/opt/git/dims-devguide.git
+    To git@git.devops.develop:/opt/git/dims-devguide.git
        e8e7d4d..00727d5  develop -> develop
 
     Summary of actions:
@@ -794,7 +794,7 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
 .. code-block:: none
    :emphasize-lines: 1,9,10
 
-    (dimsenv)[dittrich@localhost git]$ git clone git@git.prisem.washington.edu:/opt/git/dims-ad.git
+    (dimsenv)[dittrich@localhost git]$ git clone git@git.devops.develop:/opt/git/dims-ad.git
     Cloning into 'dims-ad'...
     remote: Counting objects: 236, done.
     remote: Compressing objects: 100% (155/155), done.
@@ -828,32 +828,32 @@ in your ``.git/config`` file starting with ``hubflow``:
 
    (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
    [core]
-   	repositoryformatversion = 0
-   	filemode = true
-   	bare = false
-   	logallrefupdates = true
-   	ignorecase = true
-   	precomposeunicode = true
+           repositoryformatversion = 0
+           filemode = true
+           bare = false
+           logallrefupdates = true
+           ignorecase = true
+           precomposeunicode = true
    [remote "origin"]
-   	url = git@git.prisem.washington.edu:/opt/git/dims-ad.git
-   	fetch = +refs/heads/*:refs/remotes/origin/*
+           url = git@git.devops.develop:/opt/git/dims-ad.git
+           fetch = +refs/heads/*:refs/remotes/origin/*
    [branch "master"]
-   	remote = origin
-   	merge = refs/heads/master
-   	rebase = true
+           remote = origin
+           merge = refs/heads/master
+           rebase = true
    [hubflow "branch"]
-   	master = master
-   	develop = develop
+           master = master
+           develop = develop
    [branch "develop"]
-   	remote = origin
-   	merge = refs/heads/develop
-   	rebase = true
+           remote = origin
+           merge = refs/heads/develop
+           rebase = true
    [hubflow "prefix"]
-   	feature = feature/
-   	release = release/
-   	hotfix = hotfix/
-   	support = support/
-   	versiontag =
+           feature = feature/
+           release = release/
+           hotfix = hotfix/
+           support = support/
+           versiontag =
 
 ..
 
@@ -876,21 +876,21 @@ Infrequent tasks with Git
 
 .. _cloningmultiplerepos:
 
-Cloning multiple repos from ``git.prisem.washington.edu``
+Cloning multiple repos from ``git.devops.develop``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are several dozen repositories on ``git.prisem.washington.edu``
+There are several dozen repositories on ``git.devops.develop``
 that contain DIMS-generated code, configuration files, and/or documentation,
 but also local copies of Git repositories from other sources (some with
 DIMS-related customizations).
 
-To get a list of all repositories on ``git.prisem.washington.edu``,
+To get a list of all repositories on ``git.devops.develop``,
 use the Git shell command ``list``:
 
 .. code-block:: none
    :emphasize-lines: 1
 
-    [dittrich@localhost ~]$ ssh git@git.prisem.washington.edu list
+    [dittrich@localhost ~]$ ssh git@git.devops.develop list
     prisem-replacement.git
     ELK.git
     cif-java.git
@@ -974,34 +974,34 @@ as described in Section :ref:`intersphinxlinking`.
    :emphasize-lines: 1,2,29,30,98
 
     [dittrich@localhost ~]$ cd ~/dims
-    [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig dims-ad dims-sr dims-ocd
+    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd
     [git/dims-ad]
-    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-ad.git' 'dims-ad' &&
-    	(cd dims-ad; git hf init)
+    checkout = git clone 'git@git.devops.develop:/opt/git/dims-ad.git' 'dims-ad' &&
+            (cd dims-ad; git hf init)
     show = git remote show origin
     update = git hf update
     pull = git hf update &&
-    	git hf pull
+            git hf pull
     stat = git status -s
 
     [git/dims-sr]
-    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-sr.git' 'dims-sr' &&
-    	(cd dims-sr; git hf init)
+    checkout = git clone 'git@git.devops.develop:/opt/git/dims-sr.git' 'dims-sr' &&
+            (cd dims-sr; git hf init)
     show = git remote show origin
     update = git hf update
     pull = git hf update &&
-    	git hf pull
+            git hf pull
     stat = git status -s
 
     [git/dims-ocd]
-    checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-ocd.git' 'dims-ocd' &&
-    	(cd dims-ocd; git hf init)
+    checkout = git clone 'git@git.devops.develop:/opt/git/dims-ocd.git' 'dims-ocd' &&
+            (cd dims-ocd; git hf init)
     show = git remote show origin
     update = git hf update
     pull = git hf update &&
-    	git hf pull
+            git hf pull
     stat = git status -s
-    [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig dims-ad dims-sr dims-ocd > .mrconfig
+    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd > .mrconfig
     [dittrich@localhost dims]$ mr checkout
     mr checkout: /Users/dittrich/dims/git/dims-ad
     Cloning into 'dims-ad'...
@@ -1095,11 +1095,11 @@ Adding a newly-created repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Until the ``dims.git.syncrepos`` script has a new feature added to it
-to detect when a new repo exists on ``git.prisem.washington.edu`` that
+to detect when a new repo exists on ``git.devops.develop`` that
 does not have a local repo associated with it, you must do this yourself.
 
 When someone uses the ``newrepo`` script to create a new repo on
-``git.prisem.washington.edu``, you will need to get new ``.mrconfig``
+``git.devops.develop``, you will need to get new ``.mrconfig``
 settings for that repo in order for ``dims.git.syncrepo`` to synchronize it.
 If you have your ``$GIT`` environment variable pointing to a directory
 that *only* has DIMS Git repos in it, you just need to create an updated
@@ -1118,11 +1118,11 @@ that *only* has DIMS Git repos in it, you just need to create an updated
 .. code-block:: none
 
    [dittrich@localhost ~]$ cd $GIT/..
-   [dittrich@localhost dims]$ ssh git@git.prisem.washington.edu mrconfig > .mrconfig.new
+   [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig > .mrconfig.new
    [dittrich@localhost dims]$ diff .mrconfig .mrconfig.new
    324a325,333
    > [git/dims-db-recovery]
-   > checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-db-recovery.git' 'dims-db-recovery' &&
+   > checkout = git clone 'git@git.devops.develop:/opt/git/dims-db-recovery.git' 'dims-db-recovery' &&
    >    (cd dims-db-recovery; git hf init)
    > show = git remote show origin
    > update = git hf update
@@ -1165,7 +1165,7 @@ Creating Git repositories
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As discussed in the introduction to this section, DIMS software
-will be hosted on both a local server ``git.prisem.washington.edu``
+will be hosted on both a local server ``git.devops.develop``
 and from `github.com/uw-dims`_.  This section covers creation of
 new repositories on both systems.
 
@@ -1186,11 +1186,11 @@ Creating repositories on GitHub
 
 .. _settingupremotedimsrepos:
 
-Setting up remote Git repositories on ``git.prisem.washington.edu``
+Setting up remote Git repositories on ``git.devops.develop``
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Before a repository can be shared between DIMS team members, a remote
-repository must be set up on ``git.prisem.washington.edu`` for sharing.
+repository must be set up on ``git.devops.develop`` for sharing.
 The following is an example session creating a new repository named
 ``dims-ocd`` for *operational concept description* (a.k.a., *Concept of
 Operations*).
@@ -1198,10 +1198,10 @@ Operations*).
 .. code-block:: none
    :emphasize-lines: 1,5,7,8,10,11
 
-    [dittrich@localhost ~]$ slogin git.prisem.washington.edu
+    [dittrich@localhost ~]$ slogin git.devops.develop
     Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-43-generic x86_64)
     [ ... ]
-    Last login: Sun Jan 11 12:04:36 2015 from lancaster.prisem.washington.edu
+    Last login: Sun Jan 11 12:04:36 2015 from lancaster.devops.develop
     dittrich@jira:~$ sudo su - gituser
     [sudo] password for dittrich:
     git@jira:~$ cd /opt/git
@@ -1292,20 +1292,20 @@ Here is an edited transcript of performing the above tasks.
     Initialized empty Git repository in /Users/dittrich/git/.git/
     [ ... prepare files ... ]
     [dittrich@localhost dims-ocd (master)]$ ls
-    MIL-STD-498-templates.pdf	UW-logo.png			conf.py				newsystem.rst
-    Makefile			_build				currentsystem.rst		notes.rst
-    OCD-DID.pdf			_static				impacts.rst			operationalscenarios.rst
-    OCD.html			_templates			index.rst			referenceddocs.rst
-    OCD.rst			analysis.rst			justifications.rst		scope.rst
-    UW-logo-32x32.ico		appendices.rst			license.txt
+    MIL-STD-498-templates.pdf   UW-logo.png                     conf.py                         newsystem.rst
+    Makefile                    _build                          currentsystem.rst               notes.rst
+    OCD-DID.pdf                 _static                         impacts.rst                     operationalscenarios.rst
+    OCD.html                    _templates                      index.rst                       referenceddocs.rst
+    OCD.rst                     analysis.rst                    justifications.rst              scope.rst
+    UW-logo-32x32.ico           appendices.rst                  license.txt
     [dittrich@localhost dims-ocd (master)]$ rm OCD.rst
     [dittrich@localhost dims-ocd (master)]$ ls
-    MIL-STD-498-templates.pdf	_build				currentsystem.rst		notes.rst
-    Makefile			_static				impacts.rst			operationalscenarios.rst
-    OCD-DID.pdf			_templates			index.rst			referenceddocs.rst
-    OCD.html			analysis.rst			justifications.rst		scope.rst
-    UW-logo-32x32.ico		appendices.rst			license.txt
-    UW-logo.png			conf.py				newsystem.rst
+    MIL-STD-498-templates.pdf   _build                          currentsystem.rst               notes.rst
+    Makefile                    _static                         impacts.rst                     operationalscenarios.rst
+    OCD-DID.pdf                 _templates                      index.rst                       referenceddocs.rst
+    OCD.html                    analysis.rst                    justifications.rst              scope.rst
+    UW-logo-32x32.ico           appendices.rst                  license.txt
+    UW-logo.png                 conf.py                         newsystem.rst
     [dittrich@localhost dims-ocd (master)]$ git add .
     [dittrich@localhost dims-ocd (master)]$ git commit -m "Initial load of MIL-STD-498 template"
     [master (root-commit) 39816fa] Initial load of MIL-STD-498 template
@@ -1333,7 +1333,7 @@ Here is an edited transcript of performing the above tasks.
      create mode 100644 dims-ocd/referenceddocs.rst
      create mode 100644 dims-ocd/scope.rst
     [dittrich@localhost dims-ocd (master)]$ git tag -a "2.0.0" -m "Initial template release"
-    [dittrich@localhost dims-ocd (master)]$ git remote add origin git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+    [dittrich@localhost dims-ocd (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-ocd.git
     [dittrich@localhost dims-ocd (master)]$ git push -u origin master
     Counting objects: 24, done.
     Delta compression using up to 8 threads.
@@ -1341,7 +1341,7 @@ Here is an edited transcript of performing the above tasks.
     Writing objects: 100% (24/24), 251.34 KiB | 0 bytes/s, done.
     Total 24 (delta 1), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 15 20:46:33 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+    To git@git.devops.develop:/opt/git/dims-ocd.git
      * [new branch]      master -> master
     Branch master set up to track remote branch master from origin by rebasing.
     [dittrich@localhost dims-ocd (master)]$ git push origin --tags
@@ -1349,7 +1349,7 @@ Here is an edited transcript of performing the above tasks.
     Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
     Total 1 (delta 0), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 15 20:46:45 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/dims-ocd.git
+    To git@git.devops.develop:/opt/git/dims-ocd.git
      * [new tag]         2.0.0 -> 2.0.0
 
 ..
@@ -1472,7 +1472,7 @@ in this case. Now you could bump the version if necessary before pushing.
    remote: Scheduled polling of dims-ci-utils-deploy-develop
    remote: Scheduled polling of dims-ci-utils-deploy-master
    remote: Scheduled polling of dims-seed-jobs
-   remote: No git consumers for URI git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+   remote: No git consumers for URI git@git.devops.develop:/opt/git/dims-ci-utils.git
    remote: [+++] post-receive-06jenkinsalldocs started
    remote: [+++] REPONAME=dims-ci-utils
    remote: [+++] BRANCH=develop
@@ -1487,7 +1487,7 @@ in this case. Now you could bump the version if necessary before pushing.
    remote:                                  Dload  Upload   Total   Spent    Left  Speed
    remote: 100    78    0     0  100    78      0    260 --:--:-- --:--:-- --:--:--   268
    remote: [+++] post-receive-06jenkinsalldocs finished
-   To git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+   To git@git.devops.develop:/opt/git/dims-ci-utils.git
       d5a948e..a95c9e1  develop -> develop
 
    Summary of actions:
@@ -1560,8 +1560,8 @@ do the following:
         .. code-block:: none
 
             [dimsenv] ~/dims/git/MozDef (master) $ git remote -v
-            origin      git@git.prisem.washington.edu:/opt/git/MozDef.git (fetch)
-            origin      git@git.prisem.washington.edu:/opt/git/MozDef.git (push)
+            origin      git@git.devops.develop:/opt/git/MozDef.git (fetch)
+            origin      git@git.devops.develop:/opt/git/MozDef.git (push)
             upstream    git@github.com:jeffbryner/MozDef.git (fetch)
             upstream    git@github.com:jeffbryner/MozDef.git (push)
 
@@ -1603,13 +1603,13 @@ do the following:
             Writing objects: 100% (8/8), 2.11 KiB | 0 bytes/s, done.
             Total 8 (delta 3), reused 0 (delta 0)
             remote: Running post-receive hook: Thu Sep 17 20:52:14 PDT 2015
-            To git@git.prisem.washington.edu:/opt/git/MozDef.git
+            To git@git.devops.develop:/opt/git/MozDef.git
                180484a..766da56  master -> master
 
         ..
 
     #. Now push the updated repository to the "local" `remote repository` (i.e,
-       ``git.prisem.washington.edu`` for the DIMS project):
+       ``git.devops.develop`` for the DIMS project):
 
         .. code-block:: none
 
@@ -1620,7 +1620,7 @@ do the following:
             Writing objects: 100% (8/8), 2.11 KiB | 0 bytes/s, done.
             Total 8 (delta 3), reused 0 (delta 0)
             remote: Running post-receive hook: Thu Sep 17 20:52:14 PDT 2015
-            To git@git.prisem.washington.edu:/opt/git/MozDef.git
+            To git@git.devops.develop:/opt/git/MozDef.git
                180484a..766da56  master -> master
 
         ..
@@ -1679,7 +1679,7 @@ the minor version number component.
     Switched to a new branch 'release/1.2.0'
     Total 0 (delta 0), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:33:54 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
      * [new branch]      release/1.2.0 -> release/1.2.0
 
     Summary of actions:
@@ -1730,7 +1730,7 @@ to create comments for actions like merges and tags.
     Writing objects: 100% (9/9), 690 bytes | 0 bytes/s, done.
     Total 9 (delta 7), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:37:24 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
        3ac28a2..5ca145b  release/1.2.0 -> release/1.2.0
     Switched to branch 'master'
     Your branch is up-to-date with 'origin/master'.
@@ -1801,20 +1801,20 @@ to create comments for actions like merges and tags.
     Writing objects: 100% (2/2), 447 bytes | 0 bytes/s, done.
     Total 2 (delta 0), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:38:17 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
        3ac28a2..aec921c  dev -> dev
     Total 0 (delta 0), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:38:19 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
        2afb58f..2482d07  master -> master
     Counting objects: 1, done.
     Writing objects: 100% (1/1), 166 bytes | 0 bytes/s, done.
     Total 1 (delta 0), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:38:25 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
      * [new tag]         1.2.0 -> 1.2.0
     remote: Running post-receive hook: Thu Jan 22 18:38:28 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
      - [deleted]         release/1.2.0
 
     Summary of actions:
@@ -1845,7 +1845,7 @@ dependency checks or debugging.
     Writing objects: 100% (9/9), 683 bytes | 0 bytes/s, done.
     Total 9 (delta 7), reused 0 (delta 0)
     remote: Running post-receive hook: Thu Jan 22 18:51:00 PST 2015
-    To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
        aec921c..d4fe053  dev -> dev
 
 ..
@@ -1899,7 +1899,7 @@ and pull from that repo.  A branch rename is then done, following the
 recipe above.  The impact on each of the two users is noted.
 
 First, we create a bare repo.  This will mimic our authoratitive repos
-on ``git.prisem.washington.edu``.  We'll call this repo ``dims-328.git``, named after the DIMS
+on ``git.devops.develop``.  We'll call this repo ``dims-328.git``, named after the DIMS
 Jira ticket created to study the branch rename issue:
 
 .. code-block:: none
@@ -2024,19 +2024,19 @@ rename:
 
    [stuart@rejewski dims-328 (develop)]$ cat .git/config
    [core]
-	   repositoryformatversion = 0
-	   filemode = true
-	   bare = false
-	   logallrefupdates = true
+       repositoryformatversion = 0
+       filemode = true
+       bare = false
+       logallrefupdates = true
    [remote "origin"]
-	   url = file:///home/stuart/depot/dims-328.git
-	   fetch = +refs/heads/*:refs/remotes/origin/*
+       url = file:///home/stuart/depot/dims-328.git
+       fetch = +refs/heads/*:refs/remotes/origin/*
    [branch "master"]
-	   remote = origin
-	   merge = refs/heads/master
+       remote = origin
+       merge = refs/heads/master
    [branch "develop"]
-	   remote = origin
-	   merge = refs/heads/develop
+       remote = origin
+       merge = refs/heads/develop
 
 ..
 
@@ -2064,19 +2064,19 @@ point is this:
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
    [core]
-	   repositoryformatversion = 0
-	   filemode = true
-	   bare = false
-	   logallrefupdates = true
+       repositoryformatversion = 0
+       filemode = true
+       bare = false
+       logallrefupdates = true
    [remote "origin"]
-	   url = file:///home/stuart/depot/dims-328.git
-	   fetch = +refs/heads/*:refs/remotes/origin/*
+       url = file:///home/stuart/depot/dims-328.git
+       fetch = +refs/heads/*:refs/remotes/origin/*
    [branch "master"]
-	   remote = origin
-	   merge = refs/heads/master
+       remote = origin
+       merge = refs/heads/master
    [branch "dev"]
-	   remote = origin
-	   merge = refs/heads/dev
+       remote = origin
+       merge = refs/heads/dev
 
 ..
 
@@ -2097,19 +2097,19 @@ No errors from this, but `user2`'s ``.git/config`` still refers to a
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
    [core]
-	   repositoryformatversion = 0
-	   filemode = true
-	   bare = false
-	   logallrefupdates = true
+       repositoryformatversion = 0
+       filemode = true
+       bare = false
+       logallrefupdates = true
    [remote "origin"]
-	   url = file:///home/stuart/depot/dims-328.git
-	   fetch = +refs/heads/*:refs/remotes/origin/*
+       url = file:///home/stuart/depot/dims-328.git
+       fetch = +refs/heads/*:refs/remotes/origin/*
    [branch "master"]
-	   remote = origin
-	   merge = refs/heads/master
+       remote = origin
+       merge = refs/heads/master
    [branch "develop"]
-	   remote = origin
-	   merge = refs/heads/dev
+       remote = origin
+       merge = refs/heads/dev
 
 ..
 
@@ -2145,19 +2145,19 @@ Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
 
    [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
    [core]
-	   repositoryformatversion = 0
-	   filemode = true
-	   bare = false
-	   logallrefupdates = true
+           repositoryformatversion = 0
+           filemode = true
+           bare = false
+           logallrefupdates = true
    [remote "origin"]
-	   url = file:///home/stuart/depot/dims-328.git
-	   fetch = +refs/heads/*:refs/remotes/origin/*
+           url = file:///home/stuart/depot/dims-328.git
+           fetch = +refs/heads/*:refs/remotes/origin/*
    [branch "master"]
-	   remote = origin
-	   merge = refs/heads/master
+           remote = origin
+           merge = refs/heads/master
    [branch "develop"]
-	   remote = origin
-	   merge = refs/heads/develop
+           remote = origin
+           merge = refs/heads/develop
 
 ..
 
@@ -2208,7 +2208,7 @@ named ``finish``.  It may even get propagated automatically to
 
     mr update: /Users/dittrich/dims/git/dims-keys
     Fetching origin
-    From git.prisem.washington.edu:/opt/git/dims-keys
+    From git.devops.develop:/opt/git/dims-keys
      * [new tag]         finish     -> finish
 
 ..
@@ -2223,7 +2223,7 @@ following commands:
     Deleted tag 'finish' (was 516d9d2)
     [dittrich@localhost dims-keys (develop)]$ git push origin :refs/tags/finish
     remote: Running post-receive hook: Thu Aug  6 16:07:17 PDT 2015
-    To git@git.prisem.washington.edu:/opt/git/dims-keys.git
+    To git@git.devops.develop:/opt/git/dims-keys.git
      - [deleted]         finish
 
 ..
@@ -2349,7 +2349,7 @@ all correctly commented:
     +#
     +# $ export DOCSURL=http://192.168.99.100:49153
 
-    +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
+    +DOCSURL=${DOCSURL:-http://app.devops.develop:8080/docs/devel}
 
      # Activate dimsenv virtual environment for Sphinx
      . $HOME/dims/envs/dimsenv/bin/activate
@@ -2372,17 +2372,17 @@ all correctly commented:
     +
     +if os.environ.get('DOCSURL') is None:
     +    #os.environ['DOCSURL'] = "file://{}".format(os.environ.get('GIT'))
-    +    os.environ['DOCSURL'] = "http://u12-dev-svr-1.prisem.washington.edu:8080/docs/{}/html/".format(
+    +    os.environ['DOCSURL'] = "http://app.devops.develop:8080/docs/{}/html/".format(
     +        os.environ['GITBRANCH'])
 
      intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
      intersphinx_mapping = {
     -        'dimsocd': ("%s/dims/docs/dims-ocd" % os.environ['HOME'],
-    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd/objects.inv', None)),
+    -                    ('http://app.devops.develop:8080/docs/develop/html/dims-ocd/objects.inv', None)),
     -        'dimsad': ("%s/dims/docs/dims-ad" % os.environ['HOME'],
-    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad/objects.inv', None)),
+    -                    ('http://app.devops.develop:8080/docs/develop/html/dims-ad/objects.inv', None)),
     -        'dimssr': ("%s/dims/docs/dims-sr" % os.environ['HOME'],
-    -                    ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-sr/objects.inv', None))
+    -                    ('http://app.devops.develop:8080/docs/develop/html/dims-sr/objects.inv', None))
     +        'dimsocd': ("{}/dims-ocd".format(os.environ['DOCSURL']), None),
     +        'dimsad': ("{}/dims-ad".format(os.environ['DOCSURL']), None),
     +        'dimssr': ("{}/dims-sr".format(os.environ['DOCSURL']), None)
@@ -2465,7 +2465,7 @@ commit hash!
     +#
     +# $ export DOCSURL=http://192.168.99.100:49153
 
-    +DOCSURL=${DOCSURL:-http://u12-dev-svr-1.prisem.washington.edu:8080/docs/devel}
+    +DOCSURL=${DOCSURL:-http://app.devops.develop:8080/docs/devel}
 
      # Activate dimsenv virtual environment for Sphinx
      . $HOME/dims/envs/dimsenv/bin/activate
@@ -2528,11 +2528,11 @@ and tell you what to do next:
     Stopped at f6f5d868c8ddd12018ca662a54d1f58c150e6364... Fix intersphinx links to use DOCSURL env variable
     You can amend the commit now, with
 
-    	git commit --amend
+            git commit --amend
 
     Once you are satisfied with your changes, run
 
-    	git rebase --continue
+            git rebase --continue
 
 ..
 
@@ -2789,7 +2789,7 @@ it to origin.
     create mode 100644 source/git.rst
     create mode 100644 source/index.rst
     create mode 100644 source/jenkins.rst
-   [dittrich@localhost dims-asbuilt (master)]$ git remote add origin git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   [dittrich@localhost dims-asbuilt (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-asbuilt.git
    [dittrich@localhost dims-asbuilt (master)]$ git tag -a "0.1.0" -m "Initial template release"
    [dittrich@localhost dims-asbuilt (master)]$ git push origin master
    Counting objects: 10, done.
@@ -2798,14 +2798,14 @@ it to origin.
    Writing objects: 100% (10/10), 7.37 KiB | 0 bytes/s, done.
    Total 10 (delta 0), reused 0 (delta 0)
    remote: Running post-receive hook: Wed Mar 18 16:15:02 PDT 2015
-   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   To git@git.devops.develop:/opt/git/dims-asbuilt.git
     * [new branch]      master -> master
    [dittrich@localhost dims-asbuilt (master)]$ git push origin --tags
    Counting objects: 1, done.
    Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
    Total 1 (delta 0), reused 0 (delta 0)
    remote: Running post-receive hook: Wed Mar 18 16:26:29 PDT 2015
-   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   To git@git.devops.develop:/opt/git/dims-asbuilt.git
     * [new tag]         0.1.0 -> 0.1.0
 
 ..
@@ -2831,7 +2831,7 @@ Following those steps, initialize the repo for ``hub-flow``.
    Version tag prefix? []
    Total 0 (delta 0), reused 0 (delta 0)
    remote: Running post-receive hook: Wed Mar 18 16:24:14 PDT 2015
-   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   To git@git.devops.develop:/opt/git/dims-asbuilt.git
     * [new branch]      develop -> develop
 
 ..
@@ -2925,7 +2925,7 @@ Now use ``hub-flow`` to push the current state of the local repo.
    Writing objects: 100% (4/4), 375 bytes | 0 bytes/s, done.
    Total 4 (delta 3), reused 0 (delta 0)
    remote: Running post-receive hook: Wed Mar 18 16:38:27 PDT 2015
-   To git@git.prisem.washington.edu:/opt/git/dims-asbuilt.git
+   To git@git.devops.develop:/opt/git/dims-asbuilt.git
       d0fcaa5..db3c7f1  develop -> develop
 
    Summary of actions:

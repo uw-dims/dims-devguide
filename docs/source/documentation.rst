@@ -994,7 +994,7 @@ from a Jenkins build job email message:
     [+++] jenkins.dims-defaults Default variables
     [+++]    PLAYBOOKSREPO=ansible-playbooks
     [+++]    INVENTORYREPO=ansible-inventory
-    [+++]    GITURLPREFIX=git@git.prisem.washington.edu:/opt/git/
+    [+++]    GITURLPREFIX=git@git.devops.develop:/opt/git/
     [+++]    MASTERBRANCH=master
     [+++]    DEVBRANCH=develop
     [+++]    DEVHOSTS=development
@@ -1743,11 +1743,11 @@ define a label namespace for use in ``:ref:`` directives.
 
     intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)
     intersphinx_mapping = {
-            'dimsocd': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd',
+            'dimsocd': ('http://app.devops.develop:8080/docs/develop/html/dims-ocd',
                         ('../../dims-ocd/build/html/objects.inv',None)),
-            'dimsad': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad',
+            'dimsad': ('http://app.devops.develop:8080/docs/develop/html/dims-ad',
                         ('../../dims-ad/build/html/objects.inv',None)),
-            'dimstp': ('http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-tp',
+            'dimstp': ('http://app.devops.develop:8080/docs/develop/html/dims-tp',
                         ('../../dims-tp/build/html/objects.inv',None))
     }
 
@@ -1846,9 +1846,9 @@ being loaded:
    sphinx-build -b html -d build/doctrees   source build/html
    Running Sphinx v1.3.1+
    loading pickled environment... done
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ocd/objects.inv...
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-ad/objects.inv...
-   loading intersphinx inventory from http://u12-dev-svr-1.prisem.washington.edu:8080/docs/develop/html/dims-tp/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-ocd/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-ad/objects.inv...
+   loading intersphinx inventory from http://app.devops.develop:8080/docs/develop/html/dims-tp/objects.inv...
    building [mo]: targets for 0 po files that are out of date
    building [html]: targets for 0 source files that are out of date
    updating environment: [config changed] 8 added, 0 changed, 0 removed

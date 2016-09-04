@@ -12,12 +12,15 @@ of DIMS components from a developer's perspective. It is related closely
 to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
 (``dims-ci-utils`` for short).
 
-.. warning::
+.. note::
 
    This is a `living document` that is being updated frequently to reflect
    current practices within the DIMS team.  As such, it may undergo
-   restructuring frequently and the most up-to-date information will be found
-   at https://u12-dev-svr-1.prisem.washington.edu:8080/docs/
+   restructuring frequently.
+
+..
+
+.. note::
 
    Throughout this document, ``warning::``, ``note::``, or other
    callout directives are used to let you know when to read carefully
