@@ -70,9 +70,9 @@ Notice the numbers *+23-19* in the after image? We just rebased commits from the
 If I now try to push the <span>pyes</span>branch, Git tells me that I can't, because there are remote changes that are not in the local repo that need to be merged and checked for possible conflict before the push can proceed.
 <verbatim>
 [dittrich@localhost ansible-playbooks (pyes)]$ git push
-To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+To git@git.devops.develop:/opt/git/ansible-playbooks.git
  ! [rejected]        pyes -> pyes (non-fast-forward)
-error: failed to push some refs to 'git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git'
+error: failed to push some refs to 'git@git.devops.develop:/opt/git/ansible-playbooks.git'
 hint: Updates were rejected because the tip of your current branch is behind
 hint: its remote counterpart. Integrate the remote changes (e.g.
 hint: 'git pull ...') before pushing again.
@@ -117,7 +117,7 @@ Compressing objects: 100% (14/14), done.
 Writing objects: 100% (15/15), 392.72 KiB | 0 bytes/s, done.
 Total 15 (delta 9), reused 3 (delta 0)
 remote: Running post-receive hook: Tue Nov  4 18:12:01 PST 2014
-To git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git
+To git@git.devops.develop:/opt/git/ansible-playbooks.git
    9b23575..2166e16  pyes -> pyes</verbatim>
 
 ---+++ Finding a string in a commit anywhere in the repo
@@ -403,14 +403,14 @@ v1.0-82-gabad3e5
 [dittrich@localhost dims-ci-utils (master)]$ git tag v0.1 v0.1 -m"v0.1" --force
 [dittrich@localhost dims-ci-utils (master)]$ git push origin :refs/tags/v1.0
 remote: Running post-receive hook: Sat Nov 15 16:47:58 PST 2014
-To git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+To git@git.devops.develop:/opt/git/dims-ci-utils.git
  - [deleted]         v1.0
 [dittrich@localhost dims-ci-utils (master)]$ git push origin --tags
 Counting objects: 1, done.
 Writing objects: 100% (1/1), 180 bytes | 0 bytes/s, done.
 Total 1 (delta 0), reused 0 (delta 0)
 remote: Running post-receive hook: Sat Nov 15 16:48:13 PST 2014
-To git@git.prisem.washington.edu:/opt/git/dims-ci-utils.git
+To git@git.devops.develop:/opt/git/dims-ci-utils.git
  * [new tag]         v0.1 -> v0.1
 [dittrich@localhost dims-ci-utils (master)]$ git describe
 v0.1-83-gfd37b8f
@@ -432,7 +432,7 @@ To track a repo with ``mr``, do the following:
 <verbatim>
 [dittrich@localhost ~]$ cd ~/git/ansible-inventory
 [dittrich@localhost ansible-inventory (master)]$ mr register
-Registering git url: git@git.prisem.washington.edu:/opt/git/ansible-inventory.git in /Users/dittrich/.mrconfig
+Registering git url: git@git.devops.develop:/opt/git/ansible-inventory.git in /Users/dittrich/.mrconfig
 [dittrich@localhost ansible-inventory (master)]$ mr update
 mr update: /Users/dittrich/git/ansible-inventory
 Already up-to-date.
@@ -443,40 +443,40 @@ The following ``~/.mrconfig`` file can be used to bootstrap a bunch of the DIMS 
 <verbatim>
 [dittrich@localhost git]$ cat ~/.mrconfig 
 [git/prisem]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/prisem.git' 'prisem'
+checkout = git clone 'git@git.devops.develop:/opt/git/prisem.git' 'prisem'
 
 [git/dims-sample-data]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-sample-data.git' 'dims-sample-data'
+checkout = git clone 'git@git.devops.develop:/opt/git/dims-sample-data.git' 'dims-sample-data'
 
 [git/vagrant]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/vagrant.git' 'vagrant'
+checkout = git clone 'git@git.devops.develop:/opt/git/vagrant.git' 'vagrant'
 
 [git/ansible-playbooks]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/ansible-playbooks.git' 'ansible-playbooks'
+checkout = git clone 'git@git.devops.develop:/opt/git/ansible-playbooks.git' 'ansible-playbooks'
 
 [git/ansible-inventory]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/ansible-inventory.git' 'ansible-inventory'
+checkout = git clone 'git@git.devops.develop:/opt/git/ansible-inventory.git' 'ansible-inventory'
 
 [git/supervisor]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/supervisor.git' 'supervisor'
+checkout = git clone 'git@git.devops.develop:/opt/git/supervisor.git' 'supervisor'
 
 [git/packer]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/packer.git' 'packer'
+checkout = git clone 'git@git.devops.develop:/opt/git/packer.git' 'packer'
 
 [git/ipgrep]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/ipgrep' 'ipgrep'
+checkout = git clone 'git@git.devops.develop:/opt/git/ipgrep' 'ipgrep'
 
 [git/pygraph]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/pygraph.git' 'pygraph'
+checkout = git clone 'git@git.devops.develop:/opt/git/pygraph.git' 'pygraph'
 
 [git/mal4s]
 checkout = git clone 'https://github.com/secure411dotorg/mal4s/' 'mal4s'
 
 [git/dims]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims.git' 'dims'
+checkout = git clone 'git@git.devops.develop:/opt/git/dims.git' 'dims'
 
 [git/dims-keys]
-checkout = git clone 'git@git.prisem.washington.edu:/opt/git/dims-keys.git' 'dims-keys'</verbatim>
+checkout = git clone 'git@git.devops.develop:/opt/git/dims-keys.git' 'dims-keys'</verbatim>
 
 ---+++ Linda's instructions on how to do Git and Jira dev branching:
 <verbatim>

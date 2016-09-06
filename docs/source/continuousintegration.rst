@@ -186,7 +186,7 @@ To view the documentation, you go to https://$HOST:$PORT/docs/$BRANCH/$TYPE/$REP
 or go to https://$HOST:$PORT/docs/ and browse the directory tree.
 
 Currently the Jenkins job defaults to deploying the documentation on
-   https://u12-dev-svr-1.prisem.washington.edu:8443/docs
+   https://app.devops.develop:8443/docs
 
 The following paragraphs describe this workflow in more detail.
 
@@ -251,9 +251,9 @@ BRANCH                                                            Branch to buil
 DOCPATH      .                                                    Path to Makefile
 DOCTYPE      html                                                 Type of doc to build, html or pdf
 DOCDELETE    false                                                True to delete docs for this branch
-DOCHOST      u12-dev-svr-1.prisem.washington.edu                  Host to receive the docs
+DOCHOST      app.devops.develop                                   Host to receive the docs
 DOCDEST      /opt/dims/docs                                       Root path on host to receive the docs
-DOCURL       http://u12-dev-svr-1.prisem.washington.edu:8443/docs URL of docs index
+DOCURL       http://app.devops.develop:8443/docs                  URL of docs index
 =========    ==================================================== ===========
 
 
@@ -323,10 +323,10 @@ this manually. For example:
 ..
 
 where you have defined the variables shown and
-``JOB="dims-docs-deploy"`` and ``JENKINSURL="http://jenkins.prisem.washington.edu"``
+``JOB="dims-docs-deploy"`` and ``JENKINSURL="http://jenkins.devops.develop"``
 
 You can also run the job via the Jenkins UI. Go to
-http://jenkins.prisem.washington.edu/view/Current/job/dims-docs-deploy/
+http://jenkins.devops.develop/view/Current/job/dims-docs-deploy/
 and click the ``Build with Parameters`` link on the left.
 
 .. _docdeploymentscript:

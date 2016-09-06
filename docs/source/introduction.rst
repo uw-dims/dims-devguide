@@ -18,9 +18,7 @@ Overview
   .. TODO(mboggess):
   .. todo::
 
-        I'm not sure this is true anymore.
-
-        Okay, well, look at 3.5 and 3.6
+        I'm not sure this is true anymore. (E.g., :ref:`developingongithub`)
 
         .. note::
 

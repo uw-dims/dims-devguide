@@ -19,30 +19,44 @@ them for distributed development and working remotely.
 Daily Scrum
 -----------
 
-.. todo::
+The project used a `daily scrum meeting`_ to try to keep everyone on
+track and moving forward. As much as possible (without an officially
+trained "scrum master" to lead every meeting) team members were
+encouraged to answer three questions:
 
-    This describes the reasons for scrum and procedures we
-    try to follow.
+  #. What ticket(s) have you been working on?
+  #. What ticket(s) will you be working on next?
+  #. What is blocking your progress?
+
+The goal is to keep the meeting to 15 minutes, so any longer discussions were
+deferred to a "tailgate" session after everyone has made their initial scrum
+contribution. The "tailgate" session may last much longer, sometimes running
+to over an hour (since some team members on the DIMS project were working
+remotely and it wasn't possible to just "drop into to your office" for side-bar
+conversations).
+
+.. note::
+
+    It is *really hard* to avoid these `7 Mistakes During the Daily Stand-up Meeting`_.
 
 ..
+
+.. _daily scrum meeting: http://scrumtrainingseries.com/DailyScrumMeeting/DailyScrumMeeting.htm
+.. _7 Mistakes During the Daily Stand-up Meeting: https://www.scrumalliance.org/community/articles/2014/july/7-mistakes-during-the-daily-stand-up-meeting
+
 
 .. _remotecoordination:
 
 Remote Coordination
 -------------------
 
-This section describes the tools used for coordinating work
-remotely, such as team coding, daily scrum, and weekly "standup"
-meetings.
+This section describes the tools used for coordinating work remotely, such as
+team coding, daily scrum, and weekly "standup" meetings.
 
-We initially used Adobe Connect, though that is being phased out.
-
-.. todo::
-
-   Save any recordings we need to save before the account is
-   deactivated.
-
-..
+We initially used Adobe Connect, though that was phased out because it was so
+unstable and difficult to use. Various other coordination tools were tested,
+with Skype and Google Hangout being the most compatible and useful (though
+each has its own issues.)
 
 .. _googlehangout:
 
@@ -100,7 +114,7 @@ When you make or join your first call
 
 .. figure:: images/google-hangout-plugin-settings.png
    :alt: Google Hangout Plug-in Settings
-   :width: 90%
+   :width: 50%
    :align: center
 
    Google Hangout Plug-in Settings
@@ -126,7 +140,7 @@ These docs have been update to reflect the changes Google has made
 to Hangouts. There is an 'original version', and sometimes the 'new version'
 is finicky, and we must resort to the 'original version'. As such, 
 the instructions for the 'original version' will be preserved in the 
-:ref:`appendices:orighangoutsinstructs`
+:ref:`orighangoutsinstructs`
 
 * Everyone can do it, at the same time!
 * Hover your cursor in the top right hand corner of your Hangouts window.
@@ -150,20 +164,12 @@ the instructions for the 'original version' will be preserved in the
 
 .. figure:: images/infinite-hangout.png
    :alt: The internet melting in an infinite Google Hangout loop...
-   :width: 90%
+   :width: 50%
    :align: center
 
    The internet melting in an infinite Google Hangout loop...
 
 ..
-
-
-.. todo::
-
-    Check on zooming in on text in a window that is being screenshared.
-
-..
-
 
 .. _opstrust:
 
@@ -171,16 +177,33 @@ Ops-Trust email lists
 ~~~~~~~~~~~~~~~~~~~~~
 
 We use an instance of the Ops-Trust portal system for managing
-accounts. Once an account is active, there are a number of mailing lists
-that DIMS project members should join to get various email communications
-(some ad-hoc and sent by humans, and some automatically generated for
-situational awareness, alerts, testing, etc.)
+accounts and project email lists. Once an account is active, there are a number
+of mailing lists that DIMS project members should join to get various email
+communications (some ad-hoc and sent by humans, and some automatically
+generated for situational awareness, alerts, testing, etc.)
 
-These lists are:
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
 
-.. todo::
+   * - List
+     - Purpose
 
-    Describe the lists and their purpose.
+   * - ``dims-datafeeds``
+     - Automated data feeds
+   * - ``dims-demo``
+     - DIMS demo mailing list
+   * - ``dims-devops``
+     - Continuous integration and syadmin notifications
+   * - ``dims-general``
+     - General Discussion
+   * - ``dims-reports``
+     - Periodic generated reports
+   * - ``dims-test``
+     - DIMS test mailing list
+   * - ``dims-testeval``
+     - Testing and Evaluation reports
+   * - ``dims-vetting``
+     - Vetting and Vouching
 
 ..
-

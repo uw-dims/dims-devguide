@@ -126,7 +126,7 @@ variables as shown in the examples.
     ..
 
 #. Set the ``server`` entries for forward lookups containing the top level
-   domain ``prisem.washington.edu`` and reverse maps for the DIMS VPN network
+   domain ``devops.develop`` and reverse maps for the DIMS VPN network
    range (``192.168.88.0/24``, which is expressed as
    ``88.168.192.in-addr.arpa`` for DNS reverse mappings) as shown in the
    highlighted lines here:
@@ -138,8 +138,8 @@ variables as shown in the examples.
        # Add other name servers here, with domain specs if they are for
        # non-public domains.
        #server=/localnet/192.168.0.1
-       server=/prisem.washington.edu/192.168.88.101
-       server=/dims-dev.prisem.washington.edu/127.0.0.1
+       server=/devops.develop/192.168.88.101
+       server=/dims-dev.devops.develop/127.0.0.1
 
        # Example of routing PTR queries to nameservers: this will send all
        # address->name queries for 192.168.3/24 to nameserver 10.1.2.3
@@ -151,7 +151,7 @@ variables as shown in the examples.
    .. note::
 
        The second ``server`` line in the first set above creates a test
-       domain ``dims-dev.prisem.washington.edu`` that is served by this
+       domain ``dims-dev.devops.develop`` that is served by this
        ``dnsmasq`` server on the local host address. This allows you to
        test services running on the loopback interface.
 
@@ -243,7 +243,7 @@ variables as shown in the examples.
    .. code-block:: bash
 
        [dittrich@localhost etc]$ cat resolv.dnsmasq 
-       search prisem.washington.edu apl.washington.edu
+       search devops.develop apl.washington.edu
        nameserver 8.8.8.8
        nameserver 192.168.88.101
        nameserver 128.95.120.1
@@ -256,9 +256,9 @@ variables as shown in the examples.
 
    .. code-block:: bash
 
-       [dittrich@localhost etc]$ dig @127.0.0.1 jira.prisem.washington.edu
+       [dittrich@localhost etc]$ dig @127.0.0.1 jira.devops.develop
 
-       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.prisem.washington.edu
+       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.devops.develop
        ; (1 server found)
        ;; global options: +cmd
        ;; connection timed out; no servers could be reached
@@ -269,9 +269,9 @@ variables as shown in the examples.
 
    .. code-block:: bash
 
-       [dittrich@localhost etc]$ dig @127.0.0.1 jira.prisem.washington.edu
+       [dittrich@localhost etc]$ dig @127.0.0.1 jira.devops.develop
 
-       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.prisem.washington.edu
+       ; <<>> DiG 9.8.3-P1 <<>> @127.0.0.1 jira.devops.develop
        ; (1 server found)
        ;; global options: +cmd
        ;; Got answer:
@@ -279,10 +279,10 @@ variables as shown in the examples.
        ;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
 
        ;; QUESTION SECTION:
-       ;jira.prisem.washington.edu.    IN      A
+       ;jira.devops.develop.    IN      A
 
        ;; ANSWER SECTION:
-       jira.prisem.washington.edu. 0   IN      A       192.168.88.97
+       jira.devops.develop. 0   IN      A       192.168.88.97
 
        ;; Query time: 18 msec
        ;; SERVER: 127.0.0.1#53(127.0.0.1)
@@ -529,7 +529,7 @@ space by allocating a disk image larger than is necessary.
        [+++] Activating DIMS virtual environment (dimsenv)
        [+++] (Create file /Users/dittrich/.DIMS_NO_DIMSENV_ACTIVATE to disable)
        [+++] Virtual environment dimsenv activated
-       [+++] Mounted sshfs gituser@git.prisem.washington.edu:cfg as /Users/dittrich/dims/cfg
+       [+++] Mounted sshfs gituser@git.devops.develop:cfg as /Users/dittrich/dims/cfg
        /dev/disk3               GUID_partition_scheme           
        /dev/disk3s1             EFI                             
        /dev/disk3s2             Apple_HFS                       /Users/dittrich/dims/git

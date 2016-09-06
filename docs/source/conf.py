@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# DIMS 
+# DIMS developers guide
 # (Copied from dims-ci-utils source tree on Sat May  9 14:44:33 PDT 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -66,7 +66,7 @@ author = u'Dave Dittrich'
 # built documents.
 #
 # The short X.Y version.
-version = '0.0.67'
+version = '0.1.0'
 
 # The full version, including alpha/beta/rc tags.
 release = version
@@ -359,7 +359,7 @@ os.environ['GITBRANCH'] = "develop"
 
 if os.environ.get('DOCSURL') is None:
     #os.environ['DOCSURL'] = "file://{}".format(os.environ.get('GIT'))
-    os.environ['DOCSURL'] = "http://u12-dev-svr-1.prisem.washington.edu:8080/docs/{}/html".format(
+    os.environ['DOCSURL'] = "http://app.devops.develop:8080/docs/{}/html".format(
         os.environ['GITBRANCH'])
 
 intersphinx_cache_limit = -1   # days to keep the cached inventories (0 == forever)

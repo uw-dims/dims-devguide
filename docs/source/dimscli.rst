@@ -23,7 +23,7 @@ Bootstrapping the ``dimscli`` app for development
 ..
 
 
-#. Clone the repo ``python-dimscli`` from ``git.prisem.washington.edu``. This can be
+#. Clone the repo ``python-dimscli`` from ``git.devops.develop``. This can be
    done by running ``dims.git.syncrepos``:
 
 #. Prepare a new Python virtual environment with all of the DIMS pre-requisite
@@ -1030,15 +1030,15 @@ execute the default command ``/usr/bin/uptime`` on the defined ``development`` h
 .. code-block:: none
 
     [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute
-    +-------------------------------------+--------+------------------------------------------------------------------------+
-    | Host                                | Status | Results                                                                |
-    +-------------------------------------+--------+------------------------------------------------------------------------+
-    | linda-vm1.prisem.washington.edu     | GOOD   |  18:31:22 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
-    | u12-dev-ws-1.prisem.washington.edu  | GOOD   |  18:31:21 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
-    | hub.prisem.washington.edu           | GOOD   |  02:31:22 up 128 days,  8:42,  1 user,  load average: 0.00, 0.01, 0.05 |
-    | floyd2-p.prisem.washington.edu      | GOOD   |  18:31:21 up 20 days, 56 min,  1 user,  load average: 0.02, 0.04, 0.05 |
-    | u12-dev-svr-1.prisem.washington.edu | GOOD   |  18:31:22 up 142 days, 11:22,  1 user,  load average: 0.00, 0.01, 0.05 |
-    +-------------------------------------+--------+------------------------------------------------------------------------+
+    +--------------------------------+--------+------------------------------------------------------------------------+
+    | Host                           | Status | Results                                                                |
+    +--------------------------------+--------+------------------------------------------------------------------------+
+    | linda-vm1.devops.develop       | GOOD   |  18:31:22 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | u12-dev-ws-1.devops.develop    | GOOD   |  18:31:21 up 146 days,  8:27,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | hub.devops.develop             | GOOD   |  02:31:22 up 128 days,  8:42,  1 user,  load average: 0.00, 0.01, 0.05 |
+    | floyd2-p.devops.develop        | GOOD   |  18:31:21 up 20 days, 56 min,  1 user,  load average: 0.02, 0.04, 0.05 |
+    | u12-dev-svr-1.devops.develop   | GOOD   |  18:31:22 up 142 days, 11:22,  1 user,  load average: 0.00, 0.01, 0.05 |
+    +--------------------------------+--------+------------------------------------------------------------------------+
 
 ..
 
@@ -1047,155 +1047,155 @@ Using the ``--program`` command line option, a different command can be run:
 .. code-block:: none
 
     [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --program "ip addr"
-    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
-    | Host                                | Status | Results                                                                                                          |
-    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
-    | linda-vm1.prisem.washington.edu     | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
-    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
-    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:3b:3a:65 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:36:2b:2c brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 192.168.88.11/24 brd 192.168.88.255 scope global eth1                                                   |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    | u12-dev-svr-1.prisem.washington.edu | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
-    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
-    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 ::1/128 scope host                                                                                     |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:38:db:8c brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 fe80::a00:27ff:fe38:db8c/64 scope link                                                                 |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:e7:80:52 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 192.168.88.13/24 brd 192.168.88.255 scope global eth1                                                   |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 fe80::a00:27ff:fee7:8052/64 scope link                                                                 |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    | hub.prisem.washington.edu           | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default                                |
-    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
-    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 ::1/128 scope host                                                                                     |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
-    |                                     |        |     link/ether 08:00:27:9c:f8:95 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 fe80::a00:27ff:fe9c:f895/64 scope link                                                                 |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
-    |                                     |        |     link/ether 08:00:27:28:63:2a brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 192.168.88.14/24 brd 192.168.88.255 scope global eth1                                                   |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 fe80::a00:27ff:fe28:632a/64 scope link                                                                 |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default                      |
-    |                                     |        |     link/ether 56:84:7a:fe:97:99 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        |     inet6 fe80::5484:7aff:fefe:9799/64 scope link                                                                |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 22: veth6dc6dd5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
-    |                                     |        |     link/ether 8e:d6:f5:66:fb:88 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet6 fe80::8cd6:f5ff:fe66:fb88/64 scope link                                                                |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 42: vethdc35259: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
-    |                                     |        |     link/ether 46:c3:87:32:83:a1 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet6 fe80::44c3:87ff:fe32:83a1/64 scope link                                                                |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    | floyd2-p.prisem.washington.edu      | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
-    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
-    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 52:54:00:17:19:9a brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 172.22.29.175/24 brd 172.22.29.255 scope global eth0                                                    |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000                                          |
-    |                                     |        |     link/ether 52:54:00:85:34:b7 brd ff:ff:ff:ff:ff:ff                                                           |
-    | u12-dev-ws-1.prisem.washington.edu  | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
-    |                                     |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
-    |                                     |        |     inet 127.0.0.1/8 scope host lo                                                                               |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:07:6b:00 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
-    |                                     |        |     link/ether 08:00:27:75:a0:25 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 192.168.88.12/24 brd 192.168.88.255 scope global eth1                                                   |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    |                                     |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN                               |
-    |                                     |        |     link/ether 5a:cb:bd:c2:f5:82 brd ff:ff:ff:ff:ff:ff                                                           |
-    |                                     |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
-    |                                     |        |        valid_lft forever preferred_lft forever                                                                   |
-    +-------------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+    +------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+    | Host                         | Status | Results                                                                                                          |
+    +------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
+    | linda-vm1.devops.develop     | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                              |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                              |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:3b:3a:65 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:36:2b:2c brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 192.168.88.11/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    | u12-dev-svr-1.devops.develop | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                              |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                              |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 ::1/128 scope host                                                                                     |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:38:db:8c brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 fe80::a00:27ff:fe38:db8c/64 scope link                                                                 |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:e7:80:52 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 192.168.88.13/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 fe80::a00:27ff:fee7:8052/64 scope link                                                                 |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    | hub.devops.develop           | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default                                |
+    |                              |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                              |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 ::1/128 scope host                                                                                     |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
+    |                              |        |     link/ether 08:00:27:9c:f8:95 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 fe80::a00:27ff:fe9c:f895/64 scope link                                                                 |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000            |
+    |                              |        |     link/ether 08:00:27:28:63:2a brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 192.168.88.14/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 fe80::a00:27ff:fe28:632a/64 scope link                                                                 |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default                      |
+    |                              |        |     link/ether 56:84:7a:fe:97:99 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        |     inet6 fe80::5484:7aff:fefe:9799/64 scope link                                                                |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 22: veth6dc6dd5: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
+    |                              |        |     link/ether 8e:d6:f5:66:fb:88 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet6 fe80::8cd6:f5ff:fe66:fb88/64 scope link                                                                |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 42: vethdc35259: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master docker0 state UP group default  |
+    |                              |        |     link/ether 46:c3:87:32:83:a1 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet6 fe80::44c3:87ff:fe32:83a1/64 scope link                                                                |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    | floyd2-p.devops.develop      | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                              |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                              |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 52:54:00:17:19:9a brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 172.22.29.175/24 brd 172.22.29.255 scope global eth0                                                    |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000                                          |
+    |                              |        |     link/ether 52:54:00:85:34:b7 brd ff:ff:ff:ff:ff:ff                                                           |
+    | u12-dev-ws-1.devops.develop  | GOOD   | 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN                                              |
+    |                              |        |     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00                                                        |
+    |                              |        |     inet 127.0.0.1/8 scope host lo                                                                               |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:07:6b:00 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0                                                           |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000                          |
+    |                              |        |     link/ether 08:00:27:75:a0:25 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 192.168.88.12/24 brd 192.168.88.255 scope global eth1                                                   |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    |                              |        | 4: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN                               |
+    |                              |        |     link/ether 5a:cb:bd:c2:f5:82 brd ff:ff:ff:ff:ff:ff                                                           |
+    |                              |        |     inet 172.17.42.1/16 scope global docker0                                                                     |
+    |                              |        |        valid_lft forever preferred_lft forever                                                                   |
+    +------------------------------+--------+------------------------------------------------------------------------------------------------------------------+
 
 ..
 
 .. code-block:: none
 
     [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --program "cat /etc/hosts"
-    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
-    | Host                                | Status | Results                                                                                                                                     |
-    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
-    | linda-vm1.prisem.washington.edu     | GOOD   | 127.0.0.1      localhost                                                                                                                    |
-    |                                     |        | 127.0.1.1      ubu12-generic                                                                                                                |
-    |                                     |        |                                                                                                                                             |
-    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
-    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
-    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
-    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
-    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
-    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
-    |                                     |        |                                                                                                                                             |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    |                                     |        | 127.0.0.1      auth-test.prisem.washington.edu manager-test.prisem.washington.edu  reload-test.prisem.washington.edu test5.prisem.washingto |
-    | u12-dev-svr-1.prisem.washington.edu | GOOD   | 127.0.0.1      localhost                                                                                                                    |
-    |                                     |        | 127.0.1.1      u12-dev-svr-1                                                                                                                |
-    |                                     |        |                                                                                                                                             |
-    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
-    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
-    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
-    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
-    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
-    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
-    | hub.prisem.washington.edu           | GOOD   | 127.0.0.1      localhost                                                                                                                    |
-    |                                     |        | 127.0.1.1      hub                                                                                                                          |
-    |                                     |        |                                                                                                                                             |
-    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
-    |                                     |        | ::1     localhost ip6-localhost ip6-loopback                                                                                                |
-    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
-    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
-    |                                     |        | 127.0.1.1 hub                                                                                                                               |
-    | floyd2-p.prisem.washington.edu      | GOOD   | 127.0.0.1      localhost                                                                                                                    |
-    |                                     |        | 127.0.0.1      floyd2-p floyd2-p.prisem.washington.edu                                                                                      |
-    | u12-dev-ws-1.prisem.washington.edu  | GOOD   | 127.0.0.1      localhost                                                                                                                    |
-    |                                     |        | 127.0.1.1      u12-dev-1                                                                                                                    |
-    |                                     |        |                                                                                                                                             |
-    |                                     |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
-    |                                     |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
-    |                                     |        | fe00::0 ip6-localnet                                                                                                                        |
-    |                                     |        | ff00::0 ip6-mcastprefix                                                                                                                     |
-    |                                     |        | ff02::1 ip6-allnodes                                                                                                                        |
-    |                                     |        | ff02::2 ip6-allrouters                                                                                                                      |
-    +-------------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+    +------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+    | Host                         | Status | Results                                                                                                                                     |
+    +------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
+    | linda-vm1.devops.develop     | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                              |        | 127.0.1.1      ubu12-generic                                                                                                                |
+    |                              |        |                                                                                                                                             |
+    |                              |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                              |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                              |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                              |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                              |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                              |        | ff02::2 ip6-allrouters                                                                                                                      |
+    |                              |        |                                                                                                                                             |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    |                              |        | 127.0.0.1      auth-test.devops.develop manager-test.devops.develop  reload-test.devops.develop test5.prisem.washingto |
+    | u12-dev-svr-1.devops.develop | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                              |        | 127.0.1.1      u12-dev-svr-1                                                                                                                |
+    |                              |        |                                                                                                                                             |
+    |                              |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                              |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                              |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                              |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                              |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                              |        | ff02::2 ip6-allrouters                                                                                                                      |
+    | hub.devops.develop           | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                              |        | 127.0.1.1      hub                                                                                                                          |
+    |                              |        |                                                                                                                                             |
+    |                              |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                              |        | ::1     localhost ip6-localhost ip6-loopback                                                                                                |
+    |                              |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                              |        | ff02::2 ip6-allrouters                                                                                                                      |
+    |                              |        | 127.0.1.1 hub                                                                                                                               |
+    | floyd2-p.devops.develop      | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                              |        | 127.0.0.1      floyd2-p floyd2-p.devops.develop                                                                                      |
+    | u12-dev-ws-1.devops.develop  | GOOD   | 127.0.0.1      localhost                                                                                                                    |
+    |                              |        | 127.0.1.1      u12-dev-1                                                                                                                    |
+    |                              |        |                                                                                                                                             |
+    |                              |        | # The following lines are desirable for IPv6 capable hosts                                                                                  |
+    |                              |        | ::1     ip6-localhost ip6-loopback                                                                                                          |
+    |                              |        | fe00::0 ip6-localnet                                                                                                                        |
+    |                              |        | ff00::0 ip6-mcastprefix                                                                                                                     |
+    |                              |        | ff02::1 ip6-allnodes                                                                                                                        |
+    |                              |        | ff02::2 ip6-allrouters                                                                                                                      |
+    +------------------------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
 ..
 
@@ -1246,34 +1246,34 @@ Now this list can be used to run the command across the full set of hosts under 
 .. code-block:: none
 
     [dimscli] dittrich@dimsdemo1:ims/git/python-dimscli/dimscli (develop*) $ dimscli ansible execute --host-list /home/dittrich/dims/git/ansible-inventory/complete_inventory
-    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | Host                                | Status | Results                                                                                                                                                                    |
-    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    | rabbitmq.prisem.washington.edu      | GOOD   |  18:35:04 up 20 days,  1:00,  1 user,  load average: 0.00, 0.04, 0.05                                                                                                      |
-    | wellington.prisem.washington.edu    | GOOD   |  18:35:06 up 146 days,  8:43,  1 user,  load average: 0.43, 0.64, 0.43                                                                                                     |
-    | hub.prisem.washington.edu           | GOOD   |  02:35:02 up 128 days,  8:46,  1 user,  load average: 0.11, 0.06, 0.05                                                                                                     |
-    | git.prisem.washington.edu           | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
-    | time.prisem.washington.edu          | GOOD   |  18:35:04 up 20 days,  1:00,  2 users,  load average: 0.06, 0.13, 0.13                                                                                                     |
-    | jira-int.prisem.washington.edu      | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
-    | u12-dev-ws-1.prisem.washington.edu  | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
-    | sso.prisem.washington.edu           | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.00, 0.02, 0.05                                                                                                     |
-    | lapp-int.prisem.washington.edu      | GOOD   |  18:35:02 up 146 days,  8:31,  2 users,  load average: 0.16, 0.05, 0.06                                                                                                    |
-    | foswiki-int.prisem.washington.edu   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.00, 0.01, 0.05                                                                                                     |
-    | u12-dev-svr-1.prisem.washington.edu | GOOD   |  18:35:03 up 142 days, 11:26,  1 user,  load average: 0.03, 0.04, 0.05                                                                                                     |
-    | linda-vm1.prisem.washington.edu     | GOOD   |  18:35:05 up 146 days,  8:31,  1 user,  load average: 0.13, 0.04, 0.05                                                                                                     |
-    | floyd2-p.prisem.washington.edu      | GOOD   |  18:35:02 up 20 days, 59 min,  1 user,  load average: 0.08, 0.04, 0.05                                                                                                     |
-    | jenkins-int.prisem.washington.edu   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
-    | lapp.prisem.washington.edu          | GOOD   |  18:35:02 up 146 days,  8:31,  1 user,  load average: 0.16, 0.05, 0.06                                                                                                     |
-    | eclipse.prisem.washington.edu       | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
-    | lancaster.prisem.washington.edu     | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
-    +-------------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    +------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Host                         | Status | Results                                                                                                                                                                    |
+    +------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | rabbitmq.devops.develop      | GOOD   |  18:35:04 up 20 days,  1:00,  1 user,  load average: 0.00, 0.04, 0.05                                                                                                      |
+    | wellington.devops.develop    | GOOD   |  18:35:06 up 146 days,  8:43,  1 user,  load average: 0.43, 0.64, 0.43                                                                                                     |
+    | hub.devops.develop           | GOOD   |  02:35:02 up 128 days,  8:46,  1 user,  load average: 0.11, 0.06, 0.05                                                                                                     |
+    | git.devops.develop           | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
+    | time.devops.develop          | GOOD   |  18:35:04 up 20 days,  1:00,  2 users,  load average: 0.06, 0.13, 0.13                                                                                                     |
+    | jira-int.devops.develop      | GOOD   |  18:35:03 up 146 days,  8:30,  2 users,  load average: 0.18, 0.07, 0.06                                                                                                    |
+    | u12-dev-ws-1.devops.develop  | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
+    | sso.devops.develop           | GOOD   |  18:35:05 up 146 days,  8:30,  1 user,  load average: 0.00, 0.02, 0.05                                                                                                     |
+    | lapp-int.devops.develop      | GOOD   |  18:35:02 up 146 days,  8:31,  2 users,  load average: 0.16, 0.05, 0.06                                                                                                    |
+    | foswiki-int.devops.develop   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.00, 0.01, 0.05                                                                                                     |
+    | u12-dev-svr-1.devops.develop | GOOD   |  18:35:03 up 142 days, 11:26,  1 user,  load average: 0.03, 0.04, 0.05                                                                                                     |
+    | linda-vm1.devops.develop     | GOOD   |  18:35:05 up 146 days,  8:31,  1 user,  load average: 0.13, 0.04, 0.05                                                                                                     |
+    | floyd2-p.devops.develop      | GOOD   |  18:35:02 up 20 days, 59 min,  1 user,  load average: 0.08, 0.04, 0.05                                                                                                     |
+    | jenkins-int.devops.develop   | GOOD   |  18:35:03 up 146 days,  8:31,  1 user,  load average: 0.01, 0.02, 0.05                                                                                                     |
+    | lapp.devops.develop          | GOOD   |  18:35:02 up 146 days,  8:31,  1 user,  load average: 0.16, 0.05, 0.06                                                                                                     |
+    | eclipse.devops.develop       | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
+    | lancaster.devops.develop     | DARK   | SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue |
+    +------------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ..
 
 .. note::
 
-    As can be seen here, the hosts ``eclipse.prisem.washington.edu`` and
-    ``lancaster.prisem.washington.edu`` do not conform with the standard use of
+    As can be seen here, the hosts ``eclipse.devops.develop`` and
+    ``lancaster.devops.develop`` do not conform with the standard use of
     Ansible via SSH. These kind of *one-off* or manually-configured hosts
     limit the scalability and consistent use of Ansible as a system
     configuration and management tool.
@@ -1289,7 +1289,7 @@ Now this list can be used to run the command across the full set of hosts under 
 
 ..
 
-.. _DIMS-338: http://jira.prisem.washington.edu/browse/DIMS-338
+.. _DIMS-338: http://jira.devops.develop/browse/DIMS-338
 
 .. _addingModules:
 
