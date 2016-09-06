@@ -100,3 +100,99 @@ with the ``include`` statement and help text for the target ``bootstrap``:
 
 ..
 
+.. _variablenaming:
+
+Variable Naming Conventions
+---------------------------
+
+Because the DIMS project uses several programming languages, and several open source
+tools that may have their own naming policies, variable naming is sometimes quiet
+hard to normalize into a single form.  Programmers also came to the project with
+their own preferences and past practices, combined with a desire to make their
+own mark and exercise their own creativity. The result is a mixture of naming
+conventions and variable name choices that are not entirely consistent.
+
+On top of this, the goal of *no hard coded values* means that variables are often
+used to create other variables in order to break down something as complicated as
+a Uniform Resource Locator (URL) that has protocol, host name or address, port
+number, directory path, and file name.  In order to refer to (a) the complete URL,
+(b) just the file name, and (c) the specific version number, requires that
+many (but not *too many*) variables be defined.
+
+Some of these variables will also be specific to the program being used (e.g.,
+"consul" for the Consul distributed key/value store program), and some are
+shared with the operating system and/or hardware architecture (e.g., "ubuntu"
+and "amd64").  It is desireable to not have multiple variables that hold the
+same value, but sometimes necessary to have two variables that have slightly
+different (but related) values (e.g., ``ansible_architecture`` may hold
+``x86_64``, but a program like Consul may use ``amd64`` as the architecture
+identifier. The following is the full target URL for the Consul binary:
+
+.. code-block:: none
+
+     https://releases.hashicorp.com/consul/0.6.4/consul_0.6.4_linux_amd64.zip
+
+..
+
+
+This can be broken down into the following variables:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Variable
+     - Example Value(s)
+
+   * - ``consul_version``
+     - ``0.6.4``
+
+   * - ``consul_os``
+     - ``linux`` (for Ubuntu, Debian), ``darwin`` (for Mac OS X)
+
+   * - ``consul_arch``
+     - ``amd64`` (equivalent to ``ansible_architecture`` value ``x86_64``)
+
+   * - ``consul_artifact``
+     - ``consul_{{ consul_version }}_{{ consul_os }}_{{ consul_arch }}.zip``
+
+   * - ``consul_dist_url``
+     - ``https://releases.hashicorp.com/consul/{{ consul_version }}/``
+
+..
+
+The templated version of an Ansible play that downloads the distribution
+artifact for Consul would thus look like:
+
+.. code-block:: jinja
+
+    - name: Make Consul distribution artifact present
+      get_url:
+        url={{ consul_dist_url }}/{{ consul_artifact }}
+        dest={{ dims_deploy }}/{{ role_name }}
+        sha256sum={{ consul_sha256sum }}
+      sudo: yes
+      tags: [ consul ]
+
+..
+
+Using variable names that begin with a consistent string identifying the role or
+program that they correspond with also helps in two ways.
+
+First, it groups the names (when sorted) and differentiates variables with the
+same function (e.g., identifying a version number) between Ansible roles.
+Since Ansible lumps all variables into the same name space, and may process
+roles in unpredicatable order, there is a chance that a variable with the same
+exact name in two or more roles will *not* have the value that you think it
+will have when the play is actually performed.  Names must be either prefixed
+with a string that differentiates them (e.g., ``consul_version`` vs.
+``docker_version``), or a more complex nested data structure must be used.
+Since the latter is more complex, harder to read and harder for those who are
+new to Ansible to remember how to use, prefixing and separation by way of
+underscore characters is the preferable naming scheme.
+
+Secondly, this naming style matches that already used by other Ansible
+facts, which makes the Ansible debugging output a little more consistent
+and easier to read, again primarily because of the lexical grouping
+that results.
+
