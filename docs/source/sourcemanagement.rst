@@ -2600,6 +2600,272 @@ new commit hashes:
 
 ..
 
+.. _squashingWithRebase:
+
+Squashing Commits Before Merging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Working on a feature branch for a long time can mean many changes
+are made. The idea of "commit often" to push code so other team
+members can review it means that sometimes multiple edits are made
+(or reverted commits) while debugging something. Or you may make
+a number of changes that are unrelated to the topic of the feature
+branch that would be best kept together in a single commit.
+
+It is possible to combine multiple commits into a single commit
+using an interactive Git rebase (``git rebase -i``). The idea is
+to interactively select a starting point for the rebase operation,
+then using ``pick`` and ``squash`` to select the proper commits
+to keep, and those subsequent commits that should be merged into
+the previous commit. If there are dozens of commits, this can
+get very complicated, but the idea can be demonstrated with
+three simple changes that we wish to turn into just one
+merge commit.
+
+.. note::
+
+    This example is being done with a temporary repository that we
+    will make for this purpose, allowing experimentation in a way
+    that will not result in harm to an actual repo.
+
+..
+
+Start by initializing a temporary repo in ``/tmp/testing``.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ git init .
+    Initialized empty Git repository in /private/tmp/testing/.git/
+
+..
+
+We now create three files, each with a numeric name and the
+corresponding number as the contents of the file, and add
+each file to the staging area.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ for i in 1 2 3; do echo $i > $i.txt; git add $i.txt; done
+    [dimsenv] dittrich@ren:/tmp/testing () $ git stat
+    A  1.txt
+    A  2.txt
+    A  3.txt
+
+..
+
+We now make our initial commit.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ git commit -m 'Initial commit'
+    [master (root-commit) 3ee79c4] Initial commit
+     3 files changed, 3 insertions(+)
+     create mode 100644 1.txt
+     create mode 100644 2.txt
+     create mode 100644 3.txt
+
+..
+
+Now we check out a branch were we will make our changes, before merging
+them back into ``master``.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git checkout -b foo
+    Switched to a new branch 'foo'
+
+..
+
+We now make three changes ("edits" to two files, and one file deletion).
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ echo "22222" > 2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git add 2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -m "First edit"
+    [foo 71738c7] First edit
+     1 file changed, 1 insertion(+), 1 deletion(-)
+
+..
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ echo "1111" > 1.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -am "Second edit"
+    [foo 0b0e0a9] Second edit
+     1 file changed, 1 insertion(+), 1 deletion(-)
+
+..
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git rm 3.txt
+    rm '3.txt'
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -m "Removed file"
+    [foo 0a522af] Removed file
+     1 file changed, 1 deletion(-)
+     delete mode 100644 3.txt
+
+..
+
+If we now look at the commit history, we see the initial commit
+where we branched off, and the three change commits.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git gr
+    * commit 0a522af0d8c09d206f37b647014628a89070fe94 (HEAD -> foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:59:36 2016 -0700
+    |
+    |     Removed file
+    |
+    * commit 0b0e0a986e228b177e8775900198c99af80ef5f2
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:34 2016 -0700
+    |
+    |     Second edit
+    |
+    * commit 71738c7b1d2f504110190eaca3c71461e7090cc6
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4 (master)
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
+
+          Initial commit
+
+..
+
+We now start an interactive rebase, referencing the hash of the
+initial commit (the one right before all of the changes on the
+branch).
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git rebase -i 3ee79c4
+
+    pick   71738c7 First edit
+    squash 0b0e0a9 Second edit
+    squash 0a522af Removed file
+
+    # Rebase 3ee79c4..0a522af onto 3ee79c4 (       3 TODO item(s))
+    #
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    #
+    # These lines can be re-ordered; they are executed from top to bottom.
+    #
+    # If you remove a line here THAT COMMIT WILL BE LOST.
+    #
+    # However, if you remove everything, the rebase will be aborted.
+    #
+    # Note that empty commits are commented out
+
+..
+
+When you save the file out of the editor, Git will perform the rebase
+operation:
+
+.. code-block:: none
+
+    [detached HEAD 5f90a71] First edit
+     Date: Mon Sep 5 17:58:19 2016 -0700
+     3 files changed, 2 insertions(+), 3 deletions(-)
+     delete mode 100644 3.txt
+    Successfully rebased and updated refs/heads/foo.
+
+..
+
+You can now see the commit history has been changed to reflect only
+one commit (with a combined comment indicating all of the actions
+from each commit, since we didn't alter any of the comments while
+we did the squashing).
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git gr
+    * commit 5f90a717f96501ba6526a83c107302e0fbc30f10 (HEAD -> foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    |     Second edit
+    |
+    |     Removed file
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4 (master)
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
+
+          Initial commit
+
+..
+
+We can now merge the single resulting commit back into the ``master``
+branch.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git checkout master
+    Switched to branch 'master'
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git merge foo
+    Updating 3ee79c4..5f90a71
+    Fast-forward
+     1.txt | 2 +-
+     2.txt | 2 +-
+     3.txt | 1 -
+     3 files changed, 2 insertions(+), 3 deletions(-)
+     delete mode 100644 3.txt
+
+..
+
+Our changes have taken effect:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ ls
+    1.txt   2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ cat *
+    1111
+    22222
+
+..
+
+The ``HEAD`` has now moved and ``master`` and ``foo`` are
+at the same point. (We can now delete the ``foo`` branch.)
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git gr
+    * commit 5f90a717f96501ba6526a83c107302e0fbc30f10 (HEAD -> master, foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    |     Second edit
+    |
+    |     Removed file
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
+
+          Initial commit
+
+..
+
+
 .. _creatingdocumentonlyrepo:
 
 Creating a new documentation-only repo
