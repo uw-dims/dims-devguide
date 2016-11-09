@@ -213,3 +213,207 @@ were created **after** this file.
     53347790    4 -rw-rw-r--   1 dittrich dittrich     2756 Mar 15 13:51 /vm/devserver/Vagrantfile
 
 ..
+
+.. _testingbranches:
+
+Testing Code on Branches
+------------------------
+
+The DIMS development environment uses Python virtual environments on developer workstations
+in order to isolate functional "production" code from more volatile development or test
+quality code. This means that development code on feature branches can safely be tested
+by following these basic steps:
+
+#. Create a new Python virtual environment that is a clone of the current stable code
+   base.
+
+#. Pull the latest code from the repos to be tested, and check out the latest code.
+
+#. Install the programs from these branches into the new Python virtual environment,
+   using programs like ``dims.install.dimscommands`` and/or ``dims.ansible-playbook``
+   as necessary.
+
+#. Test the code, possibly using the ``test.runner`` script to invoke scripted tests
+   that help validate the funtionality of the new code.
+
+When you are satisfied with the tests, the Python virtual environment can safely
+be deleted (or you can switch back to the "production" default ``dimsenv``
+Python virtual environment) to return to using stable program code.
+
+Let's say we are going to test the repos ``ansible-playbooks`` and ``dims-packer``,
+both on the feature branch named ``feature/interfaces``.
+
+First, create the new Python virtual environment:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~ () $ dimsenv.update --venv interfaces -v
+    [+] NO virtual environment identified and is active
+    [+] User virtual environment "interfaces" needs replacement
+    [+] Running: virtualenv-clone /opt/dims/envs/dimsenv /home/dittrich/dims/envs/interfaces
+    [+] Installing pre/post scripts from /opt/dims/envs into /home/dittrich/dims/envs
+    [+] Processing files for /home/dittrich/dims/envs/interfaces/bin
+    [+] Installed keys.host.create
+    [+] Installed dyn_inv.py
+    [+] Installed dims-ci-utils.update.user
+    [+] Installed fix.adddeploylinks
+    [+] Installed fix.ansible_managed
+    [+] Installed fix.addlinks
+    [+] Installed fix.addvars
+    [+] Installed fix.includes
+    [+] Installed fix.removetrailingspaces
+    [+] Installed dims.install.createusb
+    [+] Installed dims.makedocset
+    [+] Installed dims.boot2docker
+    [+] Installed dims.buildvirtualenv
+    [+] Installed dims.bumpversion
+    [+] Installed dims.jj2
+    [+] Installed dims.git.repoversion
+    [+] Installed dims.nas.mount
+    [+] Installed dims.nas.umount
+    [+] Installed dims.remote.setupworkstation
+    [+] Installed dims.swapcapslockctrl
+    [+] Installed dims.shutdown
+    [+] Installed dims.sphinx-autobuild
+    [+] Installed test.ansible.yaml
+    [+] Installed test.md5.output
+    [+] Installed test.supervisor
+    [+] Installed test.yaml.validate
+    [+] Installed dims.localcluster.create
+    [+] Installed dims.localcluster.start
+    [+] Installed dims.localcluster.stop
+    [+] Installed dims.localcluster.destroy
+    [+] Installed dims.localcluster.status
+    [+] Installed dims.localcluster.runscript
+    [+] Installed dims.clusterconfig.nas
+    [+] Installed dims.clusterconfig.local
+    [+] Installed dims.clusterconfig.list
+    [+] Installed dims.cluster.runscript
+    [+] Installed dims.elasticsearch.service
+    [+] Installed test.vagrant.ansible-current
+    [+] Installed test.vagrant.factory
+    [+] Installed test.vagrant.list
+    [+] Installed test.packer.factory
+    [+] Installed test.packer.list
+    [+] Installed test.vagrant.listvms
+    [+] Successfully installed 43 programs
+    [-] To enable the interfaces virtual environment, do "exec bash" or log out/log in
+
+..
+
+Activate the new virtual environment:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~ () $ workon interfaces
+    [+] Virtual environment 'dimsenv' activated [ansible-playbooks v1.3.33]
+    [interfaces] dittrich@dimsdemo1:~ () $
+
+..
+
+Update the first repo and check out the desired branch for testing.
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~ () $ cd $GIT/ansible-playbooks
+    [interfaces] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (develop*) $ git hf update && git hf pull && git checkout feature/interfaces
+    Fetching origin
+    remote: Counting objects: 71, done.
+    remote: Compressing objects: 100% (44/44), done.
+    remote: Total 44 (delta 33), reused 0 (delta 0)
+    Unpacking objects: 100% (44/44), done.
+    From git.devops.develop:/opt/git/ansible-playbooks
+       d3ae79a..cd789e9  develop    -> origin/develop
+     * [new branch]      feature/interfaces -> origin/feature/interfaces
+    Summary of actions:
+    - Any changes to branches at origin have been downloaded to your local repository
+    - Any branches that have been deleted at origin have also been deleted from your local repository
+    - Any changes from origin/master have been merged into branch 'master'
+    - Any changes from origin/develop have been pulled into branch 'develop'
+    - Any resolved merge conflicts have been pushed back to origin
+    - You are now on branch 'develop'
+    Fetching origin
+    Summary of actions:
+    Branch feature/interfaces set up to track remote branch feature/interfaces from origin by rebasing.
+    Switched to a new branch 'feature/interfaces'
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (feature/interfaces*) $
+
+..
+
+Update the subsequent repo(s), as necessary, and check out the desired branch for testing.
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (feature/interfaces*) $ cd $GIT/dims-packer
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $ git hf update && git hf pull && git checkout feature/interfaces
+    Fetching origin
+    remote: Counting objects: 72, done.
+    remote: Compressing objects: 100% (55/55), done.
+    remote: Total 61 (delta 30), reused 0 (delta 0)
+    Unpacking objects: 100% (61/61), done.
+    From git.devops.develop:/opt/git/dims-packer
+       069d966..2d47264  feature/interfaces -> origin/feature/interfaces
+
+    Summary of actions:
+    - Any changes to branches at origin have been downloaded to your local repository
+    - Any branches that have been deleted at origin have also been deleted from your local repository
+    - Any changes from origin/master have been merged into branch 'master'
+    - Any changes from origin/develop have been merged into branch 'develop'
+    - Any resolved merge conflicts have been pushed back to origin
+    - You are now on branch 'feature/interfaces'
+    Fetching origin
+    Updating 069d966..2d47264
+    Fast-forward
+     Makefile-vagrant.j2                                                           |  2 +-
+     Vagrantfile.j2                                                                | 23 ++++++++++++++---------
+     scripts/all/create-network-interfaces.sh                                      | 17 +++++++++++++----
+     scripts/all/{network-capture.sh => network-debug.sh}                          |  1 -
+     scripts/jessie/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/{xenial/post-provision.sh => jessie/after-up/05-jessie-networking.sh} | 22 +++++++++++++++++-----
+     scripts/jessie/after-up/10-network-debug.sh                                   |  1 +
+     scripts/jessie/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/trusty/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/trusty/after-up/10-network-debug.sh                                   |  1 +
+     scripts/trusty/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/wheezy/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/wheezy/after-up/10-network-debug.sh                                   |  1 +
+     scripts/wheezy/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/xenial/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/xenial/after-up/10-network-debug.sh                                   |  1 +
+     test.vagrant.factory                                                          | 62 ++++++++++++++++++++++++++++++++++----------------------------
+     17 files changed, 87 insertions(+), 174 deletions(-)
+     rename scripts/all/{network-capture.sh => network-debug.sh} (99%)
+     create mode 120000 scripts/jessie/after-up/00-create-network-interfaces.sh
+     rename scripts/{xenial/post-provision.sh => jessie/after-up/05-jessie-networking.sh} (68%)
+     create mode 120000 scripts/jessie/after-up/10-network-debug.sh
+     delete mode 100755 scripts/jessie/post-provision.sh
+     create mode 120000 scripts/trusty/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/trusty/after-up/10-network-debug.sh
+     delete mode 100755 scripts/trusty/post-provision.sh
+     create mode 120000 scripts/wheezy/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/wheezy/after-up/10-network-debug.sh
+     delete mode 100755 scripts/wheezy/post-provision.sh
+     create mode 120000 scripts/xenial/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/xenial/after-up/10-network-debug.sh
+
+    Summary of actions:
+    - Any changes from origin/feature/interfaces have been pulled into branch 'feature/interfaces'
+    Already on 'feature/interfaces'
+    Your branch is up-to-date with 'origin/feature/interfaces'.
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $
+
+..
+
+Now that both repos have been pulled, and their respective ``feature/interfaces`` branches
+checked out, install any updated programs to be tested:
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $ dims.install.dimscommands -v
+    [+] Processing files for /home/dittrich/dims/envs/interfaces/bin
+    [+] Installed test.vagrant.factory
+    [+] Successfully installed 1 program
+
+..
+
+
