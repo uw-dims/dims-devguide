@@ -20,7 +20,6 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    referenceddocs
    policy
    communication
-   onboarding
    sourcemanagement
    documentation
    continuousintegration
