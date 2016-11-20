@@ -178,13 +178,16 @@ further down for more DIMS-specific examples of using ``hubflow`` commands).
 
 .. caution::
 
-    Mac OS X (by default) uses an HFS file system *with case sensitivity*.
+    Mac OS X (by default) uses a *case insensitive* HFS file system.
     Unlike Ubuntu and other Linux/Unix distributions using case-sensitive
     file systems like ``ext2``, ``reiserfs``, etc., the default OS X file
     system does not care if you name a file ``THISFILE`` or ``ThisFile``
-    or ``thisfile``. All of those are the same file name. This can cause
+    or ``thisfile``. All of those refer to the same file on a Mac. This can cause
     problems when you use Git to share a source repository between computers
-    running OS X, Windows, and/or Linux.  See `Git on Mac OS X: Don't ignore case!`_
+    running OS X, Windows, and/or Linux, because what Linux thinks are two
+    files, the Mac only thinks is one (and that really causes problems for Git).
+
+    See `Git on Mac OS X: Don't ignore case!`_
     and `How do I commit case-sensitive only filename changes in Git?`_. A solution
     for Mac OS X, posted in `Case sensitivity in Git`_, is documented in
     Section :ref:`macosxcasesensitive`.
@@ -216,35 +219,32 @@ The following are user-specific settings that you should alter for your own acco
 
 ..
 
-.. todo::
+.. TODO(dittrich): This needs to be fixed.
 
-    .. caution::
+.. caution::
 
 
-        There is a side-effect of the way we set up common Git configuration
-        for users with Ansible.  Whenever the ``dims-users-create`` role is
-        played, a fresh copy of the user's global Git configuration file
-        (``~/.gitconfig``) is over-written.  That file contains the four
-        settings listed above, which means they will be wiped out whenever that
-        role is run and you will need to reset them. (See the file
-        ``$GIT/ansible-playbooks/dims-users-create/templates/gitconfig.j2``).
-        That is a bug in that it is not `idempotent`_.
+    There is a bad side-effect of the way the initial common Git configuration
+    were managed using Ansible.  Whenever the ``dims-users-create`` role was
+    played, a fresh copy of the user's global Git configuration file
+    (``~/.gitconfig``) is created, over-writing whatever the user had created
+    by issuing the commands above and forcing the user to have to re-issue
+    those commands every time the play was run.  (See the file
+    ``$GIT/ansible-playbooks/dims-users-create/templates/gitconfig.j2``).
+    That is a bug in that it is not `idempotent`_.
 
-        One quick hack that restores these values is to add those commands to
-        your ``$HOME/.bash_aliases`` file, which is run every time a new
-        interactive Bash shell is started.
+    One quick hack that restores these values is to add those commands to
+    your ``$HOME/.bash_aliases`` file, which is run every time a new
+    interactive Bash shell is started.
 
-        A better long-term solution, which we are working towards, is to
-        have the ``user.name`` and ``user.email`` configuration settings come
-        from the ops-trust portal user attributes table, so they can be
-        set by the user and stored in one central location, which can then be
-        retreived from the ops-trust user database and applied consistently
-        by Ansible when it sets up user accounts.
-
-    ..
+    A better long-term solution, which we are working towards, is to
+    have the ``user.name`` and ``user.email`` configuration settings come
+    from the Trident portal user attributes table, so they can be
+    set by the user and stored in one central location, which can then be
+    retreived from the Trident user database and applied consistently
+    by Ansible when it sets up user accounts.
 
 ..
-
 
 .. _idempotent: http://docs.ansible.com/ansible/glossary.html#idempotency
 
@@ -3319,25 +3319,25 @@ documented in the section above, so this is not really a viable option.
 
 There are two different services we are currently considering:
 
-    * `Ansible Vault`_ 
-    
+    * `Ansible Vault`_
+
     * `git-crypt`_
 
 Ansible Vault
 ~~~~~~~~~~~~~
 
-Ansible Vault is a command-line tool provided by Ansible that creates new
-files and then encrypts them, encrypts already created files, and decrypts,
+Ansible Vault is a command-line tool provided by Ansible. It is used to
+creates new vault files and then encrypts them, encrypts already created files, and decrypts,
 edits, and views encrypted files. It allows for application of encryption at
-a very granular level. 
+a very granular level.
 
 Vault is a password-based encryption system. This password can be stored in
-a file, but it must be shared to every user who is allowed access to the 
+a file, but it must be shared to every user who is allowed access to the
 secret data files that are encrypted. This means there is still one step of
 having to figure out how to share the vault password.
 
 Once the password is known by all parties, the process is pretty simple. To
-create a file you want to be encrypted, 
+create a file you want to be encrypted,
 
 .. code-block:: none
 
@@ -3382,7 +3382,7 @@ committed to Git. Thus, if you ``decrypt`` a file to view it, you'll have to
 ``encrypt`` it again, and the file will change, so you'll have to commit it
 again. Before a certain version of ``ansible-vault``, there was no ``view``
 option, so maybe that was the only way to see the decrypted contents of an
-encrypted file. This version of ``ansible-vault`` is the version in the 
+encrypted file. This version of ``ansible-vault`` is the version in the
 ``dimsenv`` Python virtual environment. You must be in a virtual environment
 with Ansible 2.0.1.0+ in order to have the ``view`` option.
 
@@ -3412,13 +3412,13 @@ information from that file is used to create the new file on the target machine.
 ..
 
 .. code-block:: none
- 
+
     - name: Load secret password file
       include_vars: "vault.yml"
       no_log: true
       when: ansible_os_family == "Debian"
       tags: [ ansible-server ]
-    
+
     - name: Copy secret password file
       copy:
         dest: "{{ item.key }}"
@@ -3468,8 +3468,8 @@ don't include the actual secret there--set that variable to another
 variable.
 
 Let's say we need a username and password for Service X that is going to
-run on several machines in deployment ``local``. In our group_vars file 
-for this deployment, ``deployment-local.yml``, we'd define the 
+run on several machines in deployment ``local``. In our group_vars file
+for this deployment, ``deployment-local.yml``, we'd define the
 username and password variables for Service X as follows:
 
 .. code-block:: none
