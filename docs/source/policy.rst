@@ -204,6 +204,22 @@ project started (2013) and the current year, as shown here:
 
 ..
 
+.. pythonide:
+
+Python Development and Debugging
+--------------------------------
+
+Several component subsystems used in and developed the DIMS project are
+written in Python. We have chosen to use the `PyCharm`_ Community Edition
+integrated development environment and debugger.
+
+.. _Pycharm: https://www.jetbrains.com/pycharm/download/#section=linux
+
+.. note::
+
+    Updating PyCharm may involve exporting and re-importing settings at the
+    time the program. This is covered in Section :ref:`updatingpycharm`.
+
 .. _license:
 
 License
