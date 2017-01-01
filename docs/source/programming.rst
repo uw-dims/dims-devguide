@@ -359,3 +359,53 @@ the way that Git works, in order to better integrate the use of variables
 that are used for differentiating between deployments. This high-level
 CLI is ``dimscli`` (see :ref:`dimscli`). This is still a work-in-progress.
 
+.. attention::
+
+   Here are some questions to ask when confronted with variable or program
+   naming:
+
+   * I want to put some value into a variable. Is there already a variable
+     that has been defined to hold this same value? (If so, is that the
+     appropriate variable to use? Do we need another variable with the same
+     value, and how will the next person know which one to use?)
+
+   * Is there already a dictionary or other more complex structure that
+     holds related variables? (If so, is it appropriate to add another field or
+     mapping to that structure? Is this data structure the place where someone
+     else will look to find this variable?)
+
+   * What naming convention is used elsewhere? Is ``camelCaseStyle``, ``ALLCAPS``,
+     or ``all_lower_case_with_underscores`` used? Think about how you or someone
+     else will search the source files to find this variable, and ask yourself if
+     it will be necessary to use a complicated regular expressions or simple one
+     to find it?
+
+   * Is the new name a translation of an existing name, and if so,
+     why is it being translated instead of used with the exact same spelling?
+     For example, if ``Makefile`` has something like ``VARIABLE_NAME={{ varName
+     }}`` in it, why was ``varName`` translated to ``VARIABLE_NAME``? (Look at
+     the last bullet point to see why this matters.)
+
+   * How will the script name group with other scripts when sorted by the
+     ``ls`` program? Will the script be grouped *with* other simple scripts
+     that are commonly related, or will it end up being mixed up?
+
+     A really good example for helping understanding this point is naming files
+     with dates in the file names.  The strings using the ``MM_DD_YYYY`` style
+     (or the European equivalent ``DD_MM_YYYY`` style), or spelled out
+     ``Jan_01_2015``, ``Feb_15_2016``, etc., will **not sort properly**. If
+     instead you use a naming structure that puts the things that change least
+     frequently to the left, and the things that change most frequently to the
+     right (e.g., ``2015_01_01``, ``2016_02_15``) not only will the names
+     **always** sort properly, but they also group better by year and month!
+     
+   There are sometimes good reasons to deviate from convention, to translate
+   from one variable name to another, or to create a new variable that holds
+   the same value as another variable. If you are able to explicitly describe
+   why a specific new variable name was chosen, put in a comment to explain the
+   deviation.  If you are in doubt, or can't really give a good reason for
+   doing something that may have negative consequences later on for someone
+   else, log a ticket or bring up the issue at a scrum meeting to discuss the
+   issue and get resolution.
+
+..
