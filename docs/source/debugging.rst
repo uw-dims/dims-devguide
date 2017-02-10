@@ -598,10 +598,164 @@ variable as described earlier.
 .. _Vagrant: https://www.vagrantup.com/
 .. _mitchellh/vagrant: https://github.com/mitchellh/vagrant
 
+.. _debuggingansible:
+
+Debugging Ansible
+----------------
+
+Ansible has two primary methods with which it is invoked -- ``ansible-playbook``
+to run playbooks, and ``ansible`` (a.k.a., "ad-hoc mode") to run individual
+modules one at a time.
+
+* Debugging using the ``debug`` module in "ad-hoc" mode can be used to explore
+  the value of variables after processing of the inventory (i.e., group
+  definitions, group variables, host variables, etc.) This does not require
+  any remote connections, or even an internet connection at all, since the
+  ``debug`` module is processed locally on the Ansible control host. (The
+  flip side of this is that no Ansible "facts" are available, `because` of
+  the fact that no remote connections are made.)
+
+* Debugging playbook execution with ``ansible-playbook`` involves controlling
+  the level of verbosity in output of program execution and/or exposing the
+  runtime state of variables (possibly obtaining that state remotely from
+  running systems) using the ``debug`` module. There is also "single-stepping"
+  of playbooks that can be used in conjunction with these mechanisms.
+
+
+Examining Groups and Host Variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To see the value of the variable ``inventory_hostname`` for a group of hosts
+named ``manager``, use the ``debug`` module, the specific inventory to
+look at, and pass the group name:
+
+.. code-block:: none
+
+    $ pwd
+    /home/dittrich/dims/git/ansible-playbooks/v2
+    $ ansible -m debug -a "var=inventory_hostname" -i inventory/local manager
+    core-03.devops.local | SUCCESS => {
+        "inventory_hostname": "core-03.devops.local"
+    }
+    core-01.devops.local | SUCCESS => {
+        "inventory_hostname": "core-01.devops.local"
+    }
+    core-02.devops.local | SUCCESS => {
+        "inventory_hostname": "core-02.devops.local"
+    }
+
+..
+
+To see what values would be used by a role, you can specify the
+variable from the ``vars`` structure that is loaded via the inventory
+variable loading process. Limiting to one host will then show just the
+variable for that host. To illustrate this, we will take a look at the
+dictionary ``pycharm`` that is used by the ``pycharm`` role to control
+which version of the Pycharm program will be installed. Here are the first
+20 lines of output:
+
+.. code-block:: none
+
+    $ ansible -m debug -a "var=vars.pycharm" -i inventory/develop all | head -n 20
+    dimsdemo1.devops.develop | SUCCESS => {
+        "vars.pycharm": {
+            "archive": "pycharm-community-2016.3.2.tar.gz",
+            "dist_url": "https://download.jetbrains.com/python/pycharm-community-2016.3.2.tar.gz",
+            "sha256_sum": "e1092d3692118f9097e4182edfccc76159160353b7d7379cada3249b9e2d4f39",
+            "version": "2016.3.2"
+        }
+    }
+    dimsdev3.devops.develop | SUCCESS => {
+        "vars.pycharm": {
+            "archive": "pycharm-community-2016.3.1.tar.gz",
+            "dist_url": "https://download.jetbrains.com/python/pycharm-community-2016.3.1.tar.gz",
+            "sha256_sum": "69a18300b09f1b031e8a75f60152e4c42ea163b65aa0279e0b365a1cf9186b29",
+            "version": "2016.3.1"
+        }
+    }
+    dimsdev2.devops.develop | SUCCESS => {
+        "vars.pycharm": {
+            "archive": "pycharm-community-2016.3.1.tar.gz",
+            "dist_url": "https://download.jetbrains.com/python/pycharm-community-2016.3.1.tar.gz",
+            "sha256_sum": "69a18300b09f1b031e8a75f60152e4c42ea163b65aa0279e0b365a1cf9186b29",
+
+..
+
+Note that there is a difference in the variables between ``dimsdemo1`` and the
+other hosts. This is because there is a ``host_vars/`` file for that host
+that defines variables for the newest version, which is being tested prior to
+making this the default for all hosts in the ``develop`` deployment:
+
+.. code-block:: none
+
+    $ grep -r -A4 pycharm: inventory/develop
+    inventory/develop/host_vars/dimsdemo1.devops.develop.yml:pycharm:
+    inventory/develop/host_vars/dimsdemo1.devops.develop.yml-  version:                                                          "2016.3.2"
+    inventory/develop/host_vars/dimsdemo1.devops.develop.yml-  archive:                                        "pycharm-community-2016.3.2.tar.gz"
+    inventory/develop/host_vars/dimsdemo1.devops.develop.yml-  dist_url: "https://download.jetbrains.com/python/pycharm-community-2016.3.2.tar.gz"
+    inventory/develop/host_vars/dimsdemo1.devops.develop.yml-  sha256_sum: "e1092d3692118f9097e4182edfccc76159160353b7d7379cada3249b9e2d4f39",
+    --
+    inventory/develop/group_vars/develop.yml:pycharm:
+    inventory/develop/group_vars/develop.yml-  version:                                                          "2016.3.1"
+    inventory/develop/group_vars/develop.yml-  archive:                                        "pycharm-community-2016.3.1.tar.gz"
+    inventory/develop/group_vars/develop.yml-  dist_url: "https://download.jetbrains.com/python/pycharm-community-2016.3.1.tar.gz"
+    inventory/develop/group_vars/develop.yml-  sha256_sum: "69a18300b09f1b031e8a75f60152e4c42ea163b65aa0279e0b365a1cf9186b29"
+
+..
+
+If you only want to see the variable for a single host, rather than an entire
+group, just specify the desired host:
+
+.. code-block:: none
+
+    $ ansible -m debug -a "var=vars.pycharm" -i inventory/develop dimsdemo1.devops.develop
+    dimsdemo1.devops.develop | SUCCESS => {
+        "vars.pycharm": {
+            "archive": "pycharm-community-2016.3.2.tar.gz",
+            "dist_url": "https://download.jetbrains.com/python/pycharm-community-2016.3.2.tar.gz",
+            "sha256_sum": "e1092d3692118f9097e4182edfccc76159160353b7d7379cada3249b9e2d4f39",
+            "version": "2016.3.2"
+        }
+    }
+
+..
+
+You can get even more specific and access the ``hostvars`` version of
+the variable (which would, in the runtime environment, also include
+facts that were dynamically gathered at runtime using ``register``
+or other mechanisms):
+
+.. code-block:: none
+
+    $ ansible -m debug -a "var=vars.hostvars['dimsdemo1.devops.develop'].pycharm" -i inventory/develop dimsdemo1.devops.develop
+    dimsdemo1.devops.develop | SUCCESS => {
+        "vars.hostvars['dimsdemo1.devops.develop'].pycharm": {
+            "archive": "pycharm-community-2016.3.2.tar.gz",
+            "dist_url": "https://download.jetbrains.com/python/pycharm-community-2016.3.2.tar.gz",
+            "sha256_sum": "e1092d3692118f9097e4182edfccc76159160353b7d7379cada3249b9e2d4f39",
+            "version": "2016.3.2"
+        }
+    }
+
+..
+
+Debugging Ansible at runtime
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. todo::
+
+   Not done yet...
+
+..
+
 .. _updatingpycharm:
 
 Updating PyCharm Community Edition
 ----------------------------------
+
+Now that we have seen an example of setting variables at the host level
+that override group variables, and validating the values of those variables
+at run time, we will see how an example of upgrading the application.
 
 PyCharm keeps all of its state, including settings, breakpoints, indexes, in internal
 data stores in a directory specific to the version of PyCharm being used.  For example,
