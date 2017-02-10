@@ -26,6 +26,7 @@ to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
    deployconfigure
    programming
    opstrustdb
+   dimsscripts
    dimscli
    servicediscovery
    dockerdatacenter
