@@ -416,6 +416,188 @@ checked out, install any updated programs to be tested:
 
 ..
 
+.. _debuggingvagrant:
+
+Debugging Vagrant
+-----------------
+
+`Vagrant`_ is used to create and destroy Virtual Machine sub-systems within
+DIMS deployments. It is designed to create replicable development environments,
+but is also being used to instantiate replica DIMS deployments to facilitate
+not only development, but also testing and isolation of deployments to exercise
+and document system administration tasks.
+
+Vagrant, like Ansible and some other open source tools used in the DIMS project,
+sometimes are sparse on documentation, especially of advanced features necessary
+for small-scale distributed systems deployment. This can make debugging harder,
+since the functionality is wrapped in a black box that is the ``vagrant`` command
+line (which may be buried within a ``Makefile`` and/or Bash script.)
+
+.. _vagrantprovisioners:
+
+Verbosity in Vagrant Provisioners
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first way to turn this black box into a white box is to enable debugging
+within the provisioners being called, such as the ``ansible`` provisioner.
+To do this, the ``Vagrantfile`` produced by DIMS scripts allows an environment
+variable ``VERBOSITY`` to be passed to the ``ansible`` provisioner:
+
+.. code-block:: ruby
+
+    . . .
+    ANSIBLE_VERBOSITY = ENV['VERBOSITY'].nil? ? "vv" : ENV['VERBOSITY']
+      . . .
+      config.vm.provision "ansible" do |ansible|
+        . . .
+        # Use the environment variable VERBOSITY to change verbosity level.
+        ansible.verbose = ANSIBLE_VERBOSITY
+        . . .
+      end
+    . . .
+
+..
+
+
+This mechanism adds verbosity to the provisioner being called **by**
+Vagrant, but does nothing to help you see what Vagrant itself is doing
+before and after the ``ansible`` provisioner is called.
+
+.. _vagrantlogging:
+
+Vagrant Debug Logging
+^^^^^^^^^^^^^^^^^^^^^
+
+To get debugging output from Vagrant itself, there is another
+environment variable that produces log output from Vagrant
+onto ``stderr``, which can be redirected to a file for examination
+(shown here is the context of a GNU ``Makefile``):
+
+.. code-block:: none
+
+    #HELP up - Do 'vagrant up --no-provision'
+    .PHONY: up
+    up:
+	    @if [ "$(VAGRANT_STATUS)" != "running" ]; then \
+	        echo "[+] vagrant up --no-provision"; \
+	        VAGRANT_LOG=debug vagrant up --no-provision 2>/tmp/vagrant-$(FQDN).log; \
+	     fi
+
+..
+
+The output is quite voluminous and shows not only what Vagrant is doing
+internally, but also how it is calling programs like ``vboxmanage`` to
+manipulate the Vagrant Virtual Machine.
+
+.. code-block:: none
+
+    . . .
+     INFO global: Vagrant version: 1.8.6
+     INFO global: Ruby version: 2.2.5
+     INFO global: RubyGems version: 2.4.5.1
+     INFO global: VAGRANT_LOG="debug"
+    . . .
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "sharedfolder", "add", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "--name", "home_ansible_vagrant", "--hostpath", "/vm/run/blue14"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "setextradata", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "VBoxInternal2/SharedFoldersEnableSymlinksCreate/home_ansible_sources", "1"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "sharedfolder", "add", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "--name", "home_ansible_sources", "--hostpath", "/vm/cache/sources"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+    . . .
+
+..
+
+.. caution::
+
+    Remember that environment variables, once set, are inheritted by all child
+    processes (unless they are **unset** before another sub-process is started).
+    Using an environment variable to enable logging in a program means that
+    not only the initial process running the ``vagrant`` program, **but all
+    child processes created by this parent process** that also run ``vagrant``
+    will have debugging output on ``stdout``.  If the ``Vagrantfile`` itself
+    instructs ``vagrant`` to directly run ``vagrant``, the parent process will
+    receive this output on ``stderr`` and may interpret it to mean "failure"
+    when there is actually no real error.
+
+    .. code-block:: ruby
+
+        # Shell provisioner to do post-provisioning actions
+        # See https://github.com/emyl/vagrant-triggers/wiki/Trigger-recipes
+        config.trigger.after [:provision], :stdout => true do
+          run "vagrant ssh -c '/opt/dims/bin/trigger.runner --state after-provision'"
+        end
+
+    ..
+
+    In this case, make sure that ``:stderr => false`` is included on the
+    trigger configuration line to either prevent output to ``stderr`` and/or
+    config non-error exit code values.
+
+..
+
+.. _vagrantsource:
+
+Use the Source, Luke
+^^^^^^^^^^^^^^^^^^^^
+
+Lastly, you may need to read the Vagrant source code itself to find
+out how Vagrant operates. For example, the file ``vagrant/plugins/providers/virtualbox/action/network.rb`` shows the defaults used by Vagrant for Virtualbox virtual
+networking using DHCP:
+
+.. code-block:: ruby
+
+        #-----------------------------------------------------------------
+        # DHCP Server Helper Functions
+        #-----------------------------------------------------------------
+
+        DEFAULT_DHCP_SERVER_FROM_VBOX_INSTALL = {
+          network_name: 'HostInterfaceNetworking-vboxnet0',
+          network:      'vboxnet0',
+          ip:           '192.168.56.100',
+          netmask:      '255.255.255.0',
+          lower:        '192.168.56.101',
+          upper:        '192.168.56.254'
+        }.freeze
+
+..
+
+This shows the default range for dynamically assigned addresses (which you will
+want to avoid using for any static addresses on the same network to avoid
+possible conflicts.)
+
+The source code, a few lines lower, also shows what and how Vagrant will log
+the fact that it is creating a DHCP server to manage addresses:
+
+.. code-block:: ruby
+
+          @logger.debug("Creating a DHCP server...")
+          @env[:machine].provider.driver.create_dhcp_server(interface[:name], config)
+
+..
+
+
+The string "Creating a DHCP server..." is what you would look for in
+the log output produced by setting the ``VAGRANT_LOG`` environment
+variable as described earlier.
+
+.. todo::
+
+    Not done yet...
+
+..
+
+.. _Vagrant: https://www.vagrantup.com/
+.. _mitchellh/vagrant: https://github.com/mitchellh/vagrant
+
 .. _updatingpycharm:
 
 Updating PyCharm Community Edition
