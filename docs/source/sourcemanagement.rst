@@ -648,6 +648,170 @@ starting a sync.)
 
 ..
 
+.. _findingchanges:
+
+Finding Changes and Changed Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When working with lots of branches, especially branches that last for a long
+time, it becomes difficult to find changes and changed files (and the commits
+that contain them), in order to ensure required changes are present on the
+branch you are working on.
+
+Git has a command ``whatchanged`` that assists with this. (See the
+`git-whatchanged`_ documentation.)
+
+Say you are on a branch, and running a program that relies on an Ansible
+inventory file for obtaining a list of hosts. When the program is run,
+it appears to iterate over the `group names`, not host names as you
+expect:
+
+.. code-block:: none
+   :emphasize-lines: 2,3
+
+    $ test.vagrant.list --status
+    production: not_created
+    development: not_created
+
+..
+
+The reason for this is a missing ``:children`` modifier on the
+names of a group that has sub-groups. You know this bug was
+fixed, but which branch (or which commit) contains the fix?
+Use ``git whatchanged`` and pass it the name of the file
+that has the problem.
+
+.. code-block:: none
+   :emphasize-lines: 1,6,8,16,24,32,40
+
+     $ git whatchanged -- inventory/ectf/all
+    commit 963b006a7aceee21eb35da41546ae5da7596382e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Wed Dec 14 23:07:37 2016 -0800
+
+        Add missing ":children" modifier
+
+    :100644 100644 d9918d0... 9ce596b... M  v2/inventory/ectf/all
+
+    commit 00afbb5bfadc46ef9b5f253a13a6212cb3fca178
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sun Dec 11 21:31:04 2016 -0800
+
+        Update and normalize inventory 'all' files with children groups
+
+    :100644 100644 99bb8d9... d9918d0... M  v2/inventory/ectf/all
+
+    commit 777cce71f944650c0ff5cf47723ee6b9f322c987
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sat Dec 3 21:33:38 2016 -0800
+
+        Refactor inventory directories to use group vars properly
+
+    :100644 100644 98376da... 99bb8d9... M  v2/inventory/ectf/all
+
+    commit 3cdb37d04c9d8bedb5277ad4cfbeafdec55f69b0
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Tue Nov 22 20:00:19 2016 -0800
+
+        Add vagrants to local and ectf groups
+
+    :100644 100644 b199ae1... 98376da... M  v2/inventory/ectf/all
+
+    commit 92eec6c03c28824725b9fc0c4560b4fdccfa880e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Fri Nov 18 16:53:04 2016 -0800
+
+        Add initial inventory for ectf to get dynamic inventory working
+
+    :000000 100644 0000000... b199ae1... A  v2/inventory/ectf/all
+
+..
+
+If you add the ``--patch`` option, you also see the changes themselves
+and can identify the initial problem file as well as the commit
+that contains the fix (output edited for brevity):
+
+
+
+.. code-block:: none
+   :emphasize-lines: 2,15-19,21,39-42
+   :linenos:
+
+     $ git whatchanged --patch -- inventory/ectf/all
+    commit 963b006a7aceee21eb35da41546ae5da7596382e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Wed Dec 14 23:07:37 2016 -0800
+
+        Add missing ":children" modifier
+
+    diff --git a/v2/inventory/ectf/all b/v2/inventory/ectf/all
+    index d9918d0..9ce596b 100644
+    --- a/v2/inventory/ectf/all
+    +++ b/v2/inventory/ectf/all
+    @@ -27,7 +27,7 @@ red.devops.ectf
+     yellow.devops.ectf
+
+     # Hosts are Vagrant virtual machines
+    -[vagrants]
+    +[vagrants:children]
+     production
+     development
+
+    commit 00afbb5bfadc46ef9b5f253a13a6212cb3fca178
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sun Dec 11 21:31:04 2016 -0800
+
+        Update and normalize inventory 'all' files with children groups
+
+    diff --git a/v2/inventory/ectf/all b/v2/inventory/ectf/all
+    index 99bb8d9..d9918d0 100644
+    --- a/v2/inventory/ectf/all
+    +++ b/v2/inventory/ectf/all
+      . . .
+     [manager]
+     core-[01:03].devops.ectf
+
+    +[worker]
+    +red.devops.ectf
+    +yellow.devops.ectf
+    +
+     # Hosts are Vagrant virtual machines
+     [vagrants]
+    +production
+    +development
+    +
+    +[production]
+     red.devops.ectf
+     core-[01:03].devops.ectf
+     yellow.devops.ectf
+    -blue16.devops.ectf
+    +
+    +[development]
+     blue14.devops.ectf
+    -green.devops.ectf
+     . . .
+
+..
+
+You can now ``git cherry-pick`` the commit with the fix
+(``963b006a7aceee21eb35da41546ae5da7596382e``) and move on:
+
+.. code-block:: none
+   :emphasize-lines: 2-7
+
+    $ test.vagrant.list --status
+    red: saved
+    core-01: not_created
+    core-02: not_created
+    core-03: not_created
+    yellow: saved
+    blue14: not_created
+
+..
+
+.. _git-whatchanged: https://git-scm.com/docs/git-whatchanged
+
+
 .. _versionnumbers:
 
 Managing Version Numbers
