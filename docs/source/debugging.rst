@@ -739,6 +739,7 @@ or other mechanisms):
 
 ..
 
+
 Debugging Ansible at runtime
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -747,6 +748,8 @@ Debugging Ansible at runtime
    Not done yet...
 
 ..
+
+
 
 .. _updatingpycharm:
 
@@ -818,3 +821,86 @@ you can delete the old directory.
 
 ..
 
+
+.. _jinjafilters:
+
+Developing with Filters
+-----------------------
+
+Variables are used in many contexts in Ansible, primarily in playbooks and
+templates of files. All these variables can be filtered using builtin filters
+from Jinja or from developed jinja filters.
+
+Using builtin Jinja filters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Builtin `filters`_ are documented at Jinja's website. They can be chained when
+maniplating variables, and in some cases, must be chained. For example, say we
+have a data structure that is a list of dictionaries, like the following:
+
+.. code-block:: yaml
+
+    trident:
+      admins:
+        - ident: 'trident'
+          descr: 'LOCAL Trident Administrator'
+          email: 'admin@prisem.washington.edu'
+        - ident: 'dittrich'
+          descr: 'Dave Dittrich'
+          email: 'dittrich@u.washington.edu'
+        - ident: 'mboggess'
+          descr: 'Megan Boggess'
+          email: 'mboggess@uw.edu'
+
+..
+
+Now, suppose we need a list of only the elements with the key 'ident'. We can
+chain the jinja 'map' filter and 'list' filter as follows:
+
+.. code-block:: yaml
+   :emphasize-lines: 2
+
+    - name: Create set of defined admins
+      set_fact: admins_defined={{ trident.admins | map(attribute='ident') | list }}
+      no_log: "{{ nolog }}"
+      when: ansible_lsb.codename == "jessie"
+
+    - debug: var=admins_defined
+
+..
+
+This will give the following results:
+
+.. code-block:: none
+   :emphasize-lines: 8-12
+
+    TASK [Create set of defined admins] ********************************************
+    Monday 13 February 2017  09:20:38 -0800 (0:00:01.037)       0:00:01.093 *******
+    ok: [yellow.devops.local]
+
+    TASK [debug] *******************************************************************
+    Monday 13 February 2017  09:20:38 -0800 (0:00:00.043)       0:00:01.136 *******
+    ok: [yellow.devops.local] => {
+        "admins_defined": [
+            "trident",
+            "dittrich",
+            "mboggess"
+        ]
+    }
+
+    PLAY RECAP *********************************************************************
+    yellow.devops.local        : ok=3    changed=0    unreachable=0    failed=0
+
+..
+
+
+Developing Jinja filters
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. todo::
+
+   Not done yet...
+
+..
+
+.. _filters: http://jinja.pocoo.org/docs/2.9/templates/#list-of-builtin-filters
