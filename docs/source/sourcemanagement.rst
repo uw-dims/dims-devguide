@@ -364,7 +364,7 @@ are working on is up to date:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost ansible-playbooks (develop)]$ git hf update
+    $ git hf update
     Fetching origin
     remote: Counting objects: 187, done.
     remote: Compressing objects: 100% (143/143), done.
@@ -396,13 +396,13 @@ in testing), it would be deleted:
 .. code-block:: none
    :emphasize-lines: 1,5,7,19
 
-   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   $ git branch -a
    * develop
      master
      remotes/origin/develop
      remotes/origin/feature/eliot
      remotes/origin/master
-   [dittrich@localhost dims-asbuilt (develop)]$ git hf update
+   $ git hf update
    Fetching origin
    From git.devops.develop:/opt/git/dims-asbuilt
     x [deleted]         (none)     -> origin/feature/eliot
@@ -414,7 +414,7 @@ in testing), it would be deleted:
    - Any changes from origin/develop have been merged into branch 'develop'
    - Any resolved merge conflicts have been pushed back to origin
    - You are now on branch 'develop'
-   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   $ git branch -a
    * develop
      master
      remotes/origin/develop
@@ -958,7 +958,7 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
 .. code-block:: none
    :emphasize-lines: 1,9,10
 
-    (dimsenv)[dittrich@localhost git]$ git clone git@git.devops.develop:/opt/git/dims-ad.git
+    $ git clone git@git.devops.develop:/opt/git/dims-ad.git
     Cloning into 'dims-ad'...
     remote: Counting objects: 236, done.
     remote: Compressing objects: 100% (155/155), done.
@@ -966,8 +966,8 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
     Receiving objects: 100% (236/236), 26.20 MiB | 5.89 MiB/s, done.
     Resolving deltas: 100% (117/117), done.
     Checking connectivity... done.
-    (dimsenv)[dittrich@localhost git]$ cd dims-ad
-    (dimsenv)[dittrich@localhost dims-ad (master)]$ git hf init
+    $ cd dims-ad
+    $ git hf init
     Using default branch names.
 
     Which branch should be used for tracking production releases?
@@ -990,7 +990,7 @@ in your ``.git/config`` file starting with ``hubflow``:
 .. code-block:: none
    :emphasize-lines: 16-18, 23-28
 
-   (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
+   $ cat .git/config
    [core]
            repositoryformatversion = 0
            filemode = true
@@ -1054,7 +1054,7 @@ use the Git shell command ``list``:
 .. code-block:: none
    :emphasize-lines: 1
 
-    [dittrich@localhost ~]$ ssh git@git.devops.develop list
+    $ ssh git@git.devops.develop list
     prisem-replacement.git
     ELK.git
     cif-java.git
@@ -1121,7 +1121,7 @@ of a ``.mrconfig`` file (see ``man mr`` for more information).
 
    .. code-block:: none
 
-       [dittrich@localhost dims]$ cat ~/.mrtrust
+       $ cat ~/.mrtrust
        /Users/dittrich/dims/.mrconfig
        /Users/dittrich/git/.mrconfig
 
@@ -1137,8 +1137,8 @@ as described in Section :ref:`intersphinxlinking`.
 .. code-block:: none
    :emphasize-lines: 1,2,29,30,98
 
-    [dittrich@localhost ~]$ cd ~/dims
-    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd
+    $ cd ~/dims
+    $ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd
     [git/dims-ad]
     checkout = git clone 'git@git.devops.develop:/opt/git/dims-ad.git' 'dims-ad' &&
             (cd dims-ad; git hf init)
@@ -1165,8 +1165,8 @@ as described in Section :ref:`intersphinxlinking`.
     pull = git hf update &&
             git hf pull
     stat = git status -s
-    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd > .mrconfig
-    [dittrich@localhost dims]$ mr checkout
+    $ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd > .mrconfig
+    $ mr checkout
     mr checkout: /Users/dittrich/dims/git/dims-ad
     Cloning into 'dims-ad'...
     remote: Counting objects: 518, done.
@@ -1234,7 +1234,7 @@ as described in Section :ref:`intersphinxlinking`.
     Version tag prefix? []
 
     mr checkout: finished (3 ok)
-    [dittrich@localhost dims]$ mr stat
+    $ mr stat
     mr stat: /Users/dittrich/tmp/dims/git/dims-ad
 
     mr stat: /Users/dittrich/tmp/dims/git/dims-ocd
@@ -1281,9 +1281,9 @@ that *only* has DIMS Git repos in it, you just need to create an updated
 
 .. code-block:: none
 
-   [dittrich@localhost ~]$ cd $GIT/..
-   [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig > .mrconfig.new
-   [dittrich@localhost dims]$ diff .mrconfig .mrconfig.new
+   $ cd $GIT/..
+   $ ssh git@git.devops.develop mrconfig > .mrconfig.new
+   $ diff .mrconfig .mrconfig.new
    324a325,333
    > [git/dims-db-recovery]
    > checkout = git clone 'git@git.devops.develop:/opt/git/dims-db-recovery.git' 'dims-db-recovery' &&
@@ -1294,8 +1294,8 @@ that *only* has DIMS Git repos in it, you just need to create an updated
    >    git hf pull
    > stat = git status -s
    >
-   [dittrich@localhost dims]$ mv .mrconfig.new .mrconfig
-   [dittrich@27b dims]$ mr checkout
+   $ mv .mrconfig.new .mrconfig
+   $ mr checkout
    mr checkout: /Users/dittrich/dims/git/dims-db-recovery
    Cloning into 'dims-db-recovery'...
    remote: Counting objects: 351, done.
@@ -1362,7 +1362,7 @@ Operations*).
 .. code-block:: none
    :emphasize-lines: 1,5,7,8,10,11
 
-    [dittrich@localhost ~]$ slogin git.devops.develop
+    $ slogin git.devops.develop
     Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-43-generic x86_64)
     [ ... ]
     Last login: Sun Jan 11 12:04:36 2015 from lancaster.devops.develop
@@ -1450,28 +1450,28 @@ Here is an edited transcript of performing the above tasks.
 
 .. code-block:: none
 
-    [dittrich@localhost ~]$ cd $GIT
-    [dittrich@localhost git]$ mkdir dims-ocd
-    [dittrich@localhost git]$ git init
+    $ cd $GIT
+    $ mkdir dims-ocd
+    $ git init
     Initialized empty Git repository in /Users/dittrich/git/.git/
     [ ... prepare files ... ]
-    [dittrich@localhost dims-ocd (master)]$ ls
+    $ ls
     MIL-STD-498-templates.pdf   UW-logo.png                     conf.py                         newsystem.rst
     Makefile                    _build                          currentsystem.rst               notes.rst
     OCD-DID.pdf                 _static                         impacts.rst                     operationalscenarios.rst
     OCD.html                    _templates                      index.rst                       referenceddocs.rst
     OCD.rst                     analysis.rst                    justifications.rst              scope.rst
     UW-logo-32x32.ico           appendices.rst                  license.txt
-    [dittrich@localhost dims-ocd (master)]$ rm OCD.rst
-    [dittrich@localhost dims-ocd (master)]$ ls
+    $ rm OCD.rst
+    $ ls
     MIL-STD-498-templates.pdf   _build                          currentsystem.rst               notes.rst
     Makefile                    _static                         impacts.rst                     operationalscenarios.rst
     OCD-DID.pdf                 _templates                      index.rst                       referenceddocs.rst
     OCD.html                    analysis.rst                    justifications.rst              scope.rst
     UW-logo-32x32.ico           appendices.rst                  license.txt
     UW-logo.png                 conf.py                         newsystem.rst
-    [dittrich@localhost dims-ocd (master)]$ git add .
-    [dittrich@localhost dims-ocd (master)]$ git commit -m "Initial load of MIL-STD-498 template"
+    $ git add .
+    $ git commit -m "Initial load of MIL-STD-498 template"
     [master (root-commit) 39816fa] Initial load of MIL-STD-498 template
      22 files changed, 1119 insertions(+)
      create mode 100644 dims-ocd/MIL-STD-498-templates.pdf
@@ -1496,9 +1496,9 @@ Here is an edited transcript of performing the above tasks.
      create mode 100644 dims-ocd/operationalscenarios.rst
      create mode 100644 dims-ocd/referenceddocs.rst
      create mode 100644 dims-ocd/scope.rst
-    [dittrich@localhost dims-ocd (master)]$ git tag -a "2.0.0" -m "Initial template release"
-    [dittrich@localhost dims-ocd (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-ocd.git
-    [dittrich@localhost dims-ocd (master)]$ git push -u origin master
+    $ git tag -a "2.0.0" -m "Initial template release"
+    $ git remote add origin git@git.devops.develop:/opt/git/dims-ocd.git
+    $ git push -u origin master
     Counting objects: 24, done.
     Delta compression using up to 8 threads.
     Compressing objects: 100% (22/22), done.
@@ -1508,7 +1508,7 @@ Here is an edited transcript of performing the above tasks.
     To git@git.devops.develop:/opt/git/dims-ocd.git
      * [new branch]      master -> master
     Branch master set up to track remote branch master from origin by rebasing.
-    [dittrich@localhost dims-ocd (master)]$ git push origin --tags
+    $ git push origin --tags
     Counting objects: 1, done.
     Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
     Total 1 (delta 0), reused 0 (delta 0)
@@ -1552,10 +1552,10 @@ and check out the develop branch. Next, locate the missing file:
 .. code-block:: none
    :emphasize-lines: 1,4
 
-   [dittrich@localhost docs (feature/coreos)]$ git checkout develop
+   $ git checkout develop
    Switched to branch 'develop'
    Your branch is up-to-date with 'origin/develop'.
-   [dittrich@localhost docs (develop)]$ find ../.. -name 'Makefile.dot'
+   $ find ../.. -name 'Makefile.dot'
    ../../packer/Makefile.dot
 
 ..
@@ -1566,8 +1566,8 @@ includes it:
 
 .. code-block:: none
 
-   [dittrich@localhost docs (develop)]$ cp ../../packer/Makefile.dot ..
-   [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst
+   $ cp ../../packer/Makefile.dot ..
+   $ touch source/lifecycle.rst
 
 ..
 
@@ -1604,10 +1604,10 @@ we expect, add, and commit the fix:
 .. code-block:: none
    :emphasize-lines: 1,3,4
 
-   [dittrich@localhost docs (develop)]$ git stat
+   $ git stat
    ?? Makefile.dot
-   [dittrich@localhost docs (develop)]$ git add ../Makefile.dot
-   [dittrich@localhost docs (develop)]$ git commit -m "Add Makefile.dot from packer repo for lifecycle.rst"
+   $ git add ../Makefile.dot
+   $ git commit -m "Add Makefile.dot from packer repo for lifecycle.rst"
    [develop d5a948e] Add Makefile.dot from packer repo for lifecycle.rst
     1 file changed, 83 insertions(+)
     create mode 100644 Makefile.dot
@@ -1620,8 +1620,8 @@ in this case. Now you could bump the version if necessary before pushing.
 .. code-block:: none
    :emphasize-lines: 1,2
 
-   [dittrich@localhost docs (develop)]$ (cd ..; bumpversion patch)
-   [dittrich@localhost docs (develop)]$ git hf push
+   $ (cd ..; bumpversion patch)
+   $ git hf push
    Fetching origin
    Already up-to-date.
    Counting objects: 10, done.
@@ -1630,9 +1630,6 @@ in this case. Now you could bump the version if necessary before pushing.
    Writing objects: 100% (10/10), 783 bytes | 0 bytes/s, done.
    Total 10 (delta 8), reused 0 (delta 0)
    remote: Running post-receive hook: Tue Mar 31 17:02:43 PDT 2015
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100   217  100   217    0     0   2356      0 --:--:-- --:--:-- --:--:--  2679
    remote: Scheduled polling of dims-ci-utils-deploy-develop
    remote: Scheduled polling of dims-ci-utils-deploy-master
    remote: Scheduled polling of dims-seed-jobs
@@ -1644,12 +1641,6 @@ in this case. Now you could bump the version if necessary before pushing.
    remote: [+++] oldrev=d5a948ebef61da98b7849416ee340e0a4ba45a3a
    remote: [+++] Branch was updated.
    remote: [+++] This repo has a documentation directory.
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100    79    0     0  100    79      0   1359 --:--:-- --:--:-- --:--:--  1612
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100    78    0     0  100    78      0    260 --:--:-- --:--:-- --:--:--   268
    remote: [+++] post-receive-06jenkinsalldocs finished
    To git@git.devops.develop:/opt/git/dims-ci-utils.git
       d5a948e..a95c9e1  develop -> develop
@@ -1665,16 +1656,16 @@ and ``cherry-pick`` the commit with the missing file.
 .. code-block:: none
    :emphasize-lines: 1,5,10
 
-   [dittrich@localhost docs (develop)]$ git checkout feature/coreos
+   $ git checkout feature/coreos
    Switched to branch 'feature/coreos'
    Your branch is ahead of 'origin/feature/coreos' by 1 commit.
      (use "git push" to publish your local commits)
-   [dittrich@localhost docs (feature/coreos)]$ git cherry-pick d5a948e
+   $ git cherry-pick d5a948e
    [feature/coreos 14dbf59] Add Makefile.dot from packer repo for lifecycle.rst
     Date: Tue Mar 31 16:38:03 2015 -0700
     1 file changed, 83 insertions(+)
     create mode 100644 Makefile.dot
-   [dittrich@localhost docs (feature/coreos)]$ git log
+   $ git log
    commit 14dbf59dff5d6fce51c899b32fef87276dbddef7
    Author: Dave Dittrich <dave.dittrich@gmail.com>
    Date:   Tue Mar 31 16:38:03 2015 -0700
@@ -1816,7 +1807,7 @@ looking at the contents of this file.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ cat VERSION
+    $ cat VERSION
     1.1.4
 
 ..
@@ -1838,7 +1829,7 @@ the minor version number component.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ git hf release start 1.2.0
+    $ git hf release start 1.2.0
     Fetching origin
     Switched to a new branch 'release/1.2.0'
     Total 0 (delta 0), reused 0 (delta 0)
@@ -1864,7 +1855,7 @@ You should now be on the new release branch:
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$
+    $
 
 ..
 
@@ -1873,7 +1864,7 @@ to match the new release number:
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
+    $ bumpversion minor
 
 ..
 
@@ -1882,10 +1873,10 @@ to create comments for actions like merges and tags.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ cat VERSION
+    $ bumpversion minor
+    $ cat VERSION
     1.2.0
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ git hf release finish '1.2.0'
+    $ git hf release finish '1.2.0'
     Fetching origin
     Fetching origin
     Counting objects: 9, done.
@@ -2001,8 +1992,8 @@ dependency checks or debugging.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ bumpversion patch
-    [dittrich@localhost ansible-playbooks (dev)]$ git push
+    $ bumpversion patch
+    $ git push
     Counting objects: 9, done.
     Delta compression using up to 8 threads.
     Compressing objects: 100% (8/8), done.
@@ -2186,7 +2177,7 @@ rename:
 
 .. code-block:: none
 
-   [stuart@rejewski dims-328 (develop)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2226,7 +2217,7 @@ point is this:
 
 .. code-block:: none
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2259,7 +2250,7 @@ No errors from this, but `user2`'s ``.git/config`` still refers to a
 .. code-block:: none
    :emphasize-lines: 15
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2307,7 +2298,7 @@ Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
 .. code-block:: none
    :emphasize-lines: 15
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
            repositoryformatversion = 0
            filemode = true
@@ -2383,9 +2374,9 @@ following commands:
 .. code-block:: none
    :emphasize-lines: 1,3
 
-    [dittrich@localhost dims-keys (develop)]$ git tag -d finish
+    $ git tag -d finish
     Deleted tag 'finish' (was 516d9d2)
-    [dittrich@localhost dims-keys (develop)]$ git push origin :refs/tags/finish
+    $ git push origin :refs/tags/finish
     remote: Running post-receive hook: Thu Aug  6 16:07:17 PDT 2015
     To git@git.devops.develop:/opt/git/dims-keys.git
      - [deleted]         finish
@@ -2443,7 +2434,7 @@ using the same message:
 .. code-block:: none
    :emphasize-lines: 2,8,14,20,27
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log
+    $ git log
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2491,7 +2482,7 @@ all correctly commented:
 .. code-block:: none
    :emphasize-lines: 8-26,34-60,68-83
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
+    $ git log --patch
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2583,7 +2574,7 @@ and edit the message:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend
+    $ git commit --amend
 
     Add DOCSURL selection of where docs reside for intersphinx links
 
@@ -2607,7 +2598,7 @@ commit hash!
 .. code-block:: none
    :emphasize-lines: 2
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
+    $ git log --patch
     commit 654cb34378cb0a4140725a37e3724b6dcee7aebd
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2658,7 +2649,7 @@ commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
 .. code-block:: none
    :emphasize-lines: 3
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git rebase -i 96575c9
+    $ git rebase -i 96575c9
 
     edit f6f5d86 Fix intersphinx links to use DOCSURL env variable
     pick 7f3d0d8 Fix intersphinx links to use DOCSURL env variable
@@ -2704,7 +2695,7 @@ Now use ``git commit --amend`` to edit the comment:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git commit --amend
+    $ git commit --amend
 
     Rename makedocs -> makedocset
 
@@ -2726,7 +2717,7 @@ Finish off by continuing the rebase for the remaining commits.
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git rebase --continue
+    $ git rebase --continue
     Successfully rebased and updated refs/heads/develop.
 
 ..
@@ -2736,7 +2727,7 @@ new commit hashes:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log
+    $ git log
     commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -3060,12 +3051,12 @@ Creating a new documentation-only repo
    :linenos:
    :emphasize-lines: 1,2,3,5,6,13,18,23,26,27,34,35,43,47,53,56,59-67,72,73,86-88,100
 
-   [dittrich@localhost git]$ mkdir dims-asbuilt
-   [dittrich@localhost git]$ cd dims-asbuilt/
-   [dittrich@localhost dims-asbuilt]$ git init
+   $ mkdir dims-asbuilt
+   $ cd dims-asbuilt/
+   $ git init
    Initialized empty Git repository in /Users/dittrich/git/dims-asbuilt/.git/
-   [dittrich@localhost dims-asbuilt (master)]$ workon dimsenv
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ sphinx-quickstart
+   $ workon dimsenv
+   $ sphinx-quickstart
    Welcome to the Sphinx 1.3.1 quickstart utility.
 
    Please enter values for the following settings (just press Enter to
@@ -3145,9 +3136,9 @@ Creating a new documentation-only repo
       make builder
    where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
 
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ echo \
+   $ echo \
    > "This is a documentation-only repo. Sphinx source is in docs/source." > README.txt
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ tree
+   $ tree
    .
    ├── README.txt
    ├── Makefile
@@ -3159,7 +3150,7 @@ Creating a new documentation-only repo
        └── index.rst
 
    4 directories, 4 files
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ dims.sphinx-autobuild
+   $ dims.sphinx-autobuild
    Serving on http://127.0.0.1:29583
 
 ..
@@ -3173,9 +3164,9 @@ the source files and ``README.txt`` file are present:
 .. code-block:: none
    :emphasize-lines: 1,3
 
-   [dittrich@localhost dims-asbuilt (master)]$ make clean
+   $ make clean
    rm -rf build/*
-   [dittrich@localhost dims-asbuilt (master)]$ tree
+   $ tree
    .
    ├── Makefile
    ├── README.txt
@@ -3200,8 +3191,8 @@ it to origin.
 .. code-block:: none
    :emphasize-lines: 1,2,10,20-22,31
 
-   [dittrich@localhost dims-asbuilt (master)]$ git add .
-   [dittrich@localhost dims-asbuilt (master)]$ git stat
+   $ git add .
+   $ git stat
    A  Makefile
    A  README.txt
    A  source/cifv1.rst
@@ -3209,7 +3200,7 @@ it to origin.
    A  source/git.rst
    A  source/index.rst
    A  source/jenkins.rst
-   [dittrich@localhost dims-asbuilt (master)]$ git commit -m "Initial load"
+   $ git commit -m "Initial load"
    [master (root-commit) d0fcaa5] Initial load
     7 files changed, 604 insertions(+)
     create mode 100644 Makefile
@@ -3219,9 +3210,9 @@ it to origin.
     create mode 100644 source/git.rst
     create mode 100644 source/index.rst
     create mode 100644 source/jenkins.rst
-   [dittrich@localhost dims-asbuilt (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-asbuilt.git
-   [dittrich@localhost dims-asbuilt (master)]$ git tag -a "0.1.0" -m "Initial template release"
-   [dittrich@localhost dims-asbuilt (master)]$ git push origin master
+   $ git remote add origin git@git.devops.develop:/opt/git/dims-asbuilt.git
+   $ git tag -a "0.1.0" -m "Initial template release"
+   $ git push origin master
    Counting objects: 10, done.
    Delta compression using up to 8 threads.
    Compressing objects: 100% (7/7), done.
@@ -3230,7 +3221,7 @@ it to origin.
    remote: Running post-receive hook: Wed Mar 18 16:15:02 PDT 2015
    To git@git.devops.develop:/opt/git/dims-asbuilt.git
     * [new branch]      master -> master
-   [dittrich@localhost dims-asbuilt (master)]$ git push origin --tags
+   $ git push origin --tags
    Counting objects: 1, done.
    Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
    Total 1 (delta 0), reused 0 (delta 0)
@@ -3245,7 +3236,7 @@ Following those steps, initialize the repo for ``hub-flow``.
 .. code-block:: none
    :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (master)]$ git hf init
+   $ git hf init
    Using default branch names.
 
    Which branch should be used for tracking production releases?
@@ -3272,7 +3263,7 @@ Set up ``bumpversion``:
 .. code-block:: none
    :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg
+   $ vi .bumpversion.cfg
 
    [bumpversion]
    current_version = 0.1.0
@@ -3290,7 +3281,7 @@ number.
 .. code-block:: none
    :emphasize-lines: 1,48
 
-   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion --dry-run --verbose patch
+   $ bumpversion --dry-run --verbose patch
    Reading config file .bumpversion.cfg:
    [bumpversion]
    current_version = 0.1.0
@@ -3337,7 +3328,7 @@ number.
    Would add changes in file '.bumpversion.cfg' to Git
    Would commit to Git with message 'Bump version: 0.1.0 → 0.1.1'
    Would tag 'v0.1.1' in Git
-   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion patch
+   $ bumpversion patch
 
 ..
 
@@ -3346,7 +3337,7 @@ Now use ``hub-flow`` to push the current state of the local repo.
 .. code-block:: none
    :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (develop)]$ git hf push
+   $ git hf push
    Fetching origin
    Already up-to-date.
    Counting objects: 4, done.
