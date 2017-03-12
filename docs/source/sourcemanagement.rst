@@ -3020,6 +3020,156 @@ at the same point. (We can now delete the ``foo`` branch.)
 
 ..
 
+.. _keepingBranchesUpToDate:
+
+Merging changes from ``develop`` into feature branches to keep up to date
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When branches live for a long time, and changes occur to what should be
+the stable ``develop`` branch, those branches start to drift and can
+become "broken" because things like hotfixes and new features are not
+present on the feature branch. To avoid this, first try to *not have
+feature branches live for a long time*, and second, merge the develop
+branch into the feature branches when needed.
+
+Start by reading these pages:
+
+* `Commit Often, Perfect Later, Publish Once\: Git Best Practices`_
+* `Git Tips`_
+
+.. _Commit Often, Perfect Later, Publish Once\: Git Best Practices: http://sethrobertson.github.io/GitBestPractices/
+.. _Git Tips: http://mislav.uniqpath.com/2010/07/git-tips/
+
+.. code-block:: none
+
+    $ git checkout pyes
+    Switched to branch 'pyes'
+    Your branch is up-to-date with 'origin/pyes'.
+    [dittrich@localhost ansible-playbooks (pyes)]$ git rebase dev
+    First, rewinding head to replay your work on top of it...
+    Applying: Add pyes pip install to ELK role
+    Applying: Add marker to prevent re-loading of existing data and don't add Team Cymru data
+    Applying: Fix bug in demo.logstash.deleteESDB script
+    Applying: Add feedback message if data already loaded
+    Applying: Remove debug flag from data pre-load play
+    Applying: Add demo.firefox.setup changes
+    Applying: Make default for Kibana be the UFW dataset
+    Applying: Add curl to base role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    Auto-merging roles/base-os/tasks/main.yml
+    Applying: Add elasticutils Python library to ELK role
+    Applying: Add play to pin Gnome Terminal to panel
+    Applying: Fix Ansible syntax error re: Gnome Terminal fix
+    Applying: Fix typo in Gnome Terminal script setup
+    Applying: Add dconf-tools package for dconf program
+    Applying: Run Gnome Terminal pin script with sudo
+    Applying: Fix for dbus-launch failure
+    Applying: Fix bug in pin-gnome-terminal script re: dconf write operation
+    Applying: Fix bug in pin-gnome-terminal script
+    Applying: Fix bug in pin-gnome-terminal re: empty 'value' variable</verbatim>
+
+..
+
+This is what the ``pyes`` branch looked like before:
+
+.. _pyesBeforeRebase:
+
+.. figure:: images/pyes-before-rebase.png
+   :alt: Branch ``pyes`` before rebase
+   :width: 80%
+   :align: center
+
+   Branch ``pyes`` before rebase
+
+..
+
+This is what the ``pyes`` branch looked like after the rebase:
+
+.. _pyesAfterRebase:
+
+.. figure:: images/pyes-after-rebase.png
+   :alt: Branch ``pyes`` after rebase
+   :width: 80%
+   :align: center
+
+   Branch ``pyes`` after rebase
+
+..
+
+Notice the numbers ``+23-19`` in the after image? We just rebased commits from
+the local repo branch ``develop`` onto the local repo branch ``pyes``. We
+haven't done anything yet with the remote repo. The numbers mean that after
+rebasing to get the missing commits, there are commits that exist on the local
+repo that do not exist on the remote repo, and vice-versa.
+
+If we now try to push the ``pyes`` branch, Git complains that it can't because
+there are remote changes that are not in the local repo that need to be merged
+and checked for possible conflict before the push can proceed.
+
+
+.. code-block:: none
+
+    $ git push
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
+     ! [rejected]        pyes -> pyes (non-fast-forward)
+    error: failed to push some refs to 'git@git.devops.develop:/opt/git/ansible-playbooks.git'
+    hint: Updates were rejected because the tip of your current branch is behind
+    hint: its remote counterpart. Integrate the remote changes (e.g.
+    hint: 'git pull ...') before pushing again.
+    hint: See the 'Note about fast-forwards' in 'git push --help' for details.</verbatim>
+
+..
+
+Doing a ``git pull`` first, then a ``git push`` results in a clean rebase of the remote
+commits with the local commits (which are now up to date on the ``pyes`` feature
+branch in relation to the ``develop`` branch.)
+
+.. code-block:: none
+
+    $ git pull
+    First, rewinding head to replay your work on top of it...
+    Applying: Added schema.psl to populate dims database from ops-trust
+    Applying: added postgres-dims role and files
+    Using index info to reconstruct a base tree...
+    M	dims-global-server.yml
+    <stdin>:94: trailing whitespace.
+    -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+    <stdin>:101: trailing whitespace.
+    -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+    <stdin>:210: trailing whitespace.
+    -- Name: attestations; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    <stdin>:224: trailing whitespace.
+    -- Name: audit_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    <stdin>:237: trailing whitespace.
+    -- Name: language_skill; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    warning: squelched 50 whitespace errors
+    warning: 55 lines add whitespace errors.
+    Falling back to patching base and 3-way merge...
+    Auto-merging dims-global-server.yml
+    Applying: Add curl to all hosts in base-os role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    Auto-merging roles/base-os/tasks/main.yml
+    Applying: Add curl to base role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    No changes -- Patch already applied.
+    [dittrich@localhost ansible-playbooks (pyes)]$ git push
+    Counting objects: 15, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (14/14), done.
+    Writing objects: 100% (15/15), 392.72 KiB | 0 bytes/s, done.
+    Total 15 (delta 9), reused 3 (delta 0)
+    remote: Running post-receive hook: Tue Nov  4 18:12:01 PST 2014
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
+       9b23575..2166e16  pyes -> pyes</verbatim>
+
+..
+
 
 .. _creatingdocumentonlyrepo:
 
