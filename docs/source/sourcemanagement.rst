@@ -3498,27 +3498,60 @@ to GitHub.
 Git and Secrets
 ---------------
 
-There are a plethora of ways to deal with secrets in Git repos. Most are too
-comprehensive, i.e. they encrypt entire repos, whereas the DIMS project needs
-to encrypt certain secret things within repos that will be made public. The
-other option is to not encrypt anything and have to be very disciplined about
-keeping secret data or secret files completely outside of repos which will be
-made public. The DIMS project has already run into this problem, as has been
-documented in the section above, so this is not really a viable option.
+There are a plethora of ways to deal with secrets in relation to source
+code in public Git repos.
 
-There are two different services we are currently considering:
+Some groups chose to separate out the secrets into repos that are not made
+public (i.e., one public repo without secrets, and one private repo with only
+the secrets). This adds some complexity and requires multiple Git repository
+locations that clearly separate the private and public repos.
+
+Other groups may prefer to keep their repositories small in number and simple,
+using a single directory tree with the secrets being encrypted within that
+tree.  At one extreme of the "secrets in the repo" mechanism require
+encrypting the entire repo, while at the other end only a limited number of
+specific secrets are encrypted, leaving the majority of the repository in
+clear text form.
+
+The DIMS project started out with lots of Git repos that were narrowly focused
+on specific system components to try to modularize in a way that facilitated
+integrating open source tools written by other groups. The primary repository
+that needed secrets was the Ansible playbooks repository.
+
+.. attention::
+
+    Regardless of which mechanism for managing secrets you chose, *everyone*
+    with Git commit rights *must* have discipline when it comes to handling
+    secrets.  It only takes a few mistakes to cause a lot of cleanup headaches,
+    or for an accidental commit followed by a missed review and unintended push
+    to result in a password or key exposure crisis.
+
+    The DIMS project ran into this problem many times, with accidental commits
+    including private keys, passwords, and unredacted sample data from
+    production systems. It wasn't until the repos were going to be made
+    public that reviews identified several of these mistakes, causing long
+    delays while cleanup activities were added to code completion tasks.
+
+    There is a cost/benefit tradeoff that must be made between using more than
+    just one shared "development" repository location (to more closely vet and
+    control commits to the "official" repository location) vs. the time and
+    effort required to sanitize accidentally committed secrets and
+    simultaneously delete all clones at the same time to prevent the secrets
+    being accidentally pushed back into the repo.
+
+..
+
+The two mechanisms first tested by the DIMS project were:
 
     * `Ansible Vault`_
-
     * `git-crypt`_
+
 
 Ansible Vault
 ~~~~~~~~~~~~~
 
-Ansible Vault is a command-line tool provided by Ansible. It is used to
-creates new vault files and then encrypts them, encrypts already created files, and decrypts,
-edits, and views encrypted files. It allows for application of encryption at
-a very granular level.
+Ansible Vault is a command-line tool provided by Ansible.  It allows for
+application of encryption at a very granular level.
 
 Vault is a password-based encryption system. This password can be stored in
 a file, but it must be shared to every user who is allowed access to the
@@ -3569,11 +3602,7 @@ To decrypt a file,
 When you commit a vault-protected file, it will be the encrypted file that is
 committed to Git. Thus, if you ``decrypt`` a file to view it, you'll have to
 ``encrypt`` it again, and the file will change, so you'll have to commit it
-again. Before a certain version of ``ansible-vault``, there was no ``view``
-option, so maybe that was the only way to see the decrypted contents of an
-encrypted file. This version of ``ansible-vault`` is the version in the
-``dimsenv`` Python virtual environment. You must be in a virtual environment
-with Ansible 2.0.1.0+ in order to have the ``view`` option.
+again.
 
 If you need to rekey a file,
 
