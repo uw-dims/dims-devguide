@@ -684,14 +684,14 @@ that has the problem.
 .. code-block:: none
    :emphasize-lines: 1,6,8,16,24,32,40
 
-     $ git whatchanged -- inventory/ectf/all
+     $ git whatchanged -- inventory/deployment/all
     commit 963b006a7aceee21eb35da41546ae5da7596382e
     Author: Dave Dittrich <dittrich@u.washington.edu>
     Date:   Wed Dec 14 23:07:37 2016 -0800
 
         Add missing ":children" modifier
 
-    :100644 100644 d9918d0... 9ce596b... M  v2/inventory/ectf/all
+    :100644 100644 d9918d0... 9ce596b... M  v2/inventory/deployment/all
 
     commit 00afbb5bfadc46ef9b5f253a13a6212cb3fca178
     Author: Dave Dittrich <dittrich@u.washington.edu>
@@ -699,7 +699,7 @@ that has the problem.
 
         Update and normalize inventory 'all' files with children groups
 
-    :100644 100644 99bb8d9... d9918d0... M  v2/inventory/ectf/all
+    :100644 100644 99bb8d9... d9918d0... M  v2/inventory/deployment/all
 
     commit 777cce71f944650c0ff5cf47723ee6b9f322c987
     Author: Dave Dittrich <dittrich@u.washington.edu>
@@ -707,23 +707,23 @@ that has the problem.
 
         Refactor inventory directories to use group vars properly
 
-    :100644 100644 98376da... 99bb8d9... M  v2/inventory/ectf/all
+    :100644 100644 98376da... 99bb8d9... M  v2/inventory/deployment/all
 
     commit 3cdb37d04c9d8bedb5277ad4cfbeafdec55f69b0
     Author: Dave Dittrich <dittrich@u.washington.edu>
     Date:   Tue Nov 22 20:00:19 2016 -0800
 
-        Add vagrants to local and ectf groups
+        Add vagrants to local and deployment groups
 
-    :100644 100644 b199ae1... 98376da... M  v2/inventory/ectf/all
+    :100644 100644 b199ae1... 98376da... M  v2/inventory/deployment/all
 
     commit 92eec6c03c28824725b9fc0c4560b4fdccfa880e
     Author: Dave Dittrich <dittrich@u.washington.edu>
     Date:   Fri Nov 18 16:53:04 2016 -0800
 
-        Add initial inventory for ectf to get dynamic inventory working
+        Add initial inventory for deployment to get dynamic inventory working
 
-    :000000 100644 0000000... b199ae1... A  v2/inventory/ectf/all
+    :000000 100644 0000000... b199ae1... A  v2/inventory/deployment/all
 
 ..
 
@@ -737,19 +737,19 @@ that contains the fix (output edited for brevity):
    :emphasize-lines: 2,15-19,21,39-42
    :linenos:
 
-     $ git whatchanged --patch -- inventory/ectf/all
+     $ git whatchanged --patch -- inventory/deployment/all
     commit 963b006a7aceee21eb35da41546ae5da7596382e
     Author: Dave Dittrich <dittrich@u.washington.edu>
     Date:   Wed Dec 14 23:07:37 2016 -0800
 
         Add missing ":children" modifier
 
-    diff --git a/v2/inventory/ectf/all b/v2/inventory/ectf/all
+    diff --git a/v2/inventory/deployment/all b/v2/inventory/ectf/all
     index d9918d0..9ce596b 100644
-    --- a/v2/inventory/ectf/all
-    +++ b/v2/inventory/ectf/all
-    @@ -27,7 +27,7 @@ red.devops.ectf
-     yellow.devops.ectf
+    --- a/v2/inventory/deployment/all
+    +++ b/v2/inventory/deployment/all
+    @@ -27,7 +27,7 @@ red.devops.deployment
+     yellow.devops.deployment
 
      # Hosts are Vagrant virtual machines
     -[vagrants]
@@ -763,17 +763,17 @@ that contains the fix (output edited for brevity):
 
         Update and normalize inventory 'all' files with children groups
 
-    diff --git a/v2/inventory/ectf/all b/v2/inventory/ectf/all
+    diff --git a/v2/inventory/deployment/all b/v2/inventory/ectf/all
     index 99bb8d9..d9918d0 100644
-    --- a/v2/inventory/ectf/all
-    +++ b/v2/inventory/ectf/all
+    --- a/v2/inventory/deployment/all
+    +++ b/v2/inventory/deployment/all
       . . .
      [manager]
-     core-[01:03].devops.ectf
+     core-[01:03].devops.deployment
 
     +[worker]
-    +red.devops.ectf
-    +yellow.devops.ectf
+    +red.devops.deployment
+    +yellow.devops.deployment
     +
      # Hosts are Vagrant virtual machines
      [vagrants]
@@ -781,14 +781,14 @@ that contains the fix (output edited for brevity):
     +development
     +
     +[production]
-     red.devops.ectf
-     core-[01:03].devops.ectf
-     yellow.devops.ectf
-    -blue16.devops.ectf
+     red.devops.deployment
+     core-[01:03].devops.deployment
+     yellow.devops.deployment
+    -blue16.devops.deployment
     +
     +[development]
-     blue14.devops.ectf
-    -green.devops.ectf
+     blue14.devops.deployment
+    -green.devops.deployment
      . . .
 
 ..
