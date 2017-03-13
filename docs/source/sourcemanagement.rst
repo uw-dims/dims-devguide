@@ -3926,3 +3926,143 @@ for the reasons listed above.
 .. _github.com/uw-dims: https://github.com/uw-dims
 .. _ReadTheDocs: https://readthedocs.org/
 
+Git and Unix permissions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+A final issue that must be known and kept in mind is the limitation in
+Git's ability to properly handle Unix permission masks. Unix permission
+masks (or ``umask``) are bit masks that handle multiple permissions
+(i.e., ``read``, ``write``, and ``execute``) for multiple groups
+(i.e., ``owner``, ``group``, and ``other``), along with some other
+permission bits (``setgid``, ``setuid``, and ``sticky`` bits).
+
+Git only pays attention to the ``execute`` permissions, and does so
+in a limited way. That means a file may have a mode ``0755`` (write
+permission only for user, but universal read and execute permission),
+or it may have a mode ``0644`` (same as above, but no execute permission
+for anyone).
+
+To see this problem in action, we will use the ``keys.host.create`` script
+to generate some SSH key pairs. SSH only allows keys to be used if
+they have *no* read permission for ``other``, so it generates keys
+with permission mask ``0600`` (see highlighted lines):
+
+.. code-block:: none
+   :emphasize-lines: 6,8,10,12
+
+    $ keys.host.create -d . -p EXAMPLE
+    $ ls -l
+    total 40
+    -rw-rw-r-- 1 dittrich dittrich  358 Mar 13 12:17 key_fingerprints.txt
+    -rw-rw-r-- 1 dittrich dittrich 1304 Mar 13 12:17 known_hosts.add
+    -rw------- 1 dittrich dittrich  668 Mar 13 12:17 ssh_host_dsa_key
+    -rw-r--r-- 1 dittrich dittrich  616 Mar 13 12:17 ssh_host_dsa_key.pub
+    -rw------- 1 dittrich dittrich  365 Mar 13 12:17 ssh_host_ecdsa_key
+    -rw-r--r-- 1 dittrich dittrich  282 Mar 13 12:17 ssh_host_ecdsa_key.pub
+    -rw------- 1 dittrich dittrich  432 Mar 13 12:17 ssh_host_ed25519_key
+    -rw-r--r-- 1 dittrich dittrich  112 Mar 13 12:17 ssh_host_ed25519_key.pub
+    -rw------- 1 dittrich dittrich 1675 Mar 13 12:17 ssh_host_rsa_key
+    -rw-r--r-- 1 dittrich dittrich  408 Mar 13 12:17 ssh_host_rsa_key.pub
+
+..
+
+Now, add the keys to Git and watch the permissions that Git gives
+to those files:
+
+.. code-block:: none
+   :emphasize-lines: 7,9,11,13
+
+    $ git add .
+    $ git commit -m 'Add keys'
+    [master (root-commit) 47f872b] Add keys
+     10 files changed, 66 insertions(+)
+     create mode 100644 keys/key_fingerprints.txt
+     create mode 100644 keys/known_hosts.add
+     create mode 100644 keys/ssh_host_dsa_key
+     create mode 100644 keys/ssh_host_dsa_key.pub
+     create mode 100644 keys/ssh_host_ecdsa_key
+     create mode 100644 keys/ssh_host_ecdsa_key.pub
+     create mode 100644 keys/ssh_host_ed25519_key
+     create mode 100644 keys/ssh_host_ed25519_key.pub
+     create mode 100644 keys/ssh_host_rsa_key
+     create mode 100644 keys/ssh_host_rsa_key.pub
+
+..
+
+As you can see, all files that did not have the ``execute`` bit got a
+permissions mask of ``100644``, so all files that were ``0600`` will end up
+being pulled with a permissions mask of ``0644``.  SSH will not allow a
+permission mask of ``0644`` on private keys, so if these were user keys SSH
+would not allow them to be used.  To ensure that checking out or pulling these
+files will still work requires an extra step to fix these permissions, which is
+a little complicated and involves the use of Git hooks.
+
+The simplest method is to use the public/private pairing to identify all files
+that end in ``.pub`` and change the mode to ``0600`` on the file with the
+``.pub`` extension stripped (i.e., the associated private key). A script to do
+this may look something like this:
+
+.. code-block:: none
+
+    #!/bin/bash
+    echo "[+] Verifying private key permissions and correcting if necessary"
+    find * -type f -name '*.pub' |
+      while read pubkey; do
+        privkey=$(dirname $pubkey)/$(basename $pubkey .pub)
+        if [[ -f $privkey ]]; then
+          mode=$(stat -c %a $privkey)
+          if [[ $? -ne 0 ]]; then
+            echo "[-] Failed to get mode for $privkey"
+          elif [[ "$mode" != "600" ]]; then
+            echo "[+] Changing mode $mode to 600 on file $privkey"
+	    chmod 600 $privkey
+          fi
+        fi
+      done
+    exit 0
+
+..
+
+.. attention::
+
+    You cannot add files in the ``.git/hooks`` directory, where hooks are
+    found for execution by Git, to Git tracking. The ``.git`` directory
+    is _not_ part of the Git repository commit structure. You can add
+    a directory named ``hooks/`` at the top level of the tracked repo
+    and create links into the ``.git/hooks`` directory. This has to
+    be done at least once per clone of the repo, which is up to the
+    person doing the clone to perform manually (or to use wrapper
+    scripts around Git that do this on the initial clone operation).
+
+    Here is a ``Makefile`` that automates this process:
+
+    .. code-block:: none
+
+        .PHONY: all
+        all: install-hooks
+
+        .PHONY: install-hooks
+        install-hooks:
+                @(cd hooks; find * -type f -o -type l 2>/dev/null) | \
+                        while read hook; do \
+                                echo "[+] Installing .git/hooks/$$hook"; \
+                                ln -sf ../../hooks/$$hook .git/hooks/$$hook; \
+                        done
+
+    ..
+
+..
+
+To preserve the actual permission masks in a general way for all files
+being committed to Git is much more complicated and goes beyond the needs
+of this particular issue. Examples of how to do this are found in
+the following references, or search for other options.
+
+* `githooks - Hooks used by Git`_
+* `How To Use Git Hooks To Automate Development and Deployment Tasks`_
+* `Retaining file permissions with Git`_
+
+.. _githooks - Hooks used by Git: https://git-scm.com/docs/githooks
+.. _How To Use Git Hooks To Automate Development and Deployment Tasks: https://www.digitalocean.com/community/tutorials/how-to-use-git-hooks-to-automate-development-and-deployment-tasks
+.. _Retaining file permissions with Git: http://stackoverflow.com/questions/3207728/retaining-file-permissions-with-git
+
