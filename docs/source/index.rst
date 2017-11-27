@@ -8,9 +8,7 @@ DIMS Developer Guide v |release|
 ================================
 
 This document (version |release|) covers issues related to development
-of DIMS components from a developer's perspective. It is related closely
-to, and frequently cross-references, the :ref:`dimsciutils:dimsciutilities`
-(``dims-ci-utils`` for short).
+of DIMS components from a developer's perspective.
 
 .. toctree::
    :numbered:

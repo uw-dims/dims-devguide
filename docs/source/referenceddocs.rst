@@ -9,8 +9,6 @@ Referenced documents
 
 #. :ref:`dimspacker:dimspacker`
 
-#. :ref:`dimsciutils:dimsciutilities`
-
 #. :ref:`dimssr:dimssystemrequirements`
 
 #. :ref:`dimsad:dimsarchitecturedesign`
