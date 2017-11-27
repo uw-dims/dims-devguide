@@ -178,13 +178,16 @@ further down for more DIMS-specific examples of using ``hubflow`` commands).
 
 .. caution::
 
-    Mac OS X (by default) uses an HFS file system *with case sensitivity*.
+    Mac OS X (by default) uses a *case insensitive* HFS file system.
     Unlike Ubuntu and other Linux/Unix distributions using case-sensitive
     file systems like ``ext2``, ``reiserfs``, etc., the default OS X file
     system does not care if you name a file ``THISFILE`` or ``ThisFile``
-    or ``thisfile``. All of those are the same file name. This can cause
+    or ``thisfile``. All of those refer to the same file on a Mac. This can cause
     problems when you use Git to share a source repository between computers
-    running OS X, Windows, and/or Linux.  See `Git on Mac OS X: Don't ignore case!`_
+    running OS X, Windows, and/or Linux, because what Linux thinks are two
+    files, the Mac only thinks is one (and that really causes problems for Git).
+
+    See `Git on Mac OS X: Don't ignore case!`_
     and `How do I commit case-sensitive only filename changes in Git?`_. A solution
     for Mac OS X, posted in `Case sensitivity in Git`_, is documented in
     Section :ref:`macosxcasesensitive`.
@@ -216,35 +219,32 @@ The following are user-specific settings that you should alter for your own acco
 
 ..
 
-.. todo::
+.. TODO(dittrich): This needs to be fixed.
 
-    .. caution::
+.. caution::
 
 
-        There is a side-effect of the way we set up common Git configuration
-        for users with Ansible.  Whenever the ``dims-users-create`` role is
-        played, a fresh copy of the user's global Git configuration file
-        (``~/.gitconfig``) is over-written.  That file contains the four
-        settings listed above, which means they will be wiped out whenever that
-        role is run and you will need to reset them. (See the file
-        ``$GIT/ansible-playbooks/dims-users-create/templates/gitconfig.j2``).
-        That is a bug in that it is not `idempotent`_.
+    There is a bad side-effect of the way the initial common Git configuration
+    were managed using Ansible.  Whenever the ``dims-users-create`` role was
+    played, a fresh copy of the user's global Git configuration file
+    (``~/.gitconfig``) is created, over-writing whatever the user had created
+    by issuing the commands above and forcing the user to have to re-issue
+    those commands every time the play was run.  (See the file
+    ``$GIT/ansible-playbooks/dims-users-create/templates/gitconfig.j2``).
+    That is a bug in that it is not `idempotent`_.
 
-        One quick hack that restores these values is to add those commands to
-        your ``$HOME/.bash_aliases`` file, which is run every time a new
-        interactive Bash shell is started.
+    One quick hack that restores these values is to add those commands to
+    your ``$HOME/.bash_aliases`` file, which is run every time a new
+    interactive Bash shell is started.
 
-        A better long-term solution, which we are working towards, is to
-        have the ``user.name`` and ``user.email`` configuration settings come
-        from the ops-trust portal user attributes table, so they can be
-        set by the user and stored in one central location, which can then be
-        retreived from the ops-trust user database and applied consistently
-        by Ansible when it sets up user accounts.
-
-    ..
+    A better long-term solution, which we are working towards, is to
+    have the ``user.name`` and ``user.email`` configuration settings come
+    from the Trident portal user attributes table, so they can be
+    set by the user and stored in one central location, which can then be
+    retreived from the Trident user database and applied consistently
+    by Ansible when it sets up user accounts.
 
 ..
-
 
 .. _idempotent: http://docs.ansible.com/ansible/glossary.html#idempotency
 
@@ -364,7 +364,7 @@ are working on is up to date:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost ansible-playbooks (develop)]$ git hf update
+    $ git hf update
     Fetching origin
     remote: Counting objects: 187, done.
     remote: Compressing objects: 100% (143/143), done.
@@ -396,13 +396,13 @@ in testing), it would be deleted:
 .. code-block:: none
    :emphasize-lines: 1,5,7,19
 
-   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   $ git branch -a
    * develop
      master
      remotes/origin/develop
      remotes/origin/feature/eliot
      remotes/origin/master
-   [dittrich@localhost dims-asbuilt (develop)]$ git hf update
+   $ git hf update
    Fetching origin
    From git.devops.develop:/opt/git/dims-asbuilt
     x [deleted]         (none)     -> origin/feature/eliot
@@ -414,7 +414,7 @@ in testing), it would be deleted:
    - Any changes from origin/develop have been merged into branch 'develop'
    - Any resolved merge conflicts have been pushed back to origin
    - You are now on branch 'develop'
-   [dittrich@localhost dims-asbuilt (develop)]$ git branch -a
+   $ git branch -a
    * develop
      master
      remotes/origin/develop
@@ -648,6 +648,170 @@ starting a sync.)
 
 ..
 
+.. _findingchanges:
+
+Finding Changes and Changed Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When working with lots of branches, especially branches that last for a long
+time, it becomes difficult to find changes and changed files (and the commits
+that contain them), in order to ensure required changes are present on the
+branch you are working on.
+
+Git has a command ``whatchanged`` that assists with this. (See the
+`git-whatchanged`_ documentation.)
+
+Say you are on a branch, and running a program that relies on an Ansible
+inventory file for obtaining a list of hosts. When the program is run,
+it appears to iterate over the `group names`, not host names as you
+expect:
+
+.. code-block:: none
+   :emphasize-lines: 2,3
+
+    $ test.vagrant.list --status
+    production: not_created
+    development: not_created
+
+..
+
+The reason for this is a missing ``:children`` modifier on the
+names of a group that has sub-groups. You know this bug was
+fixed, but which branch (or which commit) contains the fix?
+Use ``git whatchanged`` and pass it the name of the file
+that has the problem.
+
+.. code-block:: none
+   :emphasize-lines: 1,6,8,16,24,32,40
+
+     $ git whatchanged -- inventory/deployment/all
+    commit 963b006a7aceee21eb35da41546ae5da7596382e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Wed Dec 14 23:07:37 2016 -0800
+
+        Add missing ":children" modifier
+
+    :100644 100644 d9918d0... 9ce596b... M  v2/inventory/deployment/all
+
+    commit 00afbb5bfadc46ef9b5f253a13a6212cb3fca178
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sun Dec 11 21:31:04 2016 -0800
+
+        Update and normalize inventory 'all' files with children groups
+
+    :100644 100644 99bb8d9... d9918d0... M  v2/inventory/deployment/all
+
+    commit 777cce71f944650c0ff5cf47723ee6b9f322c987
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sat Dec 3 21:33:38 2016 -0800
+
+        Refactor inventory directories to use group vars properly
+
+    :100644 100644 98376da... 99bb8d9... M  v2/inventory/deployment/all
+
+    commit 3cdb37d04c9d8bedb5277ad4cfbeafdec55f69b0
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Tue Nov 22 20:00:19 2016 -0800
+
+        Add vagrants to local and deployment groups
+
+    :100644 100644 b199ae1... 98376da... M  v2/inventory/deployment/all
+
+    commit 92eec6c03c28824725b9fc0c4560b4fdccfa880e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Fri Nov 18 16:53:04 2016 -0800
+
+        Add initial inventory for deployment to get dynamic inventory working
+
+    :000000 100644 0000000... b199ae1... A  v2/inventory/deployment/all
+
+..
+
+If you add the ``--patch`` option, you also see the changes themselves
+and can identify the initial problem file as well as the commit
+that contains the fix (output edited for brevity):
+
+
+
+.. code-block:: none
+   :emphasize-lines: 2,15-19,21,39-42
+   :linenos:
+
+     $ git whatchanged --patch -- inventory/deployment/all
+    commit 963b006a7aceee21eb35da41546ae5da7596382e
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Wed Dec 14 23:07:37 2016 -0800
+
+        Add missing ":children" modifier
+
+    diff --git a/v2/inventory/deployment/all b/v2/inventory/ectf/all
+    index d9918d0..9ce596b 100644
+    --- a/v2/inventory/deployment/all
+    +++ b/v2/inventory/deployment/all
+    @@ -27,7 +27,7 @@ red.devops.deployment
+     yellow.devops.deployment
+
+     # Hosts are Vagrant virtual machines
+    -[vagrants]
+    +[vagrants:children]
+     production
+     development
+
+    commit 00afbb5bfadc46ef9b5f253a13a6212cb3fca178
+    Author: Dave Dittrich <dittrich@u.washington.edu>
+    Date:   Sun Dec 11 21:31:04 2016 -0800
+
+        Update and normalize inventory 'all' files with children groups
+
+    diff --git a/v2/inventory/deployment/all b/v2/inventory/ectf/all
+    index 99bb8d9..d9918d0 100644
+    --- a/v2/inventory/deployment/all
+    +++ b/v2/inventory/deployment/all
+      . . .
+     [manager]
+     core-[01:03].devops.deployment
+
+    +[worker]
+    +red.devops.deployment
+    +yellow.devops.deployment
+    +
+     # Hosts are Vagrant virtual machines
+     [vagrants]
+    +production
+    +development
+    +
+    +[production]
+     red.devops.deployment
+     core-[01:03].devops.deployment
+     yellow.devops.deployment
+    -blue16.devops.deployment
+    +
+    +[development]
+     blue14.devops.deployment
+    -green.devops.deployment
+     . . .
+
+..
+
+You can now ``git cherry-pick`` the commit with the fix
+(``963b006a7aceee21eb35da41546ae5da7596382e``) and move on:
+
+.. code-block:: none
+   :emphasize-lines: 2-7
+
+    $ test.vagrant.list --status
+    red: saved
+    core-01: not_created
+    core-02: not_created
+    core-03: not_created
+    yellow: saved
+    blue14: not_created
+
+..
+
+.. _git-whatchanged: https://git-scm.com/docs/git-whatchanged
+
+
 .. _versionnumbers:
 
 Managing Version Numbers
@@ -665,8 +829,7 @@ You can learn how `bumpversion`_ works from these resources:
 
     You can find examples of using `bumpversion`_ (including its configuration file
     ``.bumpversion.cfg`` and how it is used to manage version numbers in files) in
-    this document in Sections :ref:`creatingdocumentonlyrepo` and
-    :ref:`cherrypickingcommits`.
+    this document in Section :ref:`cherrypickingcommits`.
 ..
 
 The program ``bumpversion`` is included in the Python virtual environment
@@ -794,7 +957,7 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
 .. code-block:: none
    :emphasize-lines: 1,9,10
 
-    (dimsenv)[dittrich@localhost git]$ git clone git@git.devops.develop:/opt/git/dims-ad.git
+    $ git clone git@git.devops.develop:/opt/git/dims-ad.git
     Cloning into 'dims-ad'...
     remote: Counting objects: 236, done.
     remote: Compressing objects: 100% (155/155), done.
@@ -802,8 +965,8 @@ so that ``hub-flow`` commands work properly.  Initialize your repo this way:
     Receiving objects: 100% (236/236), 26.20 MiB | 5.89 MiB/s, done.
     Resolving deltas: 100% (117/117), done.
     Checking connectivity... done.
-    (dimsenv)[dittrich@localhost git]$ cd dims-ad
-    (dimsenv)[dittrich@localhost dims-ad (master)]$ git hf init
+    $ cd dims-ad
+    $ git hf init
     Using default branch names.
 
     Which branch should be used for tracking production releases?
@@ -826,7 +989,7 @@ in your ``.git/config`` file starting with ``hubflow``:
 .. code-block:: none
    :emphasize-lines: 16-18, 23-28
 
-   (dimsenv)[dittrich@localhost dims-ad (develop)]$ cat .git/config
+   $ cat .git/config
    [core]
            repositoryformatversion = 0
            filemode = true
@@ -890,7 +1053,7 @@ use the Git shell command ``list``:
 .. code-block:: none
    :emphasize-lines: 1
 
-    [dittrich@localhost ~]$ ssh git@git.devops.develop list
+    $ ssh git@git.devops.develop list
     prisem-replacement.git
     ELK.git
     cif-java.git
@@ -957,7 +1120,7 @@ of a ``.mrconfig`` file (see ``man mr`` for more information).
 
    .. code-block:: none
 
-       [dittrich@localhost dims]$ cat ~/.mrtrust
+       $ cat ~/.mrtrust
        /Users/dittrich/dims/.mrconfig
        /Users/dittrich/git/.mrconfig
 
@@ -973,8 +1136,8 @@ as described in Section :ref:`intersphinxlinking`.
 .. code-block:: none
    :emphasize-lines: 1,2,29,30,98
 
-    [dittrich@localhost ~]$ cd ~/dims
-    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd
+    $ cd ~/dims
+    $ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd
     [git/dims-ad]
     checkout = git clone 'git@git.devops.develop:/opt/git/dims-ad.git' 'dims-ad' &&
             (cd dims-ad; git hf init)
@@ -1001,8 +1164,8 @@ as described in Section :ref:`intersphinxlinking`.
     pull = git hf update &&
             git hf pull
     stat = git status -s
-    [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd > .mrconfig
-    [dittrich@localhost dims]$ mr checkout
+    $ ssh git@git.devops.develop mrconfig dims-ad dims-sr dims-ocd > .mrconfig
+    $ mr checkout
     mr checkout: /Users/dittrich/dims/git/dims-ad
     Cloning into 'dims-ad'...
     remote: Counting objects: 518, done.
@@ -1070,7 +1233,7 @@ as described in Section :ref:`intersphinxlinking`.
     Version tag prefix? []
 
     mr checkout: finished (3 ok)
-    [dittrich@localhost dims]$ mr stat
+    $ mr stat
     mr stat: /Users/dittrich/tmp/dims/git/dims-ad
 
     mr stat: /Users/dittrich/tmp/dims/git/dims-ocd
@@ -1117,9 +1280,9 @@ that *only* has DIMS Git repos in it, you just need to create an updated
 
 .. code-block:: none
 
-   [dittrich@localhost ~]$ cd $GIT/..
-   [dittrich@localhost dims]$ ssh git@git.devops.develop mrconfig > .mrconfig.new
-   [dittrich@localhost dims]$ diff .mrconfig .mrconfig.new
+   $ cd $GIT/..
+   $ ssh git@git.devops.develop mrconfig > .mrconfig.new
+   $ diff .mrconfig .mrconfig.new
    324a325,333
    > [git/dims-db-recovery]
    > checkout = git clone 'git@git.devops.develop:/opt/git/dims-db-recovery.git' 'dims-db-recovery' &&
@@ -1130,8 +1293,8 @@ that *only* has DIMS Git repos in it, you just need to create an updated
    >    git hf pull
    > stat = git status -s
    >
-   [dittrich@localhost dims]$ mv .mrconfig.new .mrconfig
-   [dittrich@27b dims]$ mr checkout
+   $ mv .mrconfig.new .mrconfig
+   $ mr checkout
    mr checkout: /Users/dittrich/dims/git/dims-db-recovery
    Cloning into 'dims-db-recovery'...
    remote: Counting objects: 351, done.
@@ -1198,7 +1361,7 @@ Operations*).
 .. code-block:: none
    :emphasize-lines: 1,5,7,8,10,11
 
-    [dittrich@localhost ~]$ slogin git.devops.develop
+    $ slogin git.devops.develop
     Welcome to Ubuntu 12.04.5 LTS (GNU/Linux 3.13.0-43-generic x86_64)
     [ ... ]
     Last login: Sun Jan 11 12:04:36 2015 from lancaster.devops.develop
@@ -1286,28 +1449,28 @@ Here is an edited transcript of performing the above tasks.
 
 .. code-block:: none
 
-    [dittrich@localhost ~]$ cd $GIT
-    [dittrich@localhost git]$ mkdir dims-ocd
-    [dittrich@localhost git]$ git init
+    $ cd $GIT
+    $ mkdir dims-ocd
+    $ git init
     Initialized empty Git repository in /Users/dittrich/git/.git/
     [ ... prepare files ... ]
-    [dittrich@localhost dims-ocd (master)]$ ls
+    $ ls
     MIL-STD-498-templates.pdf   UW-logo.png                     conf.py                         newsystem.rst
     Makefile                    _build                          currentsystem.rst               notes.rst
     OCD-DID.pdf                 _static                         impacts.rst                     operationalscenarios.rst
     OCD.html                    _templates                      index.rst                       referenceddocs.rst
     OCD.rst                     analysis.rst                    justifications.rst              scope.rst
     UW-logo-32x32.ico           appendices.rst                  license.txt
-    [dittrich@localhost dims-ocd (master)]$ rm OCD.rst
-    [dittrich@localhost dims-ocd (master)]$ ls
+    $ rm OCD.rst
+    $ ls
     MIL-STD-498-templates.pdf   _build                          currentsystem.rst               notes.rst
     Makefile                    _static                         impacts.rst                     operationalscenarios.rst
     OCD-DID.pdf                 _templates                      index.rst                       referenceddocs.rst
     OCD.html                    analysis.rst                    justifications.rst              scope.rst
     UW-logo-32x32.ico           appendices.rst                  license.txt
     UW-logo.png                 conf.py                         newsystem.rst
-    [dittrich@localhost dims-ocd (master)]$ git add .
-    [dittrich@localhost dims-ocd (master)]$ git commit -m "Initial load of MIL-STD-498 template"
+    $ git add .
+    $ git commit -m "Initial load of MIL-STD-498 template"
     [master (root-commit) 39816fa] Initial load of MIL-STD-498 template
      22 files changed, 1119 insertions(+)
      create mode 100644 dims-ocd/MIL-STD-498-templates.pdf
@@ -1332,9 +1495,9 @@ Here is an edited transcript of performing the above tasks.
      create mode 100644 dims-ocd/operationalscenarios.rst
      create mode 100644 dims-ocd/referenceddocs.rst
      create mode 100644 dims-ocd/scope.rst
-    [dittrich@localhost dims-ocd (master)]$ git tag -a "2.0.0" -m "Initial template release"
-    [dittrich@localhost dims-ocd (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-ocd.git
-    [dittrich@localhost dims-ocd (master)]$ git push -u origin master
+    $ git tag -a "2.0.0" -m "Initial template release"
+    $ git remote add origin git@git.devops.develop:/opt/git/dims-ocd.git
+    $ git push -u origin master
     Counting objects: 24, done.
     Delta compression using up to 8 threads.
     Compressing objects: 100% (22/22), done.
@@ -1344,7 +1507,7 @@ Here is an edited transcript of performing the above tasks.
     To git@git.devops.develop:/opt/git/dims-ocd.git
      * [new branch]      master -> master
     Branch master set up to track remote branch master from origin by rebasing.
-    [dittrich@localhost dims-ocd (master)]$ git push origin --tags
+    $ git push origin --tags
     Counting objects: 1, done.
     Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
     Total 1 (delta 0), reused 0 (delta 0)
@@ -1388,10 +1551,10 @@ and check out the develop branch. Next, locate the missing file:
 .. code-block:: none
    :emphasize-lines: 1,4
 
-   [dittrich@localhost docs (feature/coreos)]$ git checkout develop
+   $ git checkout develop
    Switched to branch 'develop'
    Your branch is up-to-date with 'origin/develop'.
-   [dittrich@localhost docs (develop)]$ find ../.. -name 'Makefile.dot'
+   $ find ../.. -name 'Makefile.dot'
    ../../packer/Makefile.dot
 
 ..
@@ -1402,8 +1565,8 @@ includes it:
 
 .. code-block:: none
 
-   [dittrich@localhost docs (develop)]$ cp ../../packer/Makefile.dot ..
-   [dittrich@localhost docs (develop)]$ touch source/lifecycle.rst
+   $ cp ../../packer/Makefile.dot ..
+   $ touch source/lifecycle.rst
 
 ..
 
@@ -1440,10 +1603,10 @@ we expect, add, and commit the fix:
 .. code-block:: none
    :emphasize-lines: 1,3,4
 
-   [dittrich@localhost docs (develop)]$ git stat
+   $ git stat
    ?? Makefile.dot
-   [dittrich@localhost docs (develop)]$ git add ../Makefile.dot
-   [dittrich@localhost docs (develop)]$ git commit -m "Add Makefile.dot from packer repo for lifecycle.rst"
+   $ git add ../Makefile.dot
+   $ git commit -m "Add Makefile.dot from packer repo for lifecycle.rst"
    [develop d5a948e] Add Makefile.dot from packer repo for lifecycle.rst
     1 file changed, 83 insertions(+)
     create mode 100644 Makefile.dot
@@ -1456,8 +1619,8 @@ in this case. Now you could bump the version if necessary before pushing.
 .. code-block:: none
    :emphasize-lines: 1,2
 
-   [dittrich@localhost docs (develop)]$ (cd ..; bumpversion patch)
-   [dittrich@localhost docs (develop)]$ git hf push
+   $ (cd ..; bumpversion patch)
+   $ git hf push
    Fetching origin
    Already up-to-date.
    Counting objects: 10, done.
@@ -1466,9 +1629,6 @@ in this case. Now you could bump the version if necessary before pushing.
    Writing objects: 100% (10/10), 783 bytes | 0 bytes/s, done.
    Total 10 (delta 8), reused 0 (delta 0)
    remote: Running post-receive hook: Tue Mar 31 17:02:43 PDT 2015
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100   217  100   217    0     0   2356      0 --:--:-- --:--:-- --:--:--  2679
    remote: Scheduled polling of dims-ci-utils-deploy-develop
    remote: Scheduled polling of dims-ci-utils-deploy-master
    remote: Scheduled polling of dims-seed-jobs
@@ -1480,12 +1640,6 @@ in this case. Now you could bump the version if necessary before pushing.
    remote: [+++] oldrev=d5a948ebef61da98b7849416ee340e0a4ba45a3a
    remote: [+++] Branch was updated.
    remote: [+++] This repo has a documentation directory.
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100    79    0     0  100    79      0   1359 --:--:-- --:--:-- --:--:--  1612
-   remote:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-   remote:                                  Dload  Upload   Total   Spent    Left  Speed
-   remote: 100    78    0     0  100    78      0    260 --:--:-- --:--:-- --:--:--   268
    remote: [+++] post-receive-06jenkinsalldocs finished
    To git@git.devops.develop:/opt/git/dims-ci-utils.git
       d5a948e..a95c9e1  develop -> develop
@@ -1501,16 +1655,16 @@ and ``cherry-pick`` the commit with the missing file.
 .. code-block:: none
    :emphasize-lines: 1,5,10
 
-   [dittrich@localhost docs (develop)]$ git checkout feature/coreos
+   $ git checkout feature/coreos
    Switched to branch 'feature/coreos'
    Your branch is ahead of 'origin/feature/coreos' by 1 commit.
      (use "git push" to publish your local commits)
-   [dittrich@localhost docs (feature/coreos)]$ git cherry-pick d5a948e
+   $ git cherry-pick d5a948e
    [feature/coreos 14dbf59] Add Makefile.dot from packer repo for lifecycle.rst
     Date: Tue Mar 31 16:38:03 2015 -0700
     1 file changed, 83 insertions(+)
     create mode 100644 Makefile.dot
-   [dittrich@localhost docs (feature/coreos)]$ git log
+   $ git log
    commit 14dbf59dff5d6fce51c899b32fef87276dbddef7
    Author: Dave Dittrich <dave.dittrich@gmail.com>
    Date:   Tue Mar 31 16:38:03 2015 -0700
@@ -1652,7 +1806,7 @@ looking at the contents of this file.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ cat VERSION
+    $ cat VERSION
     1.1.4
 
 ..
@@ -1674,7 +1828,7 @@ the minor version number component.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ git hf release start 1.2.0
+    $ git hf release start 1.2.0
     Fetching origin
     Switched to a new branch 'release/1.2.0'
     Total 0 (delta 0), reused 0 (delta 0)
@@ -1700,7 +1854,7 @@ You should now be on the new release branch:
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$
+    $
 
 ..
 
@@ -1709,7 +1863,7 @@ to match the new release number:
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
+    $ bumpversion minor
 
 ..
 
@@ -1718,10 +1872,10 @@ to create comments for actions like merges and tags.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ bumpversion minor
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ cat VERSION
+    $ bumpversion minor
+    $ cat VERSION
     1.2.0
-    [dittrich@localhost ansible-playbooks (release/1.2.0)]$ git hf release finish '1.2.0'
+    $ git hf release finish '1.2.0'
     Fetching origin
     Fetching origin
     Counting objects: 9, done.
@@ -1837,8 +1991,8 @@ dependency checks or debugging.
 
 .. code-block:: none
 
-    [dittrich@localhost ansible-playbooks (dev)]$ bumpversion patch
-    [dittrich@localhost ansible-playbooks (dev)]$ git push
+    $ bumpversion patch
+    $ git push
     Counting objects: 9, done.
     Delta compression using up to 8 threads.
     Compressing objects: 100% (8/8), done.
@@ -2022,7 +2176,7 @@ rename:
 
 .. code-block:: none
 
-   [stuart@rejewski dims-328 (develop)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2062,7 +2216,7 @@ point is this:
 
 .. code-block:: none
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2095,7 +2249,7 @@ No errors from this, but `user2`'s ``.git/config`` still refers to a
 .. code-block:: none
    :emphasize-lines: 15
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
        repositoryformatversion = 0
        filemode = true
@@ -2143,7 +2297,7 @@ Now `user2`'s ``.git/config`` looks better, the token ``dev`` has changed to
 .. code-block:: none
    :emphasize-lines: 15
 
-   [stuart@rejewski dims-328-2 (dev)]$ cat .git/config
+   $ cat .git/config
    [core]
            repositoryformatversion = 0
            filemode = true
@@ -2219,9 +2373,9 @@ following commands:
 .. code-block:: none
    :emphasize-lines: 1,3
 
-    [dittrich@localhost dims-keys (develop)]$ git tag -d finish
+    $ git tag -d finish
     Deleted tag 'finish' (was 516d9d2)
-    [dittrich@localhost dims-keys (develop)]$ git push origin :refs/tags/finish
+    $ git push origin :refs/tags/finish
     remote: Running post-receive hook: Thu Aug  6 16:07:17 PDT 2015
     To git@git.devops.develop:/opt/git/dims-keys.git
      - [deleted]         finish
@@ -2279,7 +2433,7 @@ using the same message:
 .. code-block:: none
    :emphasize-lines: 2,8,14,20,27
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log
+    $ git log
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2327,7 +2481,7 @@ all correctly commented:
 .. code-block:: none
    :emphasize-lines: 8-26,34-60,68-83
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
+    $ git log --patch
     commit 08b888b9dd33f53f0e26d8ff8aab7309765ad0eb
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2419,7 +2573,7 @@ and edit the message:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git commit --amend
+    $ git commit --amend
 
     Add DOCSURL selection of where docs reside for intersphinx links
 
@@ -2443,7 +2597,7 @@ commit hash!
 .. code-block:: none
    :emphasize-lines: 2
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log --patch
+    $ git log --patch
     commit 654cb34378cb0a4140725a37e3724b6dcee7aebd
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2494,7 +2648,7 @@ commit ``96575c9``).  Change ``pick`` to ``edit`` for that commit.
 .. code-block:: none
    :emphasize-lines: 3
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git rebase -i 96575c9
+    $ git rebase -i 96575c9
 
     edit f6f5d86 Fix intersphinx links to use DOCSURL env variable
     pick 7f3d0d8 Fix intersphinx links to use DOCSURL env variable
@@ -2540,7 +2694,7 @@ Now use ``git commit --amend`` to edit the comment:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git commit --amend
+    $ git commit --amend
 
     Rename makedocs -> makedocset
 
@@ -2562,7 +2716,7 @@ Finish off by continuing the rebase for the remaining commits.
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop|REBASE-i 1/3)]$ git rebase --continue
+    $ git rebase --continue
     Successfully rebased and updated refs/heads/develop.
 
 ..
@@ -2572,7 +2726,7 @@ new commit hashes:
 
 .. code-block:: none
 
-    (dimsenv)[dittrich@localhost docs (develop)]$ git log
+    $ git log
     commit 89af6d9fda07276d3cb06dfd2977f1392fb03b25
     Author: Dave Dittrich <dave.dittrich@gmail.com>
     Date:   Thu Apr 30 18:35:08 2015 -0700
@@ -2600,371 +2754,421 @@ new commit hashes:
 
 ..
 
-.. _creatingdocumentonlyrepo:
+.. _squashingWithRebase:
 
-Creating a new documentation-only repo
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Squashing Commits Before Merging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. TODO(mboggess):
-.. todo::
+Working on a feature branch for a long time can mean many changes
+are made. The idea of "commit often" to push code so other team
+members can review it means that sometimes multiple edits are made
+(or reverted commits) while debugging something. Or you may make
+a number of changes that are unrelated to the topic of the feature
+branch that would be best kept together in a single commit.
 
-    Could this just be a link to cookiecutter stuff now?
-    :ref:`dimsciutils:dimscookiecutters`
+It is possible to combine multiple commits into a single commit
+using an interactive Git rebase (``git rebase -i``). The idea is
+to interactively select a starting point for the rebase operation,
+then using ``pick`` and ``squash`` to select the proper commits
+to keep, and those subsequent commits that should be merged into
+the previous commit. If there are dozens of commits, this can
+get very complicated, but the idea can be demonstrated with
+three simple changes that we wish to turn into just one
+merge commit.
+
+.. note::
+
+    This example is being done with a temporary repository that we
+    will make for this purpose, allowing experimentation in a way
+    that will not result in harm to an actual repo.
 
 ..
 
-.. note:: TBD
+Start by initializing a temporary repo in ``/tmp/testing``.
 
-   The following is included here to document how to set up a new
-   documentation-only repo. The lines that are highlighted are those
-   that include user input. The long-term goal is to script creating
-   these repos so as to not require everyone know exactly how to
-   answer each of these questions. This is blocked waiting on getting
-   a consistent Python virtual environment that works on both dev
-   systems and Jenkins before globally functional scripts and Sphinx
-   configurations will work properly.
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ git init .
+    Initialized empty Git repository in /private/tmp/testing/.git/
+
+..
+
+We now create three files, each with a numeric name and the
+corresponding number as the contents of the file, and add
+each file to the staging area.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ for i in 1 2 3; do echo $i > $i.txt; git add $i.txt; done
+    [dimsenv] dittrich@ren:/tmp/testing () $ git stat
+    A  1.txt
+    A  2.txt
+    A  3.txt
+
+..
+
+We now make our initial commit.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing () $ git commit -m 'Initial commit'
+    [master (root-commit) 3ee79c4] Initial commit
+     3 files changed, 3 insertions(+)
+     create mode 100644 1.txt
+     create mode 100644 2.txt
+     create mode 100644 3.txt
+
+..
+
+Now we check out a branch were we will make our changes, before merging
+them back into ``master``.
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git checkout -b foo
+    Switched to a new branch 'foo'
+
+..
+
+We now make three changes ("edits" to two files, and one file deletion).
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ echo "22222" > 2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git add 2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -m "First edit"
+    [foo 71738c7] First edit
+     1 file changed, 1 insertion(+), 1 deletion(-)
 
 ..
 
 .. code-block:: none
-   :linenos:
-   :emphasize-lines: 1,2,3,5,6,13,18,23,26,27,34,35,43,47,53,56,59-67,72,73,86-88,100
 
-   [dittrich@localhost git]$ mkdir dims-asbuilt
-   [dittrich@localhost git]$ cd dims-asbuilt/
-   [dittrich@localhost dims-asbuilt]$ git init
-   Initialized empty Git repository in /Users/dittrich/git/dims-asbuilt/.git/
-   [dittrich@localhost dims-asbuilt (master)]$ workon dimsenv
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ sphinx-quickstart
-   Welcome to the Sphinx 1.3.1 quickstart utility.
-
-   Please enter values for the following settings (just press Enter to
-   accept a default value, if one is given in brackets).
-
-   Enter the root path for documentation.
-   > Root path for the documentation [.]:
-
-   You have two options for placing the build directory for Sphinx output.
-   Either, you use a directory "_build" within the root path, or you separate
-   "source" and "build" directories within the root path.
-   > Separate source and build directories (y/n) [n]: y
-
-   Inside the root directory, two more directories will be created; "_templates"
-   for custom HTML templates and "_static" for custom stylesheets and other static
-   files. You can enter another prefix (such as ".") to replace the underscore.
-   > Name prefix for templates and static dir [_]:
-
-   The project name will occur in several places in the built documentation.
-   > Project name: DIMS 'As-Built' System
-   > Author name(s): Dave Dittrich
-
-   Sphinx has the notion of a "version" and a "release" for the
-   software. Each version can have multiple releases. For example, for
-   Python the version is something like 2.5 or 3.0, while the release is
-   something like 2.5.1 or 3.0a1.  If you don't need this dual structure,
-   just set both to the same value.
-   > Project version: 0.1.0
-   > Project release [0.1.0]:
-
-   If the documents are to be written in a language other than English,
-   you can select a language here by its language code. Sphinx will then
-   translate text that it generates into that language.
-
-   For a list of supported codes, see
-   http://sphinx-doc.org/config.html#confval-language.
-   > Project language [en]:
-
-   The file name suffix for source files. Commonly, this is either ".txt"
-   or ".rst".  Only files with this suffix are considered documents.
-   > Source file suffix [.rst]:
-
-   One document is special in that it is considered the top node of the
-   "contents tree", that is, it is the root of the hierarchical structure
-   of the documents. Normally, this is "index", but if your "index"
-   document is a custom template, you can also set this to another filename.
-   > Name of your master document (without suffix) [index]:
-
-   Sphinx can also add configuration for epub output:
-   > Do you want to use the epub builder (y/n) [n]: y
-
-   Please indicate if you want to use one of the following Sphinx extensions:
-   > autodoc: automatically insert docstrings from modules (y/n) [n]:
-   > doctest: automatically test code snippets in doctest blocks (y/n) [n]:
-   > intersphinx: link between Sphinx documentation of different projects (y/n) [n]: y
-   > todo: write "todo" entries that can be shown or hidden on build (y/n) [n]: y
-   > coverage: checks for documentation coverage (y/n) [n]:
-   > pngmath: include math, rendered as PNG images (y/n) [n]:
-   > mathjax: include math, rendered in the browser by MathJax (y/n) [n]:
-   > ifconfig: conditional inclusion of content based on config values (y/n) [n]: y
-   > viewcode: include links to the source code of documented Python objects (y/n) [n]:
-
-   A Makefile and a Windows command file can be generated for you so that you
-   only have to run e.g. `make html' instead of invoking sphinx-build
-   directly.
-   > Create Makefile? (y/n) [y]:
-   > Create Windows command file? (y/n) [y]: n
-
-   Creating file ./source/conf.py.
-   Creating file ./source/index.rst.
-   Creating file ./Makefile.
-
-   Finished: An initial directory structure has been created.
-
-   You should now populate your master file ./source/index.rst and create other documentation
-   source files. Use the Makefile to build the docs, like so:
-      make builder
-   where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
-
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ echo \
-   > "This is a documentation-only repo. Sphinx source is in docs/source." > README.txt
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ tree
-   .
-   ├── README.txt
-   ├── Makefile
-   ├── build
-   └── source
-       ├── _static
-       ├── _templates
-       ├── conf.py
-       └── index.rst
-
-   4 directories, 4 files
-   (dimsenv)[dittrich@localhost dims-asbuilt (master)]$ dims.sphinx-autobuild
-   Serving on http://127.0.0.1:29583
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ echo "1111" > 1.txt
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -am "Second edit"
+    [foo 0b0e0a9] Second edit
+     1 file changed, 1 insertion(+), 1 deletion(-)
 
 ..
 
-After setting up the directory structure, editing the ``source/conf.py`` file
-to fix the title, etc., and creating initial scaffolding files sufficient
-to render a Sphinx document, you are almost ready to commit to Git. First,
-do ``make clean`` to get rid of any rendered files and make sure that only
-the source files and ``README.txt`` file are present:
-
 .. code-block:: none
-   :emphasize-lines: 1,3
 
-   [dittrich@localhost dims-asbuilt (master)]$ make clean
-   rm -rf build/*
-   [dittrich@localhost dims-asbuilt (master)]$ tree
-   .
-   ├── Makefile
-   ├── README.txt
-   ├── build
-   └── source
-       ├── _static
-       ├── _templates
-       ├── cifv1.rst
-       ├── conf.py
-       ├── git.rst
-       ├── index.rst
-       └── jenkins.rst
-
-   4 directories, 7 files
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git rm 3.txt
+    rm '3.txt'
+    [dimsenv] dittrich@ren:/tmp/testing (foo*) $ git commit -m "Removed file"
+    [foo 0a522af] Removed file
+     1 file changed, 1 deletion(-)
+     delete mode 100644 3.txt
 
 ..
 
-The next step is to add the source to the local git repo, set the upstream
-origin, tag the repository with the version number specified above, and push
-it to origin.
+If we now look at the commit history, we see the initial commit
+where we branched off, and the three change commits.
 
 .. code-block:: none
-   :emphasize-lines: 1,2,10,20-22,31
 
-   [dittrich@localhost dims-asbuilt (master)]$ git add .
-   [dittrich@localhost dims-asbuilt (master)]$ git stat
-   A  Makefile
-   A  README.txt
-   A  source/cifv1.rst
-   A  source/conf.py
-   A  source/git.rst
-   A  source/index.rst
-   A  source/jenkins.rst
-   [dittrich@localhost dims-asbuilt (master)]$ git commit -m "Initial load"
-   [master (root-commit) d0fcaa5] Initial load
-    7 files changed, 604 insertions(+)
-    create mode 100644 Makefile
-    create mode 100644 README.txt
-    create mode 100644 source/cifv1.rst
-    create mode 100644 source/conf.py
-    create mode 100644 source/git.rst
-    create mode 100644 source/index.rst
-    create mode 100644 source/jenkins.rst
-   [dittrich@localhost dims-asbuilt (master)]$ git remote add origin git@git.devops.develop:/opt/git/dims-asbuilt.git
-   [dittrich@localhost dims-asbuilt (master)]$ git tag -a "0.1.0" -m "Initial template release"
-   [dittrich@localhost dims-asbuilt (master)]$ git push origin master
-   Counting objects: 10, done.
-   Delta compression using up to 8 threads.
-   Compressing objects: 100% (7/7), done.
-   Writing objects: 100% (10/10), 7.37 KiB | 0 bytes/s, done.
-   Total 10 (delta 0), reused 0 (delta 0)
-   remote: Running post-receive hook: Wed Mar 18 16:15:02 PDT 2015
-   To git@git.devops.develop:/opt/git/dims-asbuilt.git
-    * [new branch]      master -> master
-   [dittrich@localhost dims-asbuilt (master)]$ git push origin --tags
-   Counting objects: 1, done.
-   Writing objects: 100% (1/1), 173 bytes | 0 bytes/s, done.
-   Total 1 (delta 0), reused 0 (delta 0)
-   remote: Running post-receive hook: Wed Mar 18 16:26:29 PDT 2015
-   To git@git.devops.develop:/opt/git/dims-asbuilt.git
-    * [new tag]         0.1.0 -> 0.1.0
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git gr
+    * commit 0a522af0d8c09d206f37b647014628a89070fe94 (HEAD -> foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:59:36 2016 -0700
+    |
+    |     Removed file
+    |
+    * commit 0b0e0a986e228b177e8775900198c99af80ef5f2
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:34 2016 -0700
+    |
+    |     Second edit
+    |
+    * commit 71738c7b1d2f504110190eaca3c71461e7090cc6
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4 (master)
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
+
+          Initial commit
 
 ..
 
-Following those steps, initialize the repo for ``hub-flow``.
+We now start an interactive rebase, referencing the hash of the
+initial commit (the one right before all of the changes on the
+branch).
 
 .. code-block:: none
-   :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (master)]$ git hf init
-   Using default branch names.
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git rebase -i 3ee79c4
 
-   Which branch should be used for tracking production releases?
-      - master
-        Branch name for production releases: [master]
-        Branch name for "next release" development: [develop]
+    pick   71738c7 First edit
+    squash 0b0e0a9 Second edit
+    squash 0a522af Removed file
 
-   How to name your supporting branch prefixes?
-   Feature branches? [feature/]
-   Release branches? [release/]
-   Hotfix branches? [hotfix/]
-   Support branches? [support/]
-   Version tag prefix? []
-   Total 0 (delta 0), reused 0 (delta 0)
-   remote: Running post-receive hook: Wed Mar 18 16:24:14 PDT 2015
-   To git@git.devops.develop:/opt/git/dims-asbuilt.git
-    * [new branch]      develop -> develop
-
-..
-
-
-Set up ``bumpversion``:
-
-.. code-block:: none
-   :emphasize-lines: 1
-
-   [dittrich@localhost dims-asbuilt (develop)]$ vi .bumpversion.cfg
-
-   [bumpversion]
-   current_version = 0.1.0
-   commit = True
-   tag = False
-
-   [bumpversion:file:source/conf.py]
-
-..
-
-Use the ``--dry-run`` option to test whether the configuration
-was done properly before attempting to actually bump the version
-number.
-
-.. code-block:: none
-   :emphasize-lines: 1,48
-
-   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion --dry-run --verbose patch
-   Reading config file .bumpversion.cfg:
-   [bumpversion]
-   current_version = 0.1.0
-   commit = True
-   tag = False
-
-   [bumpversion:file:source/conf.py]
-
-
-   Parsing version '0.1.0' using regexp '(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)'
-   Parsed the following values: major=0, minor=1, patch=0
-   Attempting to increment part 'patch'
-   Values are now: major=0, minor=1, patch=1
-   Dry run active, won't touch any files.
-   New version will be '0.1.1'
-   Asserting files source/conf.py contain the version string:
-   Found '0.1.0' in source/conf.py at line 61: version = '0.1.1'
-   Would change file source/conf.py:
-   --- a/source/conf.py
-   +++ b/source/conf.py
-   @@ -59,9 +59,9 @@
-    # built documents.
+    # Rebase 3ee79c4..0a522af onto 3ee79c4 (       3 TODO item(s))
     #
-    # The short X.Y version.
-   -version = '0.1.0'
-   +version = '0.1.1'
-    # The full version, including alpha/beta/rc tags.
-   -release = '0.1.0'
-   +release = '0.1.1'
-
-    # The language for content autogenerated by Sphinx. Refer to documentation
-    # for a list of supported languages.
-   Would write to config file .bumpversion.cfg:
-   [bumpversion]
-   current_version = 0.1.1
-   commit = True
-   tag = False
-
-   [bumpversion:file:source/conf.py]
-
-
-   Would prepare Git commit
-   Would add changes in file 'source/conf.py' to Git
-   Would add changes in file '.bumpversion.cfg' to Git
-   Would commit to Git with message 'Bump version: 0.1.0 → 0.1.1'
-   Would tag 'v0.1.1' in Git
-   [dittrich@localhost dims-asbuilt (develop)]$ bumpversion patch
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    #
+    # These lines can be re-ordered; they are executed from top to bottom.
+    #
+    # If you remove a line here THAT COMMIT WILL BE LOST.
+    #
+    # However, if you remove everything, the rebase will be aborted.
+    #
+    # Note that empty commits are commented out
 
 ..
 
-Now use ``hub-flow`` to push the current state of the local repo.
+When you save the file out of the editor, Git will perform the rebase
+operation:
 
 .. code-block:: none
-   :emphasize-lines: 1
 
-   [dittrich@localhost dims-asbuilt (develop)]$ git hf push
-   Fetching origin
-   Already up-to-date.
-   Counting objects: 4, done.
-   Delta compression using up to 8 threads.
-   Compressing objects: 100% (4/4), done.
-   Writing objects: 100% (4/4), 375 bytes | 0 bytes/s, done.
-   Total 4 (delta 3), reused 0 (delta 0)
-   remote: Running post-receive hook: Wed Mar 18 16:38:27 PDT 2015
-   To git@git.devops.develop:/opt/git/dims-asbuilt.git
-      d0fcaa5..db3c7f1  develop -> develop
-
-   Summary of actions:
-   - The remote branch 'origin/develop' was updated with your changes
+    [detached HEAD 5f90a71] First edit
+     Date: Mon Sep 5 17:58:19 2016 -0700
+     3 files changed, 2 insertions(+), 3 deletions(-)
+     delete mode 100644 3.txt
+    Successfully rebased and updated refs/heads/foo.
 
 ..
 
-Finally, add the hook to trigger Jenkins documentation construction (in
-this case, cutting/pasting the hook from another repo to get the link correct).
+You can now see the commit history has been changed to reflect only
+one commit (with a combined comment indicating all of the actions
+from each commit, since we didn't alter any of the comments while
+we did the squashing).
 
 .. code-block:: none
-   :emphasize-lines: 1,9,10
 
-   [git@jira git]$ tree dims-ad.git/hooks/
-   dims-ad.git/hooks/
-   ├── post-receive -> /opt/git/bin/post-receive
-   ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
-   ├── post-receive-01email -> /opt/git/bin/post-receive-01email
-   └── post-receive-06jenkinsalldocs -> /opt/git/bin/post-receive-06jenkinsalldocs
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git gr
+    * commit 5f90a717f96501ba6526a83c107302e0fbc30f10 (HEAD -> foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    |     Second edit
+    |
+    |     Removed file
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4 (master)
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
 
-   0 directories, 4 files
-   [git@jira git]$ ln -s /opt/git/bin/post-receive-06jenkinsalldocs dims-asbuilt.git/hooks/post-receive-06jenkinsalldocs
-   [git@jira git]$ tree dims-asbuilt.git/hooks/
-   dims-asbuilt.git/hooks/
-   ├── post-receive -> /opt/git/bin/post-receive
-   ├── post-receive-00logamqp -> /opt/git/bin/post-receive-00logamqp
-   ├── post-receive-01email -> /opt/git/bin/post-receive-01email
-   └── post-receive-06jenkinsalldocs -> /opt/git/bin/post-receive-06jenkinsalldocs
-
-   0 directories, 4 files
+          Initial commit
 
 ..
 
-.. todo::
+We can now merge the single resulting commit back into the ``master``
+branch.
 
-   Put all of the steps above into a script so that they are
-   done consistently and much more easily.
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (foo) $ git checkout master
+    Switched to branch 'master'
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git merge foo
+    Updating 3ee79c4..5f90a71
+    Fast-forward
+     1.txt | 2 +-
+     2.txt | 2 +-
+     3.txt | 1 -
+     3 files changed, 2 insertions(+), 3 deletions(-)
+     delete mode 100644 3.txt
 
 ..
+
+Our changes have taken effect:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ ls
+    1.txt   2.txt
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ cat *
+    1111
+    22222
+
+..
+
+The ``HEAD`` has now moved and ``master`` and ``foo`` are
+at the same point. (We can now delete the ``foo`` branch.)
+
+.. code-block:: none
+
+    [dimsenv] dittrich@ren:/tmp/testing (master) $ git gr
+    * commit 5f90a717f96501ba6526a83c107302e0fbc30f10 (HEAD -> master, foo)
+    | Author: Dave Dittrich <dittrich@u.washington.edu>
+    | Date:   Mon Sep 5 17:58:19 2016 -0700
+    |
+    |     First edit
+    |
+    |     Second edit
+    |
+    |     Removed file
+    |
+    * commit 3ee79c4d4455a5517a93ce7e02db88d3db7934f4
+      Author: Dave Dittrich <dittrich@u.washington.edu>
+      Date:   Mon Sep 5 17:57:51 2016 -0700
+
+          Initial commit
+
+..
+
+.. _keepingBranchesUpToDate:
+
+Merging changes from ``develop`` into feature branches to keep up to date
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When branches live for a long time, and changes occur to what should be
+the stable ``develop`` branch, those branches start to drift and can
+become "broken" because things like hotfixes and new features are not
+present on the feature branch. To avoid this, first try to *not have
+feature branches live for a long time*, and second, merge the develop
+branch into the feature branches when needed.
+
+Start by reading these pages:
+
+* `Commit Often, Perfect Later, Publish Once\: Git Best Practices`_
+* `Git Tips`_
+
+.. _Commit Often, Perfect Later, Publish Once\: Git Best Practices: http://sethrobertson.github.io/GitBestPractices/
+.. _Git Tips: http://mislav.uniqpath.com/2010/07/git-tips/
+
+.. code-block:: none
+
+    $ git checkout pyes
+    Switched to branch 'pyes'
+    Your branch is up-to-date with 'origin/pyes'.
+    [dittrich@localhost ansible-playbooks (pyes)]$ git rebase dev
+    First, rewinding head to replay your work on top of it...
+    Applying: Add pyes pip install to ELK role
+    Applying: Add marker to prevent re-loading of existing data and don't add Team Cymru data
+    Applying: Fix bug in demo.logstash.deleteESDB script
+    Applying: Add feedback message if data already loaded
+    Applying: Remove debug flag from data pre-load play
+    Applying: Add demo.firefox.setup changes
+    Applying: Make default for Kibana be the UFW dataset
+    Applying: Add curl to base role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    Auto-merging roles/base-os/tasks/main.yml
+    Applying: Add elasticutils Python library to ELK role
+    Applying: Add play to pin Gnome Terminal to panel
+    Applying: Fix Ansible syntax error re: Gnome Terminal fix
+    Applying: Fix typo in Gnome Terminal script setup
+    Applying: Add dconf-tools package for dconf program
+    Applying: Run Gnome Terminal pin script with sudo
+    Applying: Fix for dbus-launch failure
+    Applying: Fix bug in pin-gnome-terminal script re: dconf write operation
+    Applying: Fix bug in pin-gnome-terminal script
+    Applying: Fix bug in pin-gnome-terminal re: empty 'value' variable</verbatim>
+
+..
+
+This is what the ``pyes`` branch looked like before:
+
+.. _pyesBeforeRebase:
+
+.. figure:: images/pyes-before-rebase.png
+   :alt: Branch ``pyes`` before rebase
+   :width: 80%
+   :align: center
+
+   Branch ``pyes`` before rebase
+
+..
+
+This is what the ``pyes`` branch looked like after the rebase:
+
+.. _pyesAfterRebase:
+
+.. figure:: images/pyes-after-rebase.png
+   :alt: Branch ``pyes`` after rebase
+   :width: 80%
+   :align: center
+
+   Branch ``pyes`` after rebase
+
+..
+
+Notice the numbers ``+23-19`` in the after image? We just rebased commits from
+the local repo branch ``develop`` onto the local repo branch ``pyes``. We
+haven't done anything yet with the remote repo. The numbers mean that after
+rebasing to get the missing commits, there are commits that exist on the local
+repo that do not exist on the remote repo, and vice-versa.
+
+If we now try to push the ``pyes`` branch, Git complains that it can't because
+there are remote changes that are not in the local repo that need to be merged
+and checked for possible conflict before the push can proceed.
+
+
+.. code-block:: none
+
+    $ git push
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
+     ! [rejected]        pyes -> pyes (non-fast-forward)
+    error: failed to push some refs to 'git@git.devops.develop:/opt/git/ansible-playbooks.git'
+    hint: Updates were rejected because the tip of your current branch is behind
+    hint: its remote counterpart. Integrate the remote changes (e.g.
+    hint: 'git pull ...') before pushing again.
+    hint: See the 'Note about fast-forwards' in 'git push --help' for details.</verbatim>
+
+..
+
+Doing a ``git pull`` first, then a ``git push`` results in a clean rebase of the remote
+commits with the local commits (which are now up to date on the ``pyes`` feature
+branch in relation to the ``develop`` branch.)
+
+.. code-block:: none
+
+    $ git pull
+    First, rewinding head to replay your work on top of it...
+    Applying: Added schema.psl to populate dims database from ops-trust
+    Applying: added postgres-dims role and files
+    Using index info to reconstruct a base tree...
+    M	dims-global-server.yml
+    <stdin>:94: trailing whitespace.
+    -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+    <stdin>:101: trailing whitespace.
+    -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+    <stdin>:210: trailing whitespace.
+    -- Name: attestations; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    <stdin>:224: trailing whitespace.
+    -- Name: audit_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    <stdin>:237: trailing whitespace.
+    -- Name: language_skill; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
+    warning: squelched 50 whitespace errors
+    warning: 55 lines add whitespace errors.
+    Falling back to patching base and 3-way merge...
+    Auto-merging dims-global-server.yml
+    Applying: Add curl to all hosts in base-os role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    Auto-merging roles/base-os/tasks/main.yml
+    Applying: Add curl to base role
+    Using index info to reconstruct a base tree...
+    M	roles/base-os/tasks/main.yml
+    Falling back to patching base and 3-way merge...
+    No changes -- Patch already applied.
+    [dittrich@localhost ansible-playbooks (pyes)]$ git push
+    Counting objects: 15, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (14/14), done.
+    Writing objects: 100% (15/15), 392.72 KiB | 0 bytes/s, done.
+    Total 15 (delta 9), reused 3 (delta 0)
+    remote: Running post-receive hook: Tue Nov  4 18:12:01 PST 2014
+    To git@git.devops.develop:/opt/git/ansible-playbooks.git
+       9b23575..2166e16  pyes -> pyes</verbatim>
+
+..
+
 
 .. _permanentremoval:
 
@@ -3025,6 +3229,40 @@ either ``git filter-branch`` or the `BFG Repo-Cleaner`_ to remove
 files from a clone of the repo and then push the clean version
 to GitHub.
 
+.. code-block:: none
+
+    bfg 1.12.15
+    Usage: bfg [options] [<repo>]
+
+      -b, --strip-blobs-bigger-than <size>
+                               strip blobs bigger than X (eg '128K', '1M', etc)
+      -B, --strip-biggest-blobs NUM
+                               strip the top NUM biggest blobs
+      -bi, --strip-blobs-with-ids <blob-ids-file>
+                               strip blobs with the specified Git object ids
+      -D, --delete-files <glob>
+                               delete files with the specified names (eg '*.class', '*.{txt,log}' - matches on file name, not path within repo)
+      --delete-folders <glob>  delete folders with the specified names (eg '.svn', '*-tmp' - matches on folder name, not path within repo)
+      --convert-to-git-lfs <value>
+                               extract files with the specified names (eg '*.zip' or '*.mp4') into Git LFS
+      -rt, --replace-text <expressions-file>
+                               filter content of files, replacing matched text. Match expressions should be listed in the file, one expression per line - by default, each expression is treated as a literal, but 'regex:' & 'glob:' prefixes are supported, with '==>' to specify a replacement string other than the default of '***REMOVED***'.
+      -fi, --filter-content-including <glob>
+                               do file-content filtering on files that match the specified expression (eg '*.{txt,properties}')
+      -fe, --filter-content-excluding <glob>
+                               don't do file-content filtering on files that match the specified expression (eg '*.{xml,pdf}')
+      -fs, --filter-content-size-threshold <size>
+                               only do file-content filtering on files smaller than <size> (default is 1048576 bytes)
+      -p, --protect-blobs-from <refs>
+                               protect blobs that appear in the most recent versions of the specified refs (default is 'HEAD')
+      --no-blob-protection     allow the BFG to modify even your *latest* commit. Not recommended: you should have already ensured your latest commit is clean.
+      --private                treat this repo-rewrite as removing private data (for example: omit old commit ids from commit messages)
+      --massive-non-file-objects-sized-up-to <size>
+                               increase memory usage to handle over-size Commits, Tags, and Trees that are up to X in size (eg '10M')
+      <repo>                   file path for Git repository to clean
+
+..
+
 .. _How to delete files permanently from your local and remote git repositories: http://www.zyxware.com/articles/4027/how-to-delete-files-permanently-from-your-local-and-remote-git-repositories
 .. _aaronzirbes/shrink-git-repo.sh: https://gist.github.com/aaronzirbes/4570924
 .. _How to Shrink a Git Repository: http://stevelorek.com/how-to-shrink-a-git-repository.html
@@ -3043,35 +3281,68 @@ to GitHub.
 Git and Secrets
 ---------------
 
-There are a plethora of ways to deal with secrets in Git repos. Most are too
-comprehensive, i.e. they encrypt entire repos, whereas the DIMS project needs
-to encrypt certain secret things within repos that will be made public. The
-other option is to not encrypt anything and have to be very disciplined about
-keeping secret data or secret files completely outside of repos which will be
-made public. The DIMS project has already run into this problem, as has been
-documented in the section above, so this is not really a viable option.
+There are a plethora of ways to deal with secrets in relation to source
+code in public Git repos.
 
-There are two different services we are currently considering:
+Some groups chose to separate out the secrets into repos that are not made
+public (i.e., one public repo without secrets, and one private repo with only
+the secrets). This adds some complexity and requires multiple Git repository
+locations that clearly separate the private and public repos.
 
-    * `Ansible Vault`_ 
-    
+Other groups may prefer to keep their repositories small in number and simple,
+using a single directory tree with the secrets being encrypted within that
+tree.  At one extreme of the "secrets in the repo" mechanism require
+encrypting the entire repo, while at the other end only a limited number of
+specific secrets are encrypted, leaving the majority of the repository in
+clear text form.
+
+The DIMS project started out with lots of Git repos that were narrowly focused
+on specific system components to try to modularize in a way that facilitated
+integrating open source tools written by other groups. The primary repository
+that needed secrets was the Ansible playbooks repository.
+
+.. attention::
+
+    Regardless of which mechanism for managing secrets you chose, *everyone*
+    with Git commit rights *must* have discipline when it comes to handling
+    secrets.  It only takes a few mistakes to cause a lot of cleanup headaches,
+    or for an accidental commit followed by a missed review and unintended push
+    to result in a password or key exposure crisis.
+
+    The DIMS project ran into this problem many times, with accidental commits
+    including private keys, passwords, and unredacted sample data from
+    production systems. It wasn't until the repos were going to be made
+    public that reviews identified several of these mistakes, causing long
+    delays while cleanup activities were added to code completion tasks.
+
+    There is a cost/benefit tradeoff that must be made between using more than
+    just one shared "development" repository location (to more closely vet and
+    control commits to the "official" repository location) vs. the time and
+    effort required to sanitize accidentally committed secrets and
+    simultaneously delete all clones at the same time to prevent the secrets
+    being accidentally pushed back into the repo.
+
+..
+
+The two mechanisms first tested by the DIMS project were:
+
+    * `Ansible Vault`_
     * `git-crypt`_
+
 
 Ansible Vault
 ~~~~~~~~~~~~~
 
-Ansible Vault is a command-line tool provided by Ansible that creates new
-files and then encrypts them, encrypts already created files, and decrypts,
-edits, and views encrypted files. It allows for application of encryption at
-a very granular level. 
+Ansible Vault is a command-line tool provided by Ansible.  It allows for
+application of encryption at a very granular level.
 
 Vault is a password-based encryption system. This password can be stored in
-a file, but it must be shared to every user who is allowed access to the 
+a file, but it must be shared to every user who is allowed access to the
 secret data files that are encrypted. This means there is still one step of
 having to figure out how to share the vault password.
 
 Once the password is known by all parties, the process is pretty simple. To
-create a file you want to be encrypted, 
+create a file you want to be encrypted,
 
 .. code-block:: none
 
@@ -3114,11 +3385,7 @@ To decrypt a file,
 When you commit a vault-protected file, it will be the encrypted file that is
 committed to Git. Thus, if you ``decrypt`` a file to view it, you'll have to
 ``encrypt`` it again, and the file will change, so you'll have to commit it
-again. Before a certain version of ``ansible-vault``, there was no ``view``
-option, so maybe that was the only way to see the decrypted contents of an
-encrypted file. This version of ``ansible-vault`` is the version in the 
-``dimsenv`` Python virtual environment. You must be in a virtual environment
-with Ansible 2.0.1.0+ in order to have the ``view`` option.
+again.
 
 If you need to rekey a file,
 
@@ -3146,13 +3413,13 @@ information from that file is used to create the new file on the target machine.
 ..
 
 .. code-block:: none
- 
+
     - name: Load secret password file
       include_vars: "vault.yml"
       no_log: true
       when: ansible_os_family == "Debian"
       tags: [ ansible-server ]
-    
+
     - name: Copy secret password file
       copy:
         dest: "{{ item.key }}"
@@ -3202,8 +3469,8 @@ don't include the actual secret there--set that variable to another
 variable.
 
 Let's say we need a username and password for Service X that is going to
-run on several machines in deployment ``local``. In our group_vars file 
-for this deployment, ``deployment-local.yml``, we'd define the 
+run on several machines in deployment ``local``. In our group_vars file
+for this deployment, ``deployment-local.yml``, we'd define the
 username and password variables for Service X as follows:
 
 .. code-block:: none
@@ -3291,4 +3558,144 @@ for the reasons listed above.
 .. _Ansible Vault: http://docs.ansible.com/ansible/playbooks_vault.html
 .. _github.com/uw-dims: https://github.com/uw-dims
 .. _ReadTheDocs: https://readthedocs.org/
+
+Git and Unix permissions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+A final issue that must be known and kept in mind is the limitation in
+Git's ability to properly handle Unix permission masks. Unix permission
+masks (or ``umask``) are bit masks that handle multiple permissions
+(i.e., ``read``, ``write``, and ``execute``) for multiple groups
+(i.e., ``owner``, ``group``, and ``other``), along with some other
+permission bits (``setgid``, ``setuid``, and ``sticky`` bits).
+
+Git only pays attention to the ``execute`` permissions, and does so
+in a limited way. That means a file may have a mode ``0755`` (write
+permission only for user, but universal read and execute permission),
+or it may have a mode ``0644`` (same as above, but no execute permission
+for anyone).
+
+To see this problem in action, we will use the ``keys.host.create`` script
+to generate some SSH key pairs. SSH only allows keys to be used if
+they have *no* read permission for ``other``, so it generates keys
+with permission mask ``0600`` (see highlighted lines):
+
+.. code-block:: none
+   :emphasize-lines: 6,8,10,12
+
+    $ keys.host.create -d . -p EXAMPLE
+    $ ls -l
+    total 40
+    -rw-rw-r-- 1 dittrich dittrich  358 Mar 13 12:17 key_fingerprints.txt
+    -rw-rw-r-- 1 dittrich dittrich 1304 Mar 13 12:17 known_hosts.add
+    -rw------- 1 dittrich dittrich  668 Mar 13 12:17 ssh_host_dsa_key
+    -rw-r--r-- 1 dittrich dittrich  616 Mar 13 12:17 ssh_host_dsa_key.pub
+    -rw------- 1 dittrich dittrich  365 Mar 13 12:17 ssh_host_ecdsa_key
+    -rw-r--r-- 1 dittrich dittrich  282 Mar 13 12:17 ssh_host_ecdsa_key.pub
+    -rw------- 1 dittrich dittrich  432 Mar 13 12:17 ssh_host_ed25519_key
+    -rw-r--r-- 1 dittrich dittrich  112 Mar 13 12:17 ssh_host_ed25519_key.pub
+    -rw------- 1 dittrich dittrich 1675 Mar 13 12:17 ssh_host_rsa_key
+    -rw-r--r-- 1 dittrich dittrich  408 Mar 13 12:17 ssh_host_rsa_key.pub
+
+..
+
+Now, add the keys to Git and watch the permissions that Git gives
+to those files:
+
+.. code-block:: none
+   :emphasize-lines: 7,9,11,13
+
+    $ git add .
+    $ git commit -m 'Add keys'
+    [master (root-commit) 47f872b] Add keys
+     10 files changed, 66 insertions(+)
+     create mode 100644 keys/key_fingerprints.txt
+     create mode 100644 keys/known_hosts.add
+     create mode 100644 keys/ssh_host_dsa_key
+     create mode 100644 keys/ssh_host_dsa_key.pub
+     create mode 100644 keys/ssh_host_ecdsa_key
+     create mode 100644 keys/ssh_host_ecdsa_key.pub
+     create mode 100644 keys/ssh_host_ed25519_key
+     create mode 100644 keys/ssh_host_ed25519_key.pub
+     create mode 100644 keys/ssh_host_rsa_key
+     create mode 100644 keys/ssh_host_rsa_key.pub
+
+..
+
+As you can see, all files that did not have the ``execute`` bit got a
+permissions mask of ``100644``, so all files that were ``0600`` will end up
+being pulled with a permissions mask of ``0644``.  SSH will not allow a
+permission mask of ``0644`` on private keys, so if these were user keys SSH
+would not allow them to be used.  To ensure that checking out or pulling these
+files will still work requires an extra step to fix these permissions, which is
+a little complicated and involves the use of Git hooks.
+
+The simplest method is to use the public/private pairing to identify all files
+that end in ``.pub`` and change the mode to ``0600`` on the file with the
+``.pub`` extension stripped (i.e., the associated private key). A script to do
+this may look something like this:
+
+.. code-block:: none
+
+    #!/bin/bash
+    echo "[+] Verifying private key permissions and correcting if necessary"
+    find * -type f -name '*.pub' |
+      while read pubkey; do
+        privkey=$(dirname $pubkey)/$(basename $pubkey .pub)
+        if [[ -f $privkey ]]; then
+          mode=$(stat -c %a $privkey)
+          if [[ $? -ne 0 ]]; then
+            echo "[-] Failed to get mode for $privkey"
+          elif [[ "$mode" != "600" ]]; then
+            echo "[+] Changing mode $mode to 600 on file $privkey"
+	    chmod 600 $privkey
+          fi
+        fi
+      done
+    exit 0
+
+..
+
+.. attention::
+
+    You cannot add files in the ``.git/hooks`` directory, where hooks are
+    found for execution by Git, to Git tracking. The ``.git`` directory
+    is _not_ part of the Git repository commit structure. You can add
+    a directory named ``hooks/`` at the top level of the tracked repo
+    and create links into the ``.git/hooks`` directory. This has to
+    be done at least once per clone of the repo, which is up to the
+    person doing the clone to perform manually (or to use wrapper
+    scripts around Git that do this on the initial clone operation).
+
+    Here is a ``Makefile`` that automates this process:
+
+    .. code-block:: none
+
+        .PHONY: all
+        all: install-hooks
+
+        .PHONY: install-hooks
+        install-hooks:
+                @(cd hooks; find * -type f -o -type l 2>/dev/null) | \
+                        while read hook; do \
+                                echo "[+] Installing .git/hooks/$$hook"; \
+                                ln -sf ../../hooks/$$hook .git/hooks/$$hook; \
+                        done
+
+    ..
+
+..
+
+To preserve the actual permission masks in a general way for all files
+being committed to Git is much more complicated and goes beyond the needs
+of this particular issue. Examples of how to do this are found in
+the following references, or search for other options.
+
+* `githooks - Hooks used by Git`_
+* `How To Use Git Hooks To Automate Development and Deployment Tasks`_
+* `Retaining file permissions with Git`_
+
+.. _githooks - Hooks used by Git: https://git-scm.com/docs/githooks
+.. _How To Use Git Hooks To Automate Development and Deployment Tasks: https://www.digitalocean.com/community/tutorials/how-to-use-git-hooks-to-automate-development-and-deployment-tasks
+.. _Retaining file permissions with Git: http://stackoverflow.com/questions/3207728/retaining-file-permissions-with-git
 

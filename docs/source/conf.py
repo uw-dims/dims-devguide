@@ -17,6 +17,14 @@ import os
 import shlex
 from sphinx import __version__
 
+# ReadTheDocs configuration setting:
+
+on_rtd = os.environ.get('READTHEDOCS') == "True"
+if on_rtd:
+    html_theme = 'default'
+else:
+    html_theme = 'sphinx_rtd_theme'
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -39,8 +47,6 @@ extensions = [
     'sphinx.ext.ifconfig',
 ]
 
-todo_include_todos = True
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -49,9 +55,6 @@ source_suffix = '.rst'
 
 # The encoding of source files.
 source_encoding = 'utf-8-sig'
-
-# Include todos
-source_include_todos = True
 
 # The master toctree document.
 master_doc = 'index'
@@ -66,7 +69,7 @@ author = u'Dave Dittrich'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.0'
+version = '1.0.0'
 
 # The full version, including alpha/beta/rc tags.
 release = version
@@ -110,7 +113,11 @@ pygments_style = 'sphinx'
 #keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+
+if not on_rtd and os.environ.get('INCLUDETODOS') == "True":
+    todo_include_todos = True
+else:
+    todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 

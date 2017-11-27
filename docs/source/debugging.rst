@@ -213,3 +213,388 @@ were created **after** this file.
     53347790    4 -rw-rw-r--   1 dittrich dittrich     2756 Mar 15 13:51 /vm/devserver/Vagrantfile
 
 ..
+
+.. _testingbranches:
+
+Testing Code on Branches
+------------------------
+
+The DIMS development environment uses Python virtual environments on developer workstations
+in order to isolate functional "production" code from more volatile development or test
+quality code. This means that development code on feature branches can safely be tested
+by following these basic steps:
+
+#. Create a new Python virtual environment that is a clone of the current stable code
+   base.
+
+#. Pull the latest code from the repos to be tested, and check out the latest code.
+
+#. Install the programs from these branches into the new Python virtual environment,
+   using programs like ``dims.install.dimscommands`` and/or ``dims.ansible-playbook``
+   as necessary.
+
+#. Test the code, possibly using the ``test.runner`` script to invoke scripted tests
+   that help validate the funtionality of the new code.
+
+When you are satisfied with the tests, the Python virtual environment can safely
+be deleted (or you can switch back to the "production" default ``dimsenv``
+Python virtual environment) to return to using stable program code.
+
+Let's say we are going to test the repos ``ansible-playbooks`` and ``dims-packer``,
+both on the feature branch named ``feature/interfaces``.
+
+First, create the new Python virtual environment:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~ () $ dimsenv.update --venv interfaces -v
+    [+] NO virtual environment identified and is active
+    [+] User virtual environment "interfaces" needs replacement
+    [+] Running: virtualenv-clone /opt/dims/envs/dimsenv /home/dittrich/dims/envs/interfaces
+    [+] Installing pre/post scripts from /opt/dims/envs into /home/dittrich/dims/envs
+    [+] Processing files for /home/dittrich/dims/envs/interfaces/bin
+    [+] Installed keys.host.create
+    [+] Installed dyn_inv.py
+    [+] Installed dims-ci-utils.update.user
+    [+] Installed fix.adddeploylinks
+    [+] Installed fix.ansible_managed
+    [+] Installed fix.addlinks
+    [+] Installed fix.addvars
+    [+] Installed fix.includes
+    [+] Installed fix.removetrailingspaces
+    [+] Installed dims.install.createusb
+    [+] Installed dims.makedocset
+    [+] Installed dims.boot2docker
+    [+] Installed dims.buildvirtualenv
+    [+] Installed dims.bumpversion
+    [+] Installed dims.jj2
+    [+] Installed dims.git.repoversion
+    [+] Installed dims.nas.mount
+    [+] Installed dims.nas.umount
+    [+] Installed dims.remote.setupworkstation
+    [+] Installed dims.swapcapslockctrl
+    [+] Installed dims.shutdown
+    [+] Installed dims.sphinx-autobuild
+    [+] Installed test.ansible.yaml
+    [+] Installed test.md5.output
+    [+] Installed test.supervisor
+    [+] Installed test.yaml.validate
+    [+] Installed dims.localcluster.create
+    [+] Installed dims.localcluster.start
+    [+] Installed dims.localcluster.stop
+    [+] Installed dims.localcluster.destroy
+    [+] Installed dims.localcluster.status
+    [+] Installed dims.localcluster.runscript
+    [+] Installed dims.clusterconfig.nas
+    [+] Installed dims.clusterconfig.local
+    [+] Installed dims.clusterconfig.list
+    [+] Installed dims.cluster.runscript
+    [+] Installed dims.elasticsearch.service
+    [+] Installed test.vagrant.ansible-current
+    [+] Installed test.vagrant.factory
+    [+] Installed test.vagrant.list
+    [+] Installed test.packer.factory
+    [+] Installed test.packer.list
+    [+] Installed test.vagrant.listvms
+    [+] Successfully installed 43 programs
+    [-] To enable the interfaces virtual environment, do "exec bash" or log out/log in
+
+..
+
+Activate the new virtual environment:
+
+.. code-block:: none
+
+    [dimsenv] dittrich@dimsdemo1:~ () $ workon interfaces
+    [+] Virtual environment 'dimsenv' activated [ansible-playbooks v1.3.33]
+    [interfaces] dittrich@dimsdemo1:~ () $
+
+..
+
+Update the first repo and check out the desired branch for testing.
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~ () $ cd $GIT/ansible-playbooks
+    [interfaces] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (develop*) $ git hf update && git hf pull && git checkout feature/interfaces
+    Fetching origin
+    remote: Counting objects: 71, done.
+    remote: Compressing objects: 100% (44/44), done.
+    remote: Total 44 (delta 33), reused 0 (delta 0)
+    Unpacking objects: 100% (44/44), done.
+    From git.devops.develop:/opt/git/ansible-playbooks
+       d3ae79a..cd789e9  develop    -> origin/develop
+     * [new branch]      feature/interfaces -> origin/feature/interfaces
+    Summary of actions:
+    - Any changes to branches at origin have been downloaded to your local repository
+    - Any branches that have been deleted at origin have also been deleted from your local repository
+    - Any changes from origin/master have been merged into branch 'master'
+    - Any changes from origin/develop have been pulled into branch 'develop'
+    - Any resolved merge conflicts have been pushed back to origin
+    - You are now on branch 'develop'
+    Fetching origin
+    Summary of actions:
+    Branch feature/interfaces set up to track remote branch feature/interfaces from origin by rebasing.
+    Switched to a new branch 'feature/interfaces'
+    [dimsenv] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (feature/interfaces*) $
+
+..
+
+Update the subsequent repo(s), as necessary, and check out the desired branch for testing.
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~/dims/git/ansible-playbooks (feature/interfaces*) $ cd $GIT/dims-packer
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $ git hf update && git hf pull && git checkout feature/interfaces
+    Fetching origin
+    remote: Counting objects: 72, done.
+    remote: Compressing objects: 100% (55/55), done.
+    remote: Total 61 (delta 30), reused 0 (delta 0)
+    Unpacking objects: 100% (61/61), done.
+    From git.devops.develop:/opt/git/dims-packer
+       069d966..2d47264  feature/interfaces -> origin/feature/interfaces
+
+    Summary of actions:
+    - Any changes to branches at origin have been downloaded to your local repository
+    - Any branches that have been deleted at origin have also been deleted from your local repository
+    - Any changes from origin/master have been merged into branch 'master'
+    - Any changes from origin/develop have been merged into branch 'develop'
+    - Any resolved merge conflicts have been pushed back to origin
+    - You are now on branch 'feature/interfaces'
+    Fetching origin
+    Updating 069d966..2d47264
+    Fast-forward
+     Makefile-vagrant.j2                                                           |  2 +-
+     Vagrantfile.j2                                                                | 23 ++++++++++++++---------
+     scripts/all/create-network-interfaces.sh                                      | 17 +++++++++++++----
+     scripts/all/{network-capture.sh => network-debug.sh}                          |  1 -
+     scripts/jessie/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/{xenial/post-provision.sh => jessie/after-up/05-jessie-networking.sh} | 22 +++++++++++++++++-----
+     scripts/jessie/after-up/10-network-debug.sh                                   |  1 +
+     scripts/jessie/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/trusty/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/trusty/after-up/10-network-debug.sh                                   |  1 +
+     scripts/trusty/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/wheezy/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/wheezy/after-up/10-network-debug.sh                                   |  1 +
+     scripts/wheezy/post-provision.sh                                              | 42 ------------------------------------------
+     scripts/xenial/after-up/00-create-network-interfaces.sh                       |  1 +
+     scripts/xenial/after-up/10-network-debug.sh                                   |  1 +
+     test.vagrant.factory                                                          | 62 ++++++++++++++++++++++++++++++++++----------------------------
+     17 files changed, 87 insertions(+), 174 deletions(-)
+     rename scripts/all/{network-capture.sh => network-debug.sh} (99%)
+     create mode 120000 scripts/jessie/after-up/00-create-network-interfaces.sh
+     rename scripts/{xenial/post-provision.sh => jessie/after-up/05-jessie-networking.sh} (68%)
+     create mode 120000 scripts/jessie/after-up/10-network-debug.sh
+     delete mode 100755 scripts/jessie/post-provision.sh
+     create mode 120000 scripts/trusty/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/trusty/after-up/10-network-debug.sh
+     delete mode 100755 scripts/trusty/post-provision.sh
+     create mode 120000 scripts/wheezy/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/wheezy/after-up/10-network-debug.sh
+     delete mode 100755 scripts/wheezy/post-provision.sh
+     create mode 120000 scripts/xenial/after-up/00-create-network-interfaces.sh
+     create mode 120000 scripts/xenial/after-up/10-network-debug.sh
+
+    Summary of actions:
+    - Any changes from origin/feature/interfaces have been pulled into branch 'feature/interfaces'
+    Already on 'feature/interfaces'
+    Your branch is up-to-date with 'origin/feature/interfaces'.
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $
+
+..
+
+Now that both repos have been pulled, and their respective ``feature/interfaces`` branches
+checked out, install any updated programs to be tested:
+
+.. code-block:: none
+
+    [interfaces] dittrich@dimsdemo1:~/dims/git/dims-packer (feature/interfaces*) $ dims.install.dimscommands -v
+    [+] Processing files for /home/dittrich/dims/envs/interfaces/bin
+    [+] Installed test.vagrant.factory
+    [+] Successfully installed 1 program
+
+..
+
+.. _debuggingvagrant:
+
+Debugging Vagrant
+-----------------
+
+`Vagrant`_ is used to create and destroy Virtual Machine sub-systems within
+DIMS deployments. It is designed to create replicable development environments,
+but is also being used to instantiate replica DIMS deployments to facilitate
+not only development, but also testing and isolation of deployments to exercise
+and document system administration tasks.
+
+Vagrant, like Ansible and some other open source tools used in the DIMS project,
+sometimes are sparse on documentation, especially of advanced features necessary
+for small-scale distributed systems deployment. This can make debugging harder,
+since the functionality is wrapped in a black box that is the ``vagrant`` command
+line (which may be buried within a ``Makefile`` and/or Bash script.)
+
+.. _vagrantprovisioners:
+
+Verbosity in Vagrant Provisioners
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The first way to turn this black box into a white box is to enable debugging
+within the provisioners being called, such as the ``ansible`` provisioner.
+To do this, the ``Vagrantfile`` produced by DIMS scripts allows an environment
+variable ``VERBOSITY`` to be passed to the ``ansible`` provisioner:
+
+.. code-block:: ruby
+
+    . . .
+    ANSIBLE_VERBOSITY = ENV['VERBOSITY'].nil? ? "vv" : ENV['VERBOSITY']
+      . . .
+      config.vm.provision "ansible" do |ansible|
+        . . .
+        # Use the environment variable VERBOSITY to change verbosity level.
+        ansible.verbose = ANSIBLE_VERBOSITY
+        . . .
+      end
+    . . .
+
+..
+
+
+This mechanism adds verbosity to the provisioner being called **by**
+Vagrant, but does nothing to help you see what Vagrant itself is doing
+before and after the ``ansible`` provisioner is called.
+
+.. _vagrantlogging:
+
+Vagrant Debug Logging
+^^^^^^^^^^^^^^^^^^^^^
+
+To get debugging output from Vagrant itself, there is another
+environment variable that produces log output from Vagrant
+onto ``stderr``, which can be redirected to a file for examination
+(shown here is the context of a GNU ``Makefile``):
+
+.. code-block:: none
+
+    #HELP up - Do 'vagrant up --no-provision'
+    .PHONY: up
+    up:
+	    @if [ "$(VAGRANT_STATUS)" != "running" ]; then \
+	        echo "[+] vagrant up --no-provision"; \
+	        VAGRANT_LOG=debug vagrant up --no-provision 2>/tmp/vagrant-$(FQDN).log; \
+	     fi
+
+..
+
+The output is quite voluminous and shows not only what Vagrant is doing
+internally, but also how it is calling programs like ``vboxmanage`` to
+manipulate the Vagrant Virtual Machine.
+
+.. code-block:: none
+
+    . . .
+     INFO global: Vagrant version: 1.8.6
+     INFO global: Ruby version: 2.2.5
+     INFO global: RubyGems version: 2.4.5.1
+     INFO global: VAGRANT_LOG="debug"
+    . . .
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "sharedfolder", "add", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "--name", "home_ansible_vagrant", "--hostpath", "/vm/run/blue14"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "setextradata", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "VBoxInternal2/SharedFoldersEnableSymlinksCreate/home_ansible_sources", "1"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+     INFO subprocess: Starting process: ["/usr/bin/VBoxManage", "sharedfolder", "add", "16425ef3-0e00-4c8e-89aa-116065f1cb36", "--name", "home_ansible_sources", "--hostpath", "/vm/cache/sources"]
+     INFO subprocess: Command not in installer, restoring original environment...
+    DEBUG subprocess: Selecting on IO
+    DEBUG subprocess: Waiting for process to exit. Remaining to timeout: 32000
+    DEBUG subprocess: Exit status: 0
+    . . .
+
+..
+
+.. caution::
+
+    Remember that environment variables, once set, are inheritted by all child
+    processes (unless they are **unset** before another sub-process is started).
+    Using an environment variable to enable logging in a program means that
+    not only the initial process running the ``vagrant`` program, **but all
+    child processes created by this parent process** that also run ``vagrant``
+    will have debugging output on ``stdout``.  If the ``Vagrantfile`` itself
+    instructs ``vagrant`` to directly run ``vagrant``, the parent process will
+    receive this output on ``stderr`` and may interpret it to mean "failure"
+    when there is actually no real error.
+
+    .. code-block:: ruby
+
+        # Shell provisioner to do post-provisioning actions
+        # See https://github.com/emyl/vagrant-triggers/wiki/Trigger-recipes
+        config.trigger.after [:provision], :stdout => true do
+          run "vagrant ssh -c '/opt/dims/bin/trigger.runner --state after-provision'"
+        end
+
+    ..
+
+    In this case, make sure that ``:stderr => false`` is included on the
+    trigger configuration line to either prevent output to ``stderr`` and/or
+    config non-error exit code values.
+
+..
+
+.. _vagrantsource:
+
+Use the Source, Luke
+^^^^^^^^^^^^^^^^^^^^
+
+Lastly, you may need to read the Vagrant source code itself to find
+out how Vagrant operates. For example, the file ``vagrant/plugins/providers/virtualbox/action/network.rb`` shows the defaults used by Vagrant for Virtualbox virtual
+networking using DHCP:
+
+.. code-block:: ruby
+
+        #-----------------------------------------------------------------
+        # DHCP Server Helper Functions
+        #-----------------------------------------------------------------
+
+        DEFAULT_DHCP_SERVER_FROM_VBOX_INSTALL = {
+          network_name: 'HostInterfaceNetworking-vboxnet0',
+          network:      'vboxnet0',
+          ip:           '192.168.56.100',
+          netmask:      '255.255.255.0',
+          lower:        '192.168.56.101',
+          upper:        '192.168.56.254'
+        }.freeze
+
+..
+
+This shows the default range for dynamically assigned addresses (which you will
+want to avoid using for any static addresses on the same network to avoid
+possible conflicts.)
+
+The source code, a few lines lower, also shows what and how Vagrant will log
+the fact that it is creating a DHCP server to manage addresses:
+
+.. code-block:: ruby
+
+          @logger.debug("Creating a DHCP server...")
+          @env[:machine].provider.driver.create_dhcp_server(interface[:name], config)
+
+..
+
+
+The string "Creating a DHCP server..." is what you would look for in
+the log output produced by setting the ``VAGRANT_LOG`` environment
+variable as described earlier.
+
+.. todo::
+
+    Not done yet...
+
+..
+
+.. _Vagrant: https://www.vagrantup.com/
+.. _mitchellh/vagrant: https://github.com/mitchellh/vagrant
+

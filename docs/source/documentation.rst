@@ -1916,7 +1916,7 @@ will be inserted. Here is a simple example of how to do this: ::
 
     .. include:: <isonum.txt>
 
-    Copyright |copy| 2015 University of Washington. All rights reserved.
+    Copyright |copy| 2014-2017 University of Washington. All rights reserved.
 
 ..
 
@@ -1924,7 +1924,7 @@ This code renders as follows:
 
 .. include:: <isonum.txt>
 
-Copyright |copy| 2015 University of Washington. All rights reserved.
+Copyright |copy| 2014-2017 University of Washington. All rights reserved.
 
 
 Insertion of text programmatically
