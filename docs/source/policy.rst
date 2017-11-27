@@ -191,7 +191,7 @@ project started (2013) and the current year, as shown here:
 
    #!/usr/bin/env python
    #
-   # Copyright (C) 2013-2016 University of Washington. All rights reserved.
+   # Copyright (C) 2013-2017 University of Washington. All rights reserved.
    #
    # ...
 
